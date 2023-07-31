@@ -29,7 +29,8 @@ public class TileView : Subject, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        NotifyObservers(Actions.SelectTiles);
+        if (Tile.IsActive)
+            NotifyObservers(Actions.SelectTiles);
     }
 
     public void UpdateView(TileState tileState)

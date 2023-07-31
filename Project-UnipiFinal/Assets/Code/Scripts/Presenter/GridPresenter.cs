@@ -62,6 +62,21 @@ public class GridPresenter
         tileView.Tile.DeactivateTile();
     }
 
+    public void CheckForMatch(TileView tile1, TileView tile2)
+    {
+        bool matchFound = IsMatchingTile(tile1.Tile, tile2.Tile);
+        if (matchFound)
+        {
+            DeactivateTile(tile1);
+            DeactivateTile(tile2);
+        }
+        else
+        {
+            tile1.UpdateView(TileState.Default);
+            tile2.UpdateView(TileState.Default);
+        }
+    }
+
     public bool IsMatchingTile(Tile originTile, Tile targetTile)
     {
         bool areTilesValid = AreTilesInValidPositionForMatch(originTile, targetTile);
@@ -105,7 +120,6 @@ public class GridPresenter
         {
             if (dir.dx > 0)
             {
-                Debug.Log("Target tile is to the bottom of the base tile.");
                 haveTilesInBetween = HaveTilesInBetween(originTile.PositionInGrid, targetTile.PositionInGrid, SearchDirections.Bottom);
                 if (haveTilesInBetween)
                     return false;
@@ -114,7 +128,6 @@ public class GridPresenter
             }
             else
             {
-                Debug.Log("Target tile is to the top of the base tile.");
                 haveTilesInBetween = HaveTilesInBetween(originTile.PositionInGrid, targetTile.PositionInGrid, SearchDirections.Top);
                 if (haveTilesInBetween)
                     return false;
@@ -126,17 +139,28 @@ public class GridPresenter
         bool areDiagonal = AreDiagonallyAligned(originTile.PositionInGrid, targetTile.PositionInGrid);
         if (!areDiagonal)
         {
-            Debug.Log("Tiles aren't diagonally aligned");
-            // Code for checking the path to the tile
+            Debug.Log("Base tile: " + new Vector2(originTile.PositionInGrid.x, originTile.PositionInGrid.y));
+            Debug.Log("Target tile: " + new Vector2(targetTile.PositionInGrid.x, targetTile.PositionInGrid.y));
 
-            return false;
+            if (originTile.PositionInGrid.x <= targetTile.PositionInGrid.x)
+                return false;
+
+            var tempY = originTile.PositionInGrid.y - 1;
+            for (float x = originTile.PositionInGrid.x; x > targetTile.PositionInGrid.x; x--)
+            {
+                for (float y = tempY; y >= targetTile.PositionInGrid.y; y--)
+                {
+                    Debug.Log(new Vector2(x, y));
+                }
+
+                tempY = _grid.Width - 1;
+            }
         }
 
         if (dir.dx > 0)
         {
             if (dir.dy > 0)
             {
-                Debug.Log("Target tile is to the bottom right of the base tile.");
                 haveTilesInBetween = HaveTilesInBetween(originTile.PositionInGrid, targetTile.PositionInGrid, SearchDirections.BottomRight);
                 if (haveTilesInBetween)
                     return false;
@@ -145,7 +169,6 @@ public class GridPresenter
             }
             else if (dir.dy < 0)
             {
-                Debug.Log("Target tile is to the bottom left of the base tile.");
                 haveTilesInBetween = HaveTilesInBetween(originTile.PositionInGrid, targetTile.PositionInGrid, SearchDirections.BottomLeft);
                 if (haveTilesInBetween)
                     return false;
@@ -158,7 +181,6 @@ public class GridPresenter
         {
             if (dir.dy > 0)
             {
-                Debug.Log("Target tile is to the top right of the base tile.");
                 haveTilesInBetween = HaveTilesInBetween(originTile.PositionInGrid, targetTile.PositionInGrid, SearchDirections.TopRight);
                 if (haveTilesInBetween)
                     return false;
@@ -167,7 +189,6 @@ public class GridPresenter
             }
             else if (dir.dy < 0)
             {
-                Debug.Log("Target tile is to the top left of the base tile.");
                 haveTilesInBetween = HaveTilesInBetween(originTile.PositionInGrid, targetTile.PositionInGrid, SearchDirections.TopLeft);
                 if (haveTilesInBetween)
                     return false;
@@ -302,8 +323,6 @@ public class GridPresenter
                 }
                 break;
         }
-
-        Debug.Log(foundTiles);
 
         if (foundTiles)
             return true;

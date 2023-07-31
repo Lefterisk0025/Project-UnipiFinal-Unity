@@ -62,42 +62,32 @@ public class GridView : MonoBehaviour, IObserver
         {
             case Actions.SelectTiles:
                 var tile = (TileView)subject;
-                if (_tile1Clicked == null)
-                {
-                    _tile1Clicked = tile;
-                    _tile1Clicked.UpdateView(TileState.Selected);
-                    return;
-                }
-
-                if (_tile2Clicked == null)
-                {
-                    _tile2Clicked = tile;
-                    CheckForMatch(_tile1Clicked, _tile2Clicked);
-                }
+                SelectTile(tile);
                 break;
             default:
-                // code block
                 break;
         }
-
     }
 
-    private void CheckForMatch(TileView tile1, TileView tile2)
+    private void SelectTile(TileView tileView)
     {
-        bool matchFound = _gridPresenter.IsMatchingTile(tile1.Tile, tile2.Tile);
-        if (matchFound)
+        if (_tile1Clicked == null)
         {
-            _gridPresenter.DeactivateTile(tile1);
-            _gridPresenter.DeactivateTile(tile2);
+            _tile1Clicked = tileView;
+            _tile1Clicked.UpdateView(TileState.Selected);
+            return;
+        }
 
-            actionsText.text = "Found match!";
-        }
-        else
+        if (_tile2Clicked == null)
         {
-            _tile1Clicked.UpdateView(TileState.Default);
-            _tile2Clicked.UpdateView(TileState.Default);
-            actionsText.text = "Didn't find a match!";
+            // Check if the same tile is being selected twice
+            if (_tile1Clicked == tileView)
+                return;
+
+            _tile2Clicked = tileView;
         }
+
+        _gridPresenter.CheckForMatch(_tile1Clicked, _tile2Clicked);
 
         _tile1Clicked = null;
         _tile2Clicked = null;
