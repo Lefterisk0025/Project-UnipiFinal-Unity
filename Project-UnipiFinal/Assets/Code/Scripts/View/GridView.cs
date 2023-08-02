@@ -5,13 +5,15 @@ using TMPro;
 
 public class GridView : MonoBehaviour, IObserver
 {
+
     GridPresenter _gridPresenter;
     List<Subject> _tileSubjects;
 
-    TileView _tile1Clicked;
-    TileView _tile2Clicked;
+    TileView _selectedTile1;
+    TileView _selectedTile2;
 
     [SerializeField] private List<TileView> _tilesPrefabs;
+    [SerializeField] private List<GameObject> _tilesGameObjects;
     [SerializeField] private int _height;
     [SerializeField] private TextMeshProUGUI actionsText;
 
@@ -20,6 +22,8 @@ public class GridView : MonoBehaviour, IObserver
         _gridPresenter = new GridPresenter(this);
 
         _tileSubjects = new List<Subject>();
+
+        _tilesGameObjects = new List<GameObject>();
     }
 
     private void OnDisable()
@@ -38,12 +42,13 @@ public class GridView : MonoBehaviour, IObserver
     {
         foreach (var tile in grid.Tiles)
         {
-            // Calculate index based on tiles value
             int tilePrefabIndex = tile.Value - 1;
 
             var spawnedTile = Instantiate(_tilesPrefabs[tilePrefabIndex], transform);
 
             spawnedTile.GetComponent<TileView>().Tile = tile;
+
+            _tilesGameObjects.Add(spawnedTile.gameObject);
 
             // Create list of subjects to observe
             _tileSubjects.Add(spawnedTile);
@@ -60,36 +65,79 @@ public class GridView : MonoBehaviour, IObserver
     {
         switch (action)
         {
-            case Actions.SelectTiles:
+            case Actions.SelectTile:
                 var tile = (TileView)subject;
-                SelectTile(tile);
+                OnTileSelected(tile);
                 break;
             default:
                 break;
         }
     }
 
-    private void SelectTile(TileView tileView)
+    private void OnTileSelected(TileView tileView)
     {
-        if (_tile1Clicked == null)
+        if (_selectedTile1 == null)
         {
-            _tile1Clicked = tileView;
-            _tile1Clicked.UpdateView(TileState.Selected);
+            _selectedTile1 = tileView;
+            _selectedTile1.UpdateView(TileState.Selected);
             return;
         }
 
-        if (_tile2Clicked == null)
+        if (_selectedTile2 == null)
         {
             // Check if the same tile is being selected twice
-            if (_tile1Clicked == tileView)
+            if (_selectedTile1 == tileView)
                 return;
 
-            _tile2Clicked = tileView;
+            _selectedTile2 = tileView;
         }
 
-        _gridPresenter.CheckForMatch(_tile1Clicked, _tile2Clicked);
+        _gridPresenter.ValidateTileMatch(_selectedTile1, _selectedTile2);
 
-        _tile1Clicked = null;
-        _tile2Clicked = null;
+        _selectedTile1 = null;
+        _selectedTile2 = null;
+    }
+
+    public void AddLineToGrid()
+    {
+        var lastAddedLine = _gridPresenter.CreateGridLine();
+        if (lastAddedLine == null)
+            return;
+
+        int _tileSubjectsPrevListSize = _tileSubjects.Count; // helper var for updating the newly added subjects
+
+        foreach (Tile tile in lastAddedLine)
+        {
+            int tilePrefabIndex = tile.Value - 1;
+
+            var spawnedTile = Instantiate(_tilesPrefabs[tilePrefabIndex], transform);
+
+            spawnedTile.GetComponent<TileView>().Tile = tile;
+
+            _tilesGameObjects.Add(spawnedTile.gameObject);
+
+            _tileSubjects.Add(spawnedTile);
+        }
+
+        // Become observer of each NEW tile starting from the index that the new subjectss added
+        for (int i = _tileSubjectsPrevListSize; i < _tileSubjects.Count; i++)
+        {
+            _tileSubjects[i].AddObserver(this);
+        }
+    }
+
+    public void RemoveTilesLine(float row)
+    {
+        foreach (GameObject tileGO in _tilesGameObjects)
+        {
+            var tempTileView = tileGO.GetComponent<TileView>();
+            if (tempTileView.Tile.PositionInGrid.x == row)
+            {
+                _gridPresenter.RemoveTileFromGrid(tempTileView.Tile);
+                tileGO.SetActive(false);
+            }
+        }
+
+        _gridPresenter.DecreaseGridHeightByNumber(1);
     }
 }

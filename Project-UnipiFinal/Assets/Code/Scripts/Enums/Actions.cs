@@ -1,5 +1,8 @@
 public enum Actions
 {
-    SelectTiles,
+    // Tile Actions
+    SelectTile,
+
+    // Others
     UpdateScore,
 }
