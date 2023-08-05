@@ -7,13 +7,12 @@ public class GridView : MonoBehaviour, IObserver
 {
 
     GridPresenter _gridPresenter;
-    List<Subject> _tileSubjects;
 
     TileView _selectedTile1;
     TileView _selectedTile2;
 
     [SerializeField] private List<TileView> _tilesPrefabs;
-    private List<GameObject> _tilesGameObjects;
+    private IDictionary<Tile, TileView> _spawnedTiles;
     [SerializeField] private int _height;
     [SerializeField] private TextMeshProUGUI actionsText;
 
@@ -21,9 +20,7 @@ public class GridView : MonoBehaviour, IObserver
     {
         _gridPresenter = new GridPresenter(this);
 
-        _tileSubjects = new List<Subject>();
-
-        _tilesGameObjects = new List<GameObject>();
+        _spawnedTiles = new Dictionary<Tile, TileView>();
     }
 
     private void OnDisable()
@@ -33,32 +30,9 @@ public class GridView : MonoBehaviour, IObserver
 
     private void Start()
     {
-        _gridPresenter.GenerateGrid(_height);
+        SetInitialGrid();
 
         actionsText.text = "";
-    }
-
-    public void SetGrid(Grid grid)
-    {
-        foreach (var tile in grid.Tiles)
-        {
-            int tilePrefabIndex = tile.Value - 1;
-
-            var spawnedTile = Instantiate(_tilesPrefabs[tilePrefabIndex], transform);
-
-            spawnedTile.GetComponent<TileView>().Tile = tile;
-
-            _tilesGameObjects.Add(spawnedTile.gameObject);
-
-            // Create list of subjects to observe
-            _tileSubjects.Add(spawnedTile);
-        }
-
-        // Become observer of each tile
-        foreach (var subject in _tileSubjects)
-        {
-            subject.AddObserver(this);
-        }
     }
 
     public void OnNotify(ISubject subject, Actions action)
@@ -72,6 +46,29 @@ public class GridView : MonoBehaviour, IObserver
             default:
                 break;
         }
+    }
+
+    private void GenerateTiles(List<Tile> tiles)
+    {
+        TileView spawnedTileView;
+        foreach (var tile in tiles)
+        {
+            int tilePrefabIndex = tile.Value - 1;
+
+            var spawnedTile = Instantiate(_tilesPrefabs[tilePrefabIndex], transform);
+
+            spawnedTileView = spawnedTile.GetComponent<TileView>();
+            spawnedTileView.Tile = tile;
+            spawnedTileView.AddObserver(this);
+
+            _spawnedTiles[tile] = spawnedTile;
+        }
+    }
+
+    public void SetInitialGrid()
+    {
+        List<Tile> tiles = _gridPresenter.CreateTiles(_height);
+        GenerateTiles(tiles);
     }
 
     private void OnTileSelected(TileView tileView)
@@ -100,44 +97,26 @@ public class GridView : MonoBehaviour, IObserver
 
     public void AddLineToGrid()
     {
-        var lastAddedLine = _gridPresenter.CreateGridLine();
-        if (lastAddedLine == null)
+        List<Tile> tilesLine = _gridPresenter.CreateGridLineBasedOnActiveTiles();
+        if (tilesLine == null)
             return;
 
-        int _tileSubjectsPrevListSize = _tileSubjects.Count; // helper var for updating the newly added subjects
+        GenerateTiles(tilesLine);
+    }
 
-        foreach (Tile tile in lastAddedLine)
+    public void RemoveTiles(List<Tile> tiles)
+    {
+        if (tiles == null)
+            return;
+
+        foreach (Tile tile in tiles)
         {
-            int tilePrefabIndex = tile.Value - 1;
-
-            var spawnedTile = Instantiate(_tilesPrefabs[tilePrefabIndex], transform);
-
-            spawnedTile.GetComponent<TileView>().Tile = tile;
-
-            _tilesGameObjects.Add(spawnedTile.gameObject);
-
-            _tileSubjects.Add(spawnedTile);
-        }
-
-        // Become observer of each NEW tile starting from the index that the new subjectss added
-        for (int i = _tileSubjectsPrevListSize; i < _tileSubjects.Count; i++)
-        {
-            _tileSubjects[i].AddObserver(this);
+            _spawnedTiles[tile].gameObject.SetActive(false);
         }
     }
 
-    public void RemoveTilesLine(float row)
+    public void PrintTiles()
     {
-        foreach (GameObject tileGO in _tilesGameObjects)
-        {
-            var tempTileView = tileGO.GetComponent<TileView>();
-            if (tempTileView.Tile.PositionInGrid.x == row)
-            {
-                _gridPresenter.RemoveTileFromGrid(tempTileView.Tile);
-                tileGO.SetActive(false);
-            }
-        }
-
-        _gridPresenter.DecreaseGridHeightByNumber(1);
+        _gridPresenter.PrintTiles();
     }
 }

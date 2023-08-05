@@ -7,7 +7,6 @@ public class GridPresenter
     GridView _gridView;
     Grid _grid;
     TilesComparator _tilesComparator;
-    List<Tile> _lastAddedTilesLine;
 
     public GridPresenter(GridView gridView)
     {
@@ -40,7 +39,7 @@ public class GridPresenter
         Random.InitState(tempSeed);
     }
 
-    public void GenerateGrid(int height)
+    public List<Tile> CreateTiles(int height)
     {
         _grid = new Grid(height);
 
@@ -51,8 +50,9 @@ public class GridPresenter
         {
             for (int col = 0; col < _grid.Width; col++)
             {
-                int value = Random.Range(1, 10);
-                Vector2 positionInGrid = new Vector2((int)row, (int)col);
+                //int value = Random.Range(1, 10);
+                int value = 7;
+                Vector2 positionInGrid = new Vector2((float)row, (float)col);
 
                 tile = new Tile(value, positionInGrid);
 
@@ -60,7 +60,7 @@ public class GridPresenter
             }
         }
 
-        _gridView.SetGrid(_grid);
+        return _grid.Tiles;
     }
 
     public void DeactivateTile(TileView tileView)
@@ -83,16 +83,19 @@ public class GridPresenter
             DeactivateTile(tile1View);
             DeactivateTile(tile2View);
 
-            if (CanRemoveLineInRow(tile1View.Tile.PositionInGrid.x))
+            float tile1Row = tile1View.Tile.PositionInGrid.x;
+            float tile2Row = tile2View.Tile.PositionInGrid.x;
+
+            if (CanRemoveTilesInRow(tile1Row))
             {
-                _gridView.RemoveTilesLine(tile1View.Tile.PositionInGrid.x);
-                UpdateTilesPosition();
+                List<Tile> tilesToBeRemoved1 = RemoveTilesInRow(tile1Row);
+                _gridView.RemoveTiles(tilesToBeRemoved1);
             }
 
-            if (CanRemoveLineInRow(tile2View.Tile.PositionInGrid.x))
+            if (CanRemoveTilesInRow(tile2Row))
             {
-                _gridView.RemoveTilesLine(tile2View.Tile.PositionInGrid.x);
-                UpdateTilesPosition();
+                List<Tile> tilesToBeRemoved2 = RemoveTilesInRow(tile2Row);
+                _gridView.RemoveTiles(tilesToBeRemoved2);
             }
         }
         else
@@ -102,61 +105,37 @@ public class GridPresenter
         }
     }
 
-    public List<Tile> CreateGridLine()
+    public List<Tile> CreateGridLineBasedOnActiveTiles()
     {
-        _lastAddedTilesLine = new List<Tile>();
+        List<Tile> tilesLine = new List<Tile>();
 
         // Get the remaining active tiles
         var activeTilesList = _grid.GetActiveTiles();
+        Debug.Log("Active tiles number" + activeTilesList.Count);
+        Debug.Log("Active tiles number" + activeTilesList.Count);
 
         // Calculate the height of the newly added part of the grid 
         int subGridHeight = (int)Mathf.Ceil((float)activeTilesList.Count / (float)_grid.Width);
 
-        int newGridHeight = _grid.Height + subGridHeight;
-
         Tile tile;
-        int i = 0; // Tiles counter
-        for (float row = _grid.Height; row < newGridHeight; row++)
+
+        // Calculate initial row and col values based on last tiles position
+        float row = _grid.Tiles[^1].PositionInGrid.x;
+        float col = _grid.Tiles[^1].PositionInGrid.y + 1;
+        if (col > _grid.Width - 1)
         {
-            for (float col = 0; col < _grid.Width; col++)
-            {
-                Vector2 positionInGrid = new Vector2(row, col);
-
-                tile = new Tile(activeTilesList[i].Value, positionInGrid);
-
-                _grid.AddTile(tile);
-                _lastAddedTilesLine.Add(tile);
-
-                i++;
-                if (i > activeTilesList.Count - 1) break;
-            }
+            row = _grid.Height;
+            col = 0;
         }
 
-        _grid.Height = newGridHeight;
-
-        return _lastAddedTilesLine;
-    }
-
-    private bool CanRemoveLineInRow(float row)
-    {
-        Tile tempTile;
-        for (float y = 0; y < _grid.Width; y++)
+        foreach (Tile activeTile in activeTilesList)
         {
-            tempTile = _grid.GetTileInPosition(new Vector2(row, y));
-            if (tempTile.IsActive)
-                return false;
-        }
+            Vector2 positionInGrid = new Vector2(row, col);
 
-        return true;
-    }
+            tile = new Tile(activeTile.Value, positionInGrid);
 
-    private void UpdateTilesPosition()
-    {
-        float col = 0;
-        float row = 0;
-        foreach (Tile tile in _grid.Tiles)
-        {
-            tile.PositionInGrid = new Vector2(row, col);
+            _grid.AddTile(tile);
+            tilesLine.Add(tile);
 
             col++;
             if (col > _grid.Width - 1)
@@ -164,15 +143,74 @@ public class GridPresenter
                 row++;
                 col = 0;
             }
-
         }
+
+        _grid.Height = _grid.Height + subGridHeight;
+
+        Debug.Log("Add tiles line");
+
+        return tilesLine;
     }
 
-    private void PrintTiles()
+    private bool CanRemoveTilesInRow(float row)
     {
+        // FIX ROWS WHERE THERE ARE NOT ALL THE COLS
+
+        Tile tile;
+        for (float y = 0; y < _grid.Width; y++)
+        {
+            tile = _grid.GetTileInPosition(new Vector2(row, y));
+            if (tile.IsActive)
+                return false;
+        }
+
+        return true;
+    }
+
+    private List<Tile> RemoveTilesInRow(float row)
+    {
+        Debug.Log("Size before deletion: " + _grid.Tiles.Count);
+        Tile tile;
+        List<Tile> tilesToBeRemovedFromScene = new List<Tile>();
+        for (float y = 0; y < _grid.Width; y++)
+        {
+            tile = _grid.GetTileInPosition(new Vector2(row, y));
+
+            tilesToBeRemovedFromScene.Add(tile);
+            _grid.RemoveTile(tile);
+        }
+
+        Debug.Log("Remove tiles at row " + row);
+
+        Debug.Log("Size after deletion: " + _grid.Tiles.Count);
+        _grid.Height--;
+
+        // Update remaing tiles position
+        float x1 = 0;
+        float y1 = 0;
+        foreach (Tile tile1 in _grid.Tiles)
+        {
+
+            tile1.PositionInGrid = new Vector2(x1, y1);
+
+            y1++;
+            if (y1 > _grid.Width - 1)
+            {
+                x1++;
+                y1 = 0;
+            }
+        }
+
+        return tilesToBeRemovedFromScene;
+    }
+
+    public void PrintTiles()
+    {
+        Debug.Log("-------------- START TILES --------------");
         foreach (Tile tile in _grid.Tiles)
         {
             Debug.Log(tile.PositionInGrid);
         }
+        Debug.Log("-------------- END TILES --------------");
     }
 }
