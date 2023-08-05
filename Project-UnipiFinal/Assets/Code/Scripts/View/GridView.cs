@@ -13,7 +13,7 @@ public class GridView : MonoBehaviour, IObserver
     TileView _selectedTile2;
 
     [SerializeField] private List<TileView> _tilesPrefabs;
-    [SerializeField] private List<GameObject> _tilesGameObjects;
+    private List<GameObject> _tilesGameObjects;
     [SerializeField] private int _height;
     [SerializeField] private TextMeshProUGUI actionsText;
 
