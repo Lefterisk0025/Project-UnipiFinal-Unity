@@ -13,26 +13,6 @@ public class GridPresenter
         _gridView = gridView;
     }
 
-    public int GetGridWidth()
-    {
-        return _grid.Width;
-    }
-
-    public int GetGridHeight()
-    {
-        return _grid.Height;
-    }
-
-    public void RemoveTileFromGrid(Tile tile)
-    {
-        _grid.RemoveTile(tile);
-    }
-
-    public void DecreaseGridHeightByNumber(int num)
-    {
-        _grid.Height -= num;
-    }
-
     private void GenerateRandomSeed()
     {
         int tempSeed = (int)System.DateTime.Now.Ticks;
@@ -86,13 +66,13 @@ public class GridPresenter
             float tile1Row = tile1View.Tile.PositionInGrid.x;
             float tile2Row = tile2View.Tile.PositionInGrid.x;
 
-            if (CanRemoveTilesInRow(tile1Row))
+            if (CanRemoveTilesLineInRow(tile1Row))
             {
                 List<Tile> tilesToBeRemoved1 = RemoveTilesInRow(tile1Row);
                 _gridView.RemoveTiles(tilesToBeRemoved1);
             }
 
-            if (CanRemoveTilesInRow(tile2Row))
+            if (CanRemoveTilesLineInRow(tile2Row))
             {
                 List<Tile> tilesToBeRemoved2 = RemoveTilesInRow(tile2Row);
                 _gridView.RemoveTiles(tilesToBeRemoved2);
@@ -150,7 +130,7 @@ public class GridPresenter
         return tilesLine;
     }
 
-    private bool CanRemoveTilesInRow(float row)
+    private bool CanRemoveTilesLineInRow(float row)
     {
         float tempLastY = _grid.Tiles[^1].PositionInGrid.y;
 

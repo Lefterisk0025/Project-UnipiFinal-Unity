@@ -13,12 +13,8 @@ public class TileView : Subject, IPointerDownHandler
         {TileState.Deactivated, new Color(255f, 0f, 0f, 255f)},
         {TileState.Selected, new Color(0f, 190f, 255f, 255f)},
     };
+
     Image image;
-
-    private void Awake()
-    {
-
-    }
 
     private void Start()
     {

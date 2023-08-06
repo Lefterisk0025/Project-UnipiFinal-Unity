@@ -5,7 +5,6 @@ using TMPro;
 
 public class GridView : MonoBehaviour, IObserver
 {
-
     GridPresenter _gridPresenter;
 
     TileView _selectedTile1;
