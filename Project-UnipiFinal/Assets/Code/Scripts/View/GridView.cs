@@ -111,6 +111,9 @@ public class GridView : MonoBehaviour, IObserver
 
         foreach (Tile tile in tiles)
         {
+            if (tile == null)
+                break;
+
             _spawnedTiles[tile].gameObject.SetActive(false);
         }
     }

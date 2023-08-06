@@ -16,6 +16,10 @@ public class Tile
         PositionInGrid = positionInGrid;
         IsActive = true;
     }
+    public override string ToString()
+    {
+        return "Tile " + "(" + PositionInGrid.x + ", " + PositionInGrid.y + ") " + "value: " + Value;
+    }
     public void ActivateTile() => _isActive = true;
     public void DeactivateTile() => _isActive = false;
 

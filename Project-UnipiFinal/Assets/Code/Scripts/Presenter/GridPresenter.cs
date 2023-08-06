@@ -50,8 +50,8 @@ public class GridPresenter
         {
             for (int col = 0; col < _grid.Width; col++)
             {
-                //int value = Random.Range(1, 10);
-                int value = 7;
+                int value = Random.Range(1, 10);
+                //int value = 7;
                 Vector2 positionInGrid = new Vector2((float)row, (float)col);
 
                 tile = new Tile(value, positionInGrid);
@@ -111,15 +111,11 @@ public class GridPresenter
 
         // Get the remaining active tiles
         var activeTilesList = _grid.GetActiveTiles();
-        Debug.Log("Active tiles number" + activeTilesList.Count);
-        Debug.Log("Active tiles number" + activeTilesList.Count);
 
         // Calculate the height of the newly added part of the grid 
         int subGridHeight = (int)Mathf.Ceil((float)activeTilesList.Count / (float)_grid.Width);
 
-        Tile tile;
-
-        // Calculate initial row and col values based on last tiles position
+        // Calculate initial row and col values based on last tile's position
         float row = _grid.Tiles[^1].PositionInGrid.x;
         float col = _grid.Tiles[^1].PositionInGrid.y + 1;
         if (col > _grid.Width - 1)
@@ -128,6 +124,8 @@ public class GridPresenter
             col = 0;
         }
 
+        // Create new tiles based on the active tiles
+        Tile tile;
         foreach (Tile activeTile in activeTilesList)
         {
             Vector2 positionInGrid = new Vector2(row, col);
@@ -147,20 +145,21 @@ public class GridPresenter
 
         _grid.Height = _grid.Height + subGridHeight;
 
-        Debug.Log("Add tiles line");
+        Debug.Log("Add line");
 
         return tilesLine;
     }
 
     private bool CanRemoveTilesInRow(float row)
     {
-        // FIX ROWS WHERE THERE ARE NOT ALL THE COLS
+        float tempLastY = _grid.Tiles[^1].PositionInGrid.y;
 
         Tile tile;
-        for (float y = 0; y < _grid.Width; y++)
+        for (float y = 0; y <= tempLastY; y++)
         {
             tile = _grid.GetTileInPosition(new Vector2(row, y));
-            if (tile.IsActive)
+
+            if (tile == null || tile.IsActive)
                 return false;
         }
 
@@ -169,12 +168,15 @@ public class GridPresenter
 
     private List<Tile> RemoveTilesInRow(float row)
     {
-        Debug.Log("Size before deletion: " + _grid.Tiles.Count);
+        float tempLastY = _grid.Tiles[^1].PositionInGrid.y;
+
         Tile tile;
         List<Tile> tilesToBeRemovedFromScene = new List<Tile>();
-        for (float y = 0; y < _grid.Width; y++)
+        for (float y = 0; y <= tempLastY; y++)
         {
             tile = _grid.GetTileInPosition(new Vector2(row, y));
+            if (tile == null)
+                break;
 
             tilesToBeRemovedFromScene.Add(tile);
             _grid.RemoveTile(tile);
@@ -182,26 +184,28 @@ public class GridPresenter
 
         Debug.Log("Remove tiles at row " + row);
 
-        Debug.Log("Size after deletion: " + _grid.Tiles.Count);
         _grid.Height--;
 
-        // Update remaing tiles position
-        float x1 = 0;
-        float y1 = 0;
-        foreach (Tile tile1 in _grid.Tiles)
-        {
-
-            tile1.PositionInGrid = new Vector2(x1, y1);
-
-            y1++;
-            if (y1 > _grid.Width - 1)
-            {
-                x1++;
-                y1 = 0;
-            }
-        }
+        ReInitializeTilesPosition();
 
         return tilesToBeRemovedFromScene;
+    }
+
+    private void ReInitializeTilesPosition()
+    {
+        float x = 0;
+        float y = 0;
+        foreach (Tile tile in _grid.Tiles)
+        {
+            tile.PositionInGrid = new Vector2(x, y);
+
+            y++;
+            if (y > _grid.Width - 1)
+            {
+                x++;
+                y = 0;
+            }
+        }
     }
 
     public void PrintTiles()
@@ -209,7 +213,7 @@ public class GridPresenter
         Debug.Log("-------------- START TILES --------------");
         foreach (Tile tile in _grid.Tiles)
         {
-            Debug.Log(tile.PositionInGrid);
+            Debug.Log(tile.ToString());
         }
         Debug.Log("-------------- END TILES --------------");
     }

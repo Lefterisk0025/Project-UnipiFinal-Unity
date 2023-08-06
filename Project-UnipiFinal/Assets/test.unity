@@ -556,7 +556,7 @@ MonoBehaviour:
   - {fileID: 7210248008526601900, guid: 1a502ad6a6b7c544f92ae93335ba518d, type: 3}
   - {fileID: 7210248008526601900, guid: b6c24a701c143454eb1a70376a0c3092, type: 3}
   - {fileID: 7210248008526601900, guid: b6d4965d34887f241b64f793bc45c5ef, type: 3}
-  _height: 6
+  _height: 2
   actionsText: {fileID: 1606144827}
 --- !u!1 &1224006289
 GameObject:
