@@ -5,6 +5,8 @@ using TMPro;
 
 public class GridView : MonoBehaviour, IObserver
 {
+    public MatchDataSO matchDataSO;
+
     GridPresenter _gridPresenter;
 
     TileView _selectedTile1;
@@ -31,14 +33,14 @@ public class GridView : MonoBehaviour, IObserver
     {
         SetInitialGrid();
 
-        actionsText.text = "";
+        actionsText.text = matchDataSO.gameMode.ToString();
     }
 
     public void OnNotify(ISubject subject, Actions action)
     {
         switch (action)
         {
-            case Actions.SelectTile:
+            case Actions.SELECT_TILE:
                 var tile = (TileView)subject;
                 OnTileSelected(tile);
                 break;
@@ -58,6 +60,7 @@ public class GridView : MonoBehaviour, IObserver
 
             spawnedTileView = spawnedTile.GetComponent<TileView>();
             spawnedTileView.Tile = tile;
+
             spawnedTileView.AddObserver(this);
 
             _spawnedTiles[tile] = spawnedTile;

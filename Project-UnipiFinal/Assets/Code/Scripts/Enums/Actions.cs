@@ -1,8 +1,12 @@
 public enum Actions
 {
     // Tile Actions
-    SelectTile,
+    SELECT_TILE,
 
     // Others
-    UpdateScore,
+    UPDATE_SCORE,
+
+    // Menus
+    OPEN_MENU,
+    CLOSE_MENU
 }

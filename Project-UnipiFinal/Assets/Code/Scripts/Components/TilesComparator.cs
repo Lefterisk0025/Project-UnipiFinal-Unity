@@ -256,8 +256,6 @@ public class TilesComparator
                 break;
             case SearchDirections.LeftPath:
 
-                Debug.Log("Bravo six I am in...");
-
                 float tempStartY = originTilePos.y - 1;
                 float tempEndY = 0;
 
@@ -268,7 +266,6 @@ public class TilesComparator
 
                     for (float y = tempStartY; y > tempEndY; y--)
                     {
-                        Debug.Log("Checking at pos: " + new Vector2(x, y));
                         Tile tile = _grid.GetTileInPosition(new Vector2(x, y));
                         if (tile.IsActive)
                         {
