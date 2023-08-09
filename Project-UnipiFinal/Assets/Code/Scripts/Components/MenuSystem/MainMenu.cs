@@ -31,11 +31,9 @@ public class MainMenu : MenuManager
 
     public void StartMatchPointMatch()
     {
-        GameManager.Instance.UpdateGameState(GameState.ON_MATCH_POINT_MATCH);
     }
 
     public void StartTimeAttackMatch()
     {
-        GameManager.Instance.UpdateGameState(GameState.ON_TIME_ATTACK_MATCH);
     }
 }
