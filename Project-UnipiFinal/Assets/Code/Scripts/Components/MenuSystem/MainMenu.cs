@@ -11,22 +11,26 @@ public class MainMenu : MenuManager
 
     public void OpenMainMenu()
     {
-        ToggleMenu(_menusDict[Menus.MAIN_MENU]);
+        ToggleMenu(_menusDict[Menus.MainMenu]);
     }
 
-    public void OpenGameModesMenu()
+    public void OpenMissionsMenu()
     {
-        ToggleMenu(_menusDict[Menus.GAMEMODES]);
+        if (!GameManager.Instance.PlayerOnMission)
+            ToggleMenu(_menusDict[Menus.Missions]);
+        else
+            ToggleMenu(_menusDict[Menus.MissionMap]);
+
     }
 
     public void OpenStoreMenu()
     {
-        ToggleMenu(_menusDict[Menus.STORE]);
+        ToggleMenu(_menusDict[Menus.Store]);
     }
 
     public void OpenStoreItemMenu()
     {
-        ToggleMenu(_menusDict[Menus.STORE_ITEM]);
+        ToggleMenu(_menusDict[Menus.StoreItem]);
     }
 
     public void StartMatchPointMatch()

@@ -6,6 +6,10 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+    public bool PlayerOnMission { get => coreGameDataSO.PlayerOnMission; private set => coreGameDataSO.PlayerOnMission = value; }
+
+    // Container for saving data
+    [SerializeField] private CoreGameDataSO coreGameDataSO;
 
     private void Awake()
     {
@@ -17,36 +21,35 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        UpdateGameState(GameState.ON_MAIN_MENU);
+        // When the game launches
+        UpdateGameState(GameState.MainMenu);
     }
 
     public void UpdateGameState(GameState state)
     {
         switch (state)
         {
-            case GameState.ON_MAIN_MENU:
+            case GameState.MainMenu:
                 HandleOnMainMenuState();
                 break;
-            case GameState.ON_HACKRUN:
-                break;
-            case GameState.ON_MATCH:
+            case GameState.InitializingMission:
+                HandleInitializingMissionState();
                 break;
         }
     }
 
     private void HandleOnMainMenuState()
     {
-        SceneManager.LoadScene("MainMenu", LoadSceneMode.Additive);
+        if (!SceneManager.GetSceneByName("MainMenu").isLoaded)
+            SceneManager.LoadScene("MainMenu", LoadSceneMode.Additive);
+    }
+
+    private void HandleInitializingMissionState()
+    {
+        coreGameDataSO.PlayerOnMission = true;
     }
 
     private void HandleOnMatchPointMatchState()
-    {
-        SceneManager.LoadScene("test", LoadSceneMode.Additive);
-
-        SceneManager.UnloadSceneAsync("MainMenu");
-    }
-
-    private void HandleOnTimeAttackMatchState()
     {
         SceneManager.LoadScene("test", LoadSceneMode.Additive);
 

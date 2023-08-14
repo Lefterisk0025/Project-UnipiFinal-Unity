@@ -5,8 +5,8 @@ public enum Actions
 
     // Others
     UPDATE_SCORE,
-
+    SelectMission,
     // Menus
     OPEN_MENU,
-    CLOSE_MENU
+    CLOSE_MENU,
 }

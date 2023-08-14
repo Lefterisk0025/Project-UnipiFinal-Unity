@@ -1,9 +1,10 @@
 public enum Menus
 {
-    MAIN_MENU,
-    SETTINGS,
-    GAMEMODES,
-    STORE,
-    HELP,
-    STORE_ITEM
+    MainMenu,
+    Settings,
+    Missions,
+    Store,
+    Help,
+    StoreItem,
+    MissionMap
 }

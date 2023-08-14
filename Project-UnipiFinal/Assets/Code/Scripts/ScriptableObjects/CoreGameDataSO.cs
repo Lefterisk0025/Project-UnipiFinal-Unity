@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class AttackTargetSO : ScriptableObject
+public class CoreGameDataSO : ScriptableObject
 {
-    public AttackTarget attackTargetModel;
+    public bool PlayerOnMission;
 }

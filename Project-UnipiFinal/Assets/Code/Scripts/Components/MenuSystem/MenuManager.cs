@@ -4,6 +4,11 @@ using UnityEngine;
 
 public abstract class MenuManager : MonoBehaviour
 {
+    // Menu = Object
+    // Menus = Enum
+
+    public static MenuManager Instance { get; private set; }
+
     [SerializeField] private List<Menu> _menus;
 
     protected IDictionary<Menus, Menu> _menusDict;
@@ -12,6 +17,11 @@ public abstract class MenuManager : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+            Destroy(this);
+        else
+            Instance = this;
+
         _menusStack = new Stack<Menu>();
 
         _menusDict = new Dictionary<Menus, Menu>();

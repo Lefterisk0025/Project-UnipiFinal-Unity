@@ -5,8 +5,6 @@ using TMPro;
 
 public class GridView : MonoBehaviour, IObserver
 {
-    public MatchDataSO matchDataSO;
-
     GridPresenter _gridPresenter;
 
     TileView _selectedTile1;
@@ -15,7 +13,6 @@ public class GridView : MonoBehaviour, IObserver
     [SerializeField] private List<TileView> _tilesPrefabs;
     private IDictionary<Tile, TileView> _spawnedTiles;
     [SerializeField] private int _height;
-    [SerializeField] private TextMeshProUGUI actionsText;
 
     private void Awake()
     {
@@ -32,8 +29,6 @@ public class GridView : MonoBehaviour, IObserver
     private void Start()
     {
         SetInitialGrid();
-
-        actionsText.text = matchDataSO.gameMode.ToString();
     }
 
     public void OnNotify(ISubject subject, Actions action)

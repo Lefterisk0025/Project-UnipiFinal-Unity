@@ -9,10 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6224d887701063047921ecc57ccf6ca1, type: 3}
-  m_Name: Target3
+  m_Script: {fileID: 11500000, guid: a76e7b5de72d743489e488d1acb15936, type: 3}
+  m_Name: CoreGameData
   m_EditorClassIdentifier: 
-  Title: 
-  Description: 
-  Difficulty: 0
-  MinimumReputationNeeded: 0
+  PlayerOnMission: 0

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class AttackTarget
+public class Mission
 {
     [SerializeField] private string _title;
     [SerializeField] private string _description;
@@ -18,7 +18,7 @@ public class AttackTarget
 
     public bool IsCompleted { get => _isCompleted; private set => _isCompleted = value; }
 
-    public AttackTarget(string title, string description, Difficulty difficulty, int minimumReputationNeeded)
+    public Mission(string title, string description, Difficulty difficulty, int minimumReputationNeeded)
     {
         _title = title;
         _description = description;
