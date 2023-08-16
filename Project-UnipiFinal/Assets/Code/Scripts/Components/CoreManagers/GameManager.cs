@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    public bool PlayerOnMission { get => coreGameDataSO.PlayerOnMission; private set => coreGameDataSO.PlayerOnMission = value; }
+    public bool PlayerOnMission = false;
 
     // Container for saving data
     [SerializeField] private CoreGameDataSO coreGameDataSO;
@@ -35,6 +36,9 @@ public class GameManager : MonoBehaviour
             case GameState.InitializingMission:
                 HandleInitializingMissionState();
                 break;
+            case GameState.AbandoningMission:
+                HandleAbandoningMissionState();
+                break;
         }
     }
 
@@ -46,7 +50,9 @@ public class GameManager : MonoBehaviour
 
     private void HandleInitializingMissionState()
     {
-        coreGameDataSO.PlayerOnMission = true;
+        PlayerOnMission = true;
+
+        MenuManager.Instance.ToggleMenu(Menu.MissionMap);
     }
 
     private void HandleOnMatchPointMatchState()
@@ -54,5 +60,12 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("test", LoadSceneMode.Additive);
 
         SceneManager.UnloadSceneAsync("MainMenu");
+    }
+
+    private void HandleAbandoningMissionState()
+    {
+        PlayerOnMission = false;
+
+        MenuManager.Instance.ToggleMenu(Menu.MainMenu);
     }
 }

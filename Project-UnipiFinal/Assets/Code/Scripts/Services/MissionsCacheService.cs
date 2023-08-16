@@ -5,7 +5,7 @@ using System.Linq;
 
 public class MissionsCacheService
 {
-    private const int missionsCount = 5;
+    ILocalDataService _dataService = new JsonLocalDataService();
 
     List<Mission> missionsList = new List<Mission>() {
             new Mission("Diamond District Vault", "Nestled amidst a bustling city, this high-security vault holds billions in gems. Surveillance is tight, and the labyrinth layout confounds outsiders.", Difficulty.Medium, 80),
@@ -20,7 +20,7 @@ public class MissionsCacheService
             new Mission("Underground Speakeasy Heist", "Hidden below the bustling city streets, a prohibition-era speakeasy, now a den for modern elite. Holds rare liquors and a secret stash of golden bars.", Difficulty.VeryHard, 340),
     };
 
-    public List<Mission> GetRandomMissions(int count)
+    public List<Mission> GetNewRandomMissions(int count)
     {
         List<Mission> randomMissionsList = new List<Mission>(missionsList);
         int n = randomMissionsList.Count;
@@ -34,5 +34,10 @@ public class MissionsCacheService
         }
 
         return randomMissionsList.Take(count).ToList();
+    }
+
+    public bool SaveMissionDataLocal(Mission mission)
+    {
+        return _dataService.SaveData("/mission.json", mission, true);
     }
 }

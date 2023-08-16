@@ -264,9 +264,20 @@ public class TilesComparator
                     if (x == targetTilePos.x)
                         tempEndY = targetTilePos.y;
 
+                    if (tempStartY == 0f)
+                    {
+                        Tile tile = _grid.GetTileInPosition(new Vector2(x, 0));
+                        if (tile.IsActive)
+                        {
+                            foundTiles = true;
+                            break;
+                        }
+                    }
+
                     for (float y = tempStartY; y > tempEndY; y--)
                     {
                         Tile tile = _grid.GetTileInPosition(new Vector2(x, y));
+                        Debug.Log($"(x, y): {x}, {y}");
                         if (tile.IsActive)
                         {
                             foundTiles = true;

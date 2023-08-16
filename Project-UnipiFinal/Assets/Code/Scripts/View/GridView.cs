@@ -44,6 +44,12 @@ public class GridView : MonoBehaviour, IObserver
         }
     }
 
+    public void SetInitialGrid()
+    {
+        List<Tile> tiles = _gridPresenter.CreateTiles(_height);
+        GenerateTiles(tiles);
+    }
+
     private void GenerateTiles(List<Tile> tiles)
     {
         TileView spawnedTileView;
@@ -60,12 +66,6 @@ public class GridView : MonoBehaviour, IObserver
 
             _spawnedTiles[tile] = spawnedTile;
         }
-    }
-
-    public void SetInitialGrid()
-    {
-        List<Tile> tiles = _gridPresenter.CreateTiles(_height);
-        GenerateTiles(tiles);
     }
 
     private void OnTileSelected(TileView tileView)

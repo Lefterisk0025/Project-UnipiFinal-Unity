@@ -2,22 +2,43 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEditor.Build.Pipeline.Tasks;
 
 public class MissionMapView : MonoBehaviour
 {
-    [SerializeField] private MissionDataSO _missionDataSO;
+    MissionMapPresenter _missionMapPresenter;
 
-    [SerializeField] private TextMeshProUGUI missionTitleGUI;
-    [SerializeField] private TextMeshProUGUI missionDifficultyGUI;
+    [SerializeField] private TextMeshProUGUI _missionTitleGUI;
+    [SerializeField] private TextMeshProUGUI _missionDifficultyGUI;
+    [SerializeField] private UILineRenderer _uiLineRenderer;
 
-    private void Start()
+    [SerializeField] private MapNode _attackNodePrefab;
+    [SerializeField] private MapNode _boostHubNodePrefab;
+
+    [SerializeField] private int mapNodesCount;
+    [SerializeField] private int mapDepth;
+
+    private void Awake()
     {
-        missionTitleGUI.text = "Mission: " + _missionDataSO.Title;
-        missionDifficultyGUI.text = "Difficulty: " + _missionDataSO.Difficulty.ToString();
+        _missionMapPresenter = new MissionMapPresenter(this);
     }
 
-    public void SetMissionView()
+    private void OnEnable()
     {
+        Mission mission = _missionMapPresenter.GetLocalSavedMission();
 
+        _missionTitleGUI.text = "Mission: " + mission.Title;
+        _missionDifficultyGUI.text = "Difficulty: " + mission.Difficulty.ToString();
+    }
+
+    public void AbandonMission()
+    {
+        GameManager.Instance.UpdateGameState(GameState.AbandoningMission);
+    }
+
+    private void GenerateMap()
+    {
+        // get map from presenter
+        // Show it on screen
     }
 }

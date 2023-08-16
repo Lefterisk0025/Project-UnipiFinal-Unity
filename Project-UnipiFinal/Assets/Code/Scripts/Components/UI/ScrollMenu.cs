@@ -4,48 +4,54 @@ using UnityEngine;
 
 public class ScrollMenu : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> _attackTargetsPanels;
-
     int currentPanelIndex = 0;
     int prevPanelIndex = 0;
+    List<GameObject> _menusGOsList = new List<GameObject>();
 
-    private void OnEnable()
+    private void Update()
     {
-        foreach (GameObject go in _attackTargetsPanels)
+        if (_menusGOsList.Count <= 0)
+            InitializeScroll();
+    }
+
+    private void InitializeScroll()
+    {
+        foreach (Transform child in transform)
         {
-            go.SetActive(false);
+            _menusGOsList.Add(child.gameObject);
+            child.gameObject.SetActive(false);
         }
 
-        _attackTargetsPanels[0].SetActive(true);
+        _menusGOsList[currentPanelIndex].SetActive(true);
     }
 
     public void NextTarget()
     {
         prevPanelIndex = currentPanelIndex;
 
-        _attackTargetsPanels[currentPanelIndex].SetActive(false);
+        _menusGOsList[currentPanelIndex].SetActive(false);
 
         currentPanelIndex++;
-        if (currentPanelIndex > _attackTargetsPanels.Count - 1)
+        if (currentPanelIndex > _menusGOsList.Count - 1)
         {
             currentPanelIndex = 0;
         }
 
-        _attackTargetsPanels[currentPanelIndex].SetActive(true);
+        _menusGOsList[currentPanelIndex].SetActive(true);
     }
 
     public void PreviousTarget()
     {
         prevPanelIndex = currentPanelIndex;
 
-        _attackTargetsPanels[currentPanelIndex].SetActive(false);
+        _menusGOsList[currentPanelIndex].SetActive(false);
 
         currentPanelIndex--;
         if (currentPanelIndex < 0)
         {
-            currentPanelIndex = _attackTargetsPanels.Count - 1;
+            currentPanelIndex = _menusGOsList.Count - 1;
         }
 
-        _attackTargetsPanels[currentPanelIndex].SetActive(true);
+        _menusGOsList[currentPanelIndex].SetActive(true);
     }
 }

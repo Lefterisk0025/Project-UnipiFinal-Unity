@@ -4,40 +4,31 @@ using UnityEngine;
 
 public class MainMenu : MenuManager
 {
-    void Start()
+    private void Start()
     {
         OpenMainMenu();
     }
 
     public void OpenMainMenu()
     {
-        ToggleMenu(_menusDict[Menus.MainMenu]);
+        ToggleMenu(Menu.MainMenu);
     }
 
     public void OpenMissionsMenu()
     {
         if (!GameManager.Instance.PlayerOnMission)
-            ToggleMenu(_menusDict[Menus.Missions]);
+            ToggleMenu(Menu.Missions);
         else
-            ToggleMenu(_menusDict[Menus.MissionMap]);
-
+            ToggleMenu(Menu.MissionMap);
     }
 
     public void OpenStoreMenu()
     {
-        ToggleMenu(_menusDict[Menus.Store]);
+        ToggleMenu(Menu.Store);
     }
 
     public void OpenStoreItemMenu()
     {
-        ToggleMenu(_menusDict[Menus.StoreItem]);
-    }
-
-    public void StartMatchPointMatch()
-    {
-    }
-
-    public void StartTimeAttackMatch()
-    {
+        ToggleMenu(Menu.StoreItem);
     }
 }

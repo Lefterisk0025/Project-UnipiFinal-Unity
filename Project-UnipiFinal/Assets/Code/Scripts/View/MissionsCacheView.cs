@@ -7,27 +7,42 @@ public class MissionsCacheView : MonoBehaviour, IObserver
 {
     MissionsCachePresenter _missionsCachePresenter;
 
-    [SerializeField] private List<MissionCard> _missionCardsList;
-    [SerializeField] private MissionDataSO _missionDataSO;
+    [SerializeField] private MissionCard _missionCardsPrefab;
+    [SerializeField] private int _missionsCount = 5;
+    [SerializeField] private bool _canFetchNewMissions = true;
 
     private void Awake()
     {
         _missionsCachePresenter = new MissionsCachePresenter(this);
+
+        for (int i = 0; i < _missionsCount; i++)
+        {
+            Instantiate(_missionCardsPrefab, transform);
+        }
     }
 
-    // OnEnable its being called after Awake() and before Start()
     private void OnEnable()
     {
-        List<Mission> missionsList = _missionsCachePresenter.GetRandomMissions(_missionCardsList.Count);
+        // ADD CHECK FOR GETTING NEW MISSIONS EVERY 2 HOURS
+        List<Mission> missions;
+
+        if (!_canFetchNewMissions)
+            missions = _missionsCachePresenter.GetCurrentMissions();
+        else
+            missions = _missionsCachePresenter.GetNewRandomMissions(_missionsCount);
+
+        if (missions == null || missions.Count != _missionsCount)
+        {
+            Debug.Log("An error occured while fetching missions.");
+            return;
+        }
 
         int i = 0;
-        foreach (Mission mission in missionsList)
+        foreach (Transform childGO in transform)
         {
-            if (_missionCardsList[i] == null)
-                break;
-
-            _missionCardsList[i].SetMissionCardView(mission);
-            _missionCardsList[i].AddObserver(this);
+            var missionCard = childGO.GetComponent<MissionCard>();
+            missionCard.SetMissionCardView(missions[i]);
+            missionCard.AddObserver(this);
             i++;
         }
     }
@@ -45,8 +60,9 @@ public class MissionsCacheView : MonoBehaviour, IObserver
 
     private void HandleSelectMissionAction(Mission mission)
     {
-        _missionDataSO.Difficulty = mission.Difficulty;
-        _missionDataSO.Title = mission.Title;
+        LoadingScreen.Instance.Open(2);
+
+        _missionsCachePresenter.SaveMissionDataLocal(mission);
 
         GameManager.Instance.UpdateGameState(GameState.InitializingMission);
     }

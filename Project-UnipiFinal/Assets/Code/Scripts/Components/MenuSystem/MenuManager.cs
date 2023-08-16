@@ -4,16 +4,13 @@ using UnityEngine;
 
 public abstract class MenuManager : MonoBehaviour
 {
-    // Menu = Object
-    // Menus = Enum
-
     public static MenuManager Instance { get; private set; }
 
-    [SerializeField] private List<Menu> _menus;
+    [SerializeField] private List<MenuEntity> _menus;
 
-    protected IDictionary<Menus, Menu> _menusDict;
+    protected IDictionary<Menu, MenuEntity> _menusDict;
 
-    private Stack<Menu> _menusStack;
+    private Stack<MenuEntity> _menusStack;
 
     private void Awake()
     {
@@ -22,26 +19,26 @@ public abstract class MenuManager : MonoBehaviour
         else
             Instance = this;
 
-        _menusStack = new Stack<Menu>();
+        _menusStack = new Stack<MenuEntity>();
 
-        _menusDict = new Dictionary<Menus, Menu>();
+        _menusDict = new Dictionary<Menu, MenuEntity>();
 
-        foreach (Menu menu in _menus)
+        foreach (MenuEntity menuEntity in _menus)
         {
-            _menusDict[menu.MenuType] = menu;
+            _menusDict[menuEntity.MenuType] = menuEntity;
 
-            menu.gameObject.SetActive(false);
+            menuEntity.gameObject.SetActive(false);
         }
     }
 
-    protected void ToggleMenu(Menu menu)
+    public void ToggleMenu(Menu menu)
     {
         if (_menusStack.Count > 0)
         {
             _menusStack.Peek().gameObject.SetActive(false);
         }
 
-        _menusStack.Push(menu);
+        _menusStack.Push(_menusDict[menu]);
 
         _menusStack.Peek().gameObject.SetActive(true);
     }

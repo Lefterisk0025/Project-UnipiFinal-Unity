@@ -30,8 +30,8 @@ public class GridPresenter
         {
             for (int col = 0; col < _grid.Width; col++)
             {
-                int value = Random.Range(1, 10);
-                //int value = 7;
+                //int value = Random.Range(1, 10);
+                int value = 7;
                 Vector2 positionInGrid = new Vector2((float)row, (float)col);
 
                 tile = new Tile(value, positionInGrid);
