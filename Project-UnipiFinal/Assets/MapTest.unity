@@ -156,10 +156,10 @@ RectTransform:
   m_Father: {fileID: 1465483243}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 0.00009836991, y: 0}
-  m_SizeDelta: {x: 0, y: 970}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0.0001, y: 0.0007324219}
+  m_SizeDelta: {x: 0, y: -71.9374}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &4928247
 MonoBehaviour:
@@ -1325,7 +1325,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -636}
+  m_AnchoredPosition: {x: 166, y: -636}
   m_SizeDelta: {x: 300, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &989715629
@@ -1459,8 +1459,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 40}
-  m_SizeDelta: {x: -80, y: -480}
+  m_AnchoredPosition: {x: 0, y: -18.221313}
+  m_SizeDelta: {x: -80, y: -355.2402}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1030398467
 MonoBehaviour:
@@ -1788,7 +1788,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1465483242}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
   m_Name: 
@@ -1953,7 +1953,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _missionTitleGUI: {fileID: 1683915197}
   _missionDifficultyGUI: {fileID: 1358770977}
+  _contentParent: {fileID: 4928246}
+  _verticalNodesContainerPrefab: {fileID: 5529500706036574148, guid: 6dad07fe23aae6d4696d6b496b5656c6, type: 3}
+  _attackNodePrefab: {fileID: 457547932186896789, guid: 86311e94cdfac664a9be0b6e8cadef40, type: 3}
+  _boostHubNodePrefab: {fileID: -5933814584308124747, guid: cc04a47b4da6d6b4ba6f88cfc2cb50b5, type: 3}
   _uiLineRenderer: {fileID: 1983725533}
+  mapDepth: 10
+  maxNodesPerVerticalLine: 4
+  mainCamera: {fileID: 943753471}
+  canvasRectTransform: {fileID: 1959629251}
 --- !u!224 &1611921734
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2092,7 +2100,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -525}
+  m_AnchoredPosition: {x: -158, y: -637}
   m_SizeDelta: {x: 300, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1670836588
@@ -2709,7 +2717,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6f116527fe1a304d881bffa943a3633, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvasRectTransform: {fileID: 1959629251}
+  canvasRectTransform: {fileID: 1030398466}
   lineImage: {fileID: 5736311886166678649, guid: df17eb502e847214da965807ddb4016e, type: 3}
 --- !u!1 &2080816366
 GameObject:
