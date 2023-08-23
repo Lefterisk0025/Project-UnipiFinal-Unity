@@ -13,12 +13,12 @@ public class MapGraph : DAG<MapNode>
 
     public void AddNodesGroup(List<MapNode> _nodesGroup)
     {
-        NodeGroups.Add(_nodesGroup);
-
         foreach (MapNode node in _nodesGroup)
         {
             AddVertex(node);
         }
+
+        NodeGroups.Add(_nodesGroup);
     }
 
     public void ConnectNodes(MapNode fromNode, MapNode toNode)

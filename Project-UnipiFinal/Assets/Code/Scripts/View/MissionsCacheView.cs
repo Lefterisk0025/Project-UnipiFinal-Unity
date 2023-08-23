@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class MissionsCacheView : MonoBehaviour, IObserver
 {
-    MissionsCachePresenter _missionsCachePresenter;
+    MissionPresenter _missionsPresenter;
 
     [SerializeField] private MissionCard _missionCardsPrefab;
     [SerializeField] private int _missionsCount = 5;
@@ -13,7 +13,7 @@ public class MissionsCacheView : MonoBehaviour, IObserver
 
     private void Awake()
     {
-        _missionsCachePresenter = new MissionsCachePresenter(this);
+        _missionsPresenter = new MissionPresenter(this);
 
         for (int i = 0; i < _missionsCount; i++)
         {
@@ -27,9 +27,9 @@ public class MissionsCacheView : MonoBehaviour, IObserver
         List<Mission> missions;
 
         if (!_canFetchNewMissions)
-            missions = _missionsCachePresenter.GetCurrentMissions();
+            missions = _missionsPresenter.GetCurrentMissions();
         else
-            missions = _missionsCachePresenter.GetNewRandomMissions(_missionsCount);
+            missions = _missionsPresenter.GetNewRandomMissions(_missionsCount);
 
         if (missions == null || missions.Count != _missionsCount)
         {
@@ -62,7 +62,7 @@ public class MissionsCacheView : MonoBehaviour, IObserver
     {
         LoadingScreen.Instance.Open(2);
 
-        _missionsCachePresenter.SaveMissionDataLocal(mission);
+        _missionsPresenter.CreateLocalMissionData(mission);
 
         GameManager.Instance.UpdateGameState(GameState.InitializingMission);
     }

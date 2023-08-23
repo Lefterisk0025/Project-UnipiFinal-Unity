@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1032411951316",
+    "project_id": "heistnet-80e07",
+    "storage_bucket": "heistnet-80e07.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1032411951316:android:7d487a29c1fde3d1f6cb41",
+        "android_client_info": {
+          "package_name": "com.lkstudio.heistnet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1032411951316-cum04b0ovfd1t91k2btjp4u978eq99g7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOP7Mozf0eSk5Bj3GoTX75Tbe5qD7ItJs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1032411951316-cum04b0ovfd1t91k2btjp4u978eq99g7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

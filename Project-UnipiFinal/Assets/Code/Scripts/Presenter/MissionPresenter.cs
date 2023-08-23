@@ -1,26 +1,67 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-public class MissionMapPresenter
+public class MissionPresenter
 {
     MissionMapView _missionMapView;
-    MissionMapService _missionMapService;
-    MapGraph _mapGraph;
+    MissionsCacheView _missionsCacheView;
+    MissionService _missionService;
+    Mission _mission;
 
-    public MissionMapPresenter(MissionMapView missionMapView)
+    public MissionPresenter(MissionMapView missionMapView)
     {
         _missionMapView = missionMapView;
-
-        _missionMapService = new MissionMapService();
-
-        _mapGraph = new MapGraph();
+        _missionService = new MissionService();
     }
+
+    public MissionPresenter(MissionsCacheView missionsCacheView)
+    {
+        _missionsCacheView = missionsCacheView;
+        _missionService = new MissionService();
+    }
+
+    #region LOCAL CRUD
 
     public Mission GetLocalSavedMission()
     {
-        return _missionMapService.GetLocalSavedMission();
+        return _missionService.GetLocalMissionData();
+    }
+
+    public void CreateLocalMissionData(Mission mission)
+    {
+        if (_missionService.SaveLocalMissionData(mission))
+        {
+            Debug.Log("Data saved successfully!");
+        }
+    }
+
+    public bool UpdateLocalMissionData(Mission mission)
+    {
+        if (_missionService.SaveLocalMissionData(mission))
+            return true;
+
+        return false;
+    }
+
+    public bool DeleteLocalMissionData()
+    {
+        if (_missionService.DeleteLocalMission())
+            return true;
+
+        return false;
+    }
+
+    #endregion
+
+    public List<Mission> GetNewRandomMissions(int count)
+    {
+        return _missionService.GetNewRandomMissions(count);
+    }
+
+    public List<Mission> GetCurrentMissions()
+    {
+        return null;
     }
 
     private void GenerateRandomSeed()
@@ -29,13 +70,10 @@ public class MissionMapPresenter
         Random.InitState(tempSeed);
     }
 
-    public Dictionary<MapNode, List<MapNode>> GetMapGraph()
+    public MapGraph CreateMissionMapGraph(int mapDepth, int maxNodesPerVerticalLine)
     {
-        return _mapGraph.GetGraph();
-    }
+        MapGraph mapGraph = new MapGraph();
 
-    public MapGraph CreateMapGraph(int mapDepth, int maxNodesPerVerticalLine)
-    {
         GenerateRandomSeed();
 
         int prevSize = 0;
@@ -43,13 +81,15 @@ public class MissionMapPresenter
         // Create node groups
         for (int i = 0; i < mapDepth; i++)
         {
+            Debug.Log("i: " + i);
+
             var tempGroup = new List<MapNode>();
 
             // Check for root or final node
             if (i == 0 || i == (mapDepth - 1))
             {
                 tempGroup.Add(new MapNode(NodeType.Begin));
-                _mapGraph.AddNodesGroup(tempGroup);
+                mapGraph.AddNodesGroup(tempGroup);
                 continue;
             }
 
@@ -77,24 +117,26 @@ public class MissionMapPresenter
                 tempGroup.Add(tempNode);
             }
 
-            _mapGraph.AddNodesGroup(tempGroup);
+            mapGraph.AddNodesGroup(tempGroup);
             prevSize = randGroupSize;
         }
 
         // Connect Nodes between Node Groups
-        for (int i = 0; i < _mapGraph.NodeGroups.Count; i++)
+        for (int i = 0; i < mapGraph.NodeGroups.Count; i++)
         {
             // Connect the root node with every node in the 2nd group
             if (i == 0)
             {
-                var rootNode = _mapGraph.NodeGroups[0][0];
-                foreach (var node in _mapGraph.NodeGroups[1])
+                var rootNode = mapGraph.NodeGroups[0][0];
+                foreach (var node in mapGraph.NodeGroups[1])
                 {
-                    _mapGraph.ConnectNodes(rootNode, node);
+                    mapGraph.ConnectNodes(rootNode, node);
                 }
             }
         }
 
-        return _mapGraph;
+        Debug.Log("Node Groups: " + mapGraph.NodeGroups);
+
+        return mapGraph;
     }
 }

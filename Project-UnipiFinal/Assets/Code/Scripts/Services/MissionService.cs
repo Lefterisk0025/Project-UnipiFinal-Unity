@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class MissionsCacheService
+public class MissionService
 {
+    private const string localFileName = "/mission.json";
+
     ILocalDataService _dataService = new JsonLocalDataService();
 
     List<Mission> missionsList = new List<Mission>() {
@@ -16,7 +18,7 @@ public class MissionsCacheService
             new Mission("Celestial Observatory Heist", "Perched on a remote mountaintop, the observatory holds astronomical secrets and rare cosmic gems. Guarded by a dedicated crew and natural isolation.", Difficulty.Easy, 100),
             new Mission("Royal Train Robbery", "A moving target, the luxury royal train transports a monarch's treasures. Security is tight, and the ever-changing landscape complicates the plot.", Difficulty.Hard, 200),
             new Mission("Opera House Caper", "An architectural marvel echoing with music, it's said to have a vault of old world wealth beneath its stage. Heisting during a live performance?", Difficulty.Medium, 300),
-            new Mission("Tech Tycoon's Tower", "A modern skyscraper fitted with the latest technology, owned by a billionaire tech magnate. Rumored to hold a digital treasure of immense value.", Difficulty.Medium, 100),
+            new Mission("-Tech Tycoon's Tower", "A modern skyscraper fitted with the latest technology, owned by a billionaire tech magnate. Rumored to hold a digital treasure of immense value.", Difficulty.Medium, 100),
             new Mission("Underground Speakeasy Heist", "Hidden below the bustling city streets, a prohibition-era speakeasy, now a den for modern elite. Holds rare liquors and a secret stash of golden bars.", Difficulty.VeryHard, 340),
     };
 
@@ -36,8 +38,22 @@ public class MissionsCacheService
         return randomMissionsList.Take(count).ToList();
     }
 
-    public bool SaveMissionDataLocal(Mission mission)
+    #region LOCAL DATA
+
+    public bool SaveLocalMissionData(Mission mission)
     {
-        return _dataService.SaveData("/mission.json", mission, true);
+        return _dataService.SaveData(localFileName, mission, true);
     }
+
+    public Mission GetLocalMissionData()
+    {
+        return _dataService.LoadData<Mission>(localFileName, true);
+    }
+
+    public bool DeleteLocalMission()
+    {
+        return _dataService.DeleteData(localFileName);
+    }
+
+    #endregion
 }

@@ -15,12 +15,10 @@ public class JsonLocalDataService : ILocalDataService
         {
             if (File.Exists(path))
             {
-                Debug.Log("Data file already exists. Overwriting old file.");
                 File.Delete(path);
             }
             else
             {
-                Debug.Log("Creating file the first time.");
             }
             using FileStream stream = File.Create(path);
             stream.Close();
@@ -29,7 +27,6 @@ public class JsonLocalDataService : ILocalDataService
         }
         catch (Exception e)
         {
-            Debug.Log($"Unable to save data due to: {e.Message} {e.StackTrace}");
             return false;
         }
 
@@ -41,7 +38,6 @@ public class JsonLocalDataService : ILocalDataService
 
         if (!File.Exists(path))
         {
-            Debug.Log($"Cannot load file at {path}. File does not exist!");
             throw new FileNotFoundException($"{path} does not exist!");
         }
 
@@ -52,8 +48,27 @@ public class JsonLocalDataService : ILocalDataService
         }
         catch (Exception e)
         {
-            Debug.Log($"Failed to load data due to: {e.Message} {e.StackTrace}");
             throw e;
+        }
+    }
+
+    public bool DeleteData(string RelativePath)
+    {
+        string path = Application.persistentDataPath + RelativePath;
+
+        if (!File.Exists(path))
+        {
+            throw new FileNotFoundException($"{path} does not exist!");
+        }
+
+        try
+        {
+            File.Delete(path);
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
         }
     }
 }

@@ -15,8 +15,8 @@ public class Mission
     public string Description { get => _description; set => _description = value; }
     public Difficulty Difficulty { get => _difficulty; private set => _difficulty = value; }
     public int MinimumReputationNeeded { get => _minimumReputationNeeded; private set => _minimumReputationNeeded = value; }
-
     public bool IsCompleted { get => _isCompleted; private set => _isCompleted = value; }
+    public MapGraph MapGraph { get; set; }
 
     public Mission(string title, string description, Difficulty difficulty, int minimumReputationNeeded)
     {
