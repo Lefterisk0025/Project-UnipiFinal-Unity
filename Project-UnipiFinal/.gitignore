@@ -80,3 +80,6 @@ crashlytics-build.properties
 /[Aa]ssets/[Pp]lugins/[Ii]OS/*.meta
 /[Aa]ssets/[Pp]lugins/[Tt]vOS/*.meta
 /[Aa]ssets/[Pp]lugins/*.meta
+
+# Google Play
+/[Aa]ssets/[Gg]ooglePlayGames/
