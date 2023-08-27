@@ -14,10 +14,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/MainMenu.unity
     guid: 535e275d351e4494c829bb3ddee33713
-  - enabled: 1
+  - enabled: 0
     path: Assets/test.unity
     guid: 2593cb0f7b815b8478a7f78741beeca8
   m_configObjects:
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 43683f4d36f3ca742b69d901eded067c, type: 2}
+    com.unity.adaptiveperformance.samsung.android.provider_settings: {fileID: 11400000, guid: 5def7a2305b08d04e8534ec4b64d9ef8, type: 2}
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: 5ae3c1b87f4b692489ca1a2cf74d50a1, type: 2}
     com.unity.addressableassets: {fileID: 11400000, guid: 1e1826e8edfe2184cb4bbc06058adef4, type: 2}

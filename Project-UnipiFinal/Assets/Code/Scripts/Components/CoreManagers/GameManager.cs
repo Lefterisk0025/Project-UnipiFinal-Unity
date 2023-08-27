@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     public bool PlayerOnMission = false;
+    public Firebase.FirebaseApp FBapp;
 
     // Container for saving data
     [SerializeField] private CoreGameDataSO coreGameDataSO;
@@ -30,6 +31,9 @@ public class GameManager : MonoBehaviour
     {
         switch (state)
         {
+            case GameState.Initialization:
+                HandleInitializationState();
+                break;
             case GameState.MainMenu:
                 HandleOnMainMenuState();
                 break;
@@ -40,6 +44,11 @@ public class GameManager : MonoBehaviour
                 HandleAbandoningMissionState();
                 break;
         }
+    }
+
+    private void HandleInitializationState()
+    {
+
     }
 
     private void HandleOnMainMenuState()

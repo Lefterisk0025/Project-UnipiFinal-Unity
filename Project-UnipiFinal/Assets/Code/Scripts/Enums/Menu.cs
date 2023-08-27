@@ -6,5 +6,6 @@ public enum Menu
     Store,
     Help,
     StoreItem,
-    MissionMap
+    MissionMap,
+    Login
 }

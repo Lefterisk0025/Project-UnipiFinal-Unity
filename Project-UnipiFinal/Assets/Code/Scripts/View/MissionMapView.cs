@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEditor.Build.Pipeline.Tasks;
 
 public class MissionMapView : MonoBehaviour, IObserver
 {

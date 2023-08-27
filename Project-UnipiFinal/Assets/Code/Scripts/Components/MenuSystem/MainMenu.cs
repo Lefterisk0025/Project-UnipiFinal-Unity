@@ -6,7 +6,12 @@ public class MainMenu : MenuManager
 {
     private void Start()
     {
-        OpenMainMenu();
+        OpenLoginMenu();
+    }
+
+    public void OpenLoginMenu()
+    {
+        ToggleMenu(Menu.Login);
     }
 
     public void OpenMainMenu()
