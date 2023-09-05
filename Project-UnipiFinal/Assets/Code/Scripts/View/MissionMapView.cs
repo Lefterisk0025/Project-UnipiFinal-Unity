@@ -29,9 +29,9 @@ public class MissionMapView : MonoBehaviour, IObserver
         _spawnedNodes = new Dictionary<MapNode, GameObject>();
     }
 
-    private void OnEnable()
+    private async void OnEnable()
     {
-        Mission mission = _missionPresenter.GetLocalSavedMission();
+        Mission mission = await _missionPresenter.GetLocalSavedMission();
 
         _missionTitleGUI.text = "Mission: " + mission.Title;
         _missionDifficultyGUI.text = "Difficulty: " + mission.Difficulty.ToString();
@@ -44,10 +44,12 @@ public class MissionMapView : MonoBehaviour, IObserver
             RectTransform contectRectTransform = _contentParent.gameObject.GetComponent<RectTransform>();
             contectRectTransform.localPosition = new Vector3(0, _contentParent.transform.position.y);
 
+            // Check mission's difficulty to define mapDepth and maxNodesPerVerticalLine
+
             MapGraph mapGraph = _missionPresenter.CreateMissionMapGraph(mapDepth, maxNodesPerVerticalLine);
             mission.MapGraph = mapGraph;
 
-            _missionPresenter.UpdateLocalMissionData(mission);
+            await _missionPresenter.UpdateLocalMissionData(mission);
 
             GenerateGraphMap(mapGraph);
         }
@@ -78,14 +80,14 @@ public class MissionMapView : MonoBehaviour, IObserver
         _selectedNode.UpdateView(MapNodeView.NodeState.Selected);
     }
 
-    public void AbandonMission()
+    public async void AbandonMission()
     {
         foreach (Transform child in _contentParent)
         {
             Destroy(child.gameObject);
         }
 
-        _missionPresenter.DeleteLocalMissionData();
+        await _missionPresenter.DeleteLocalMissionData();
 
         GameManager.Instance.UpdateGameState(GameState.AbandoningMission);
     }
@@ -94,6 +96,8 @@ public class MissionMapView : MonoBehaviour, IObserver
     {
         if (_selectedNode.Node.NodeType != NodeType.Attack)
             return;
+
+
 
         GameManager.Instance.UpdateGameState(GameState.Playing);
     }

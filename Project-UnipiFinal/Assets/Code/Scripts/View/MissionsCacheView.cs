@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
+using TMPro;
 
 public class MissionsCacheView : MonoBehaviour, IObserver
 {
@@ -10,6 +12,10 @@ public class MissionsCacheView : MonoBehaviour, IObserver
     [SerializeField] private MissionCard _missionCardsPrefab;
     [SerializeField] private int _missionsCount = 5;
     [SerializeField] private bool _canFetchNewMissions = true;
+    [SerializeField] private TextMeshProUGUI _messageText;
+    [SerializeField] private CountdownTimer _countdownTimer;
+
+    float timeTilNextFetch;
 
     private void Awake()
     {
@@ -21,29 +27,55 @@ public class MissionsCacheView : MonoBehaviour, IObserver
         }
     }
 
-    private void OnEnable()
+    private async void OnEnable()
     {
-        // ADD CHECK FOR GETTING NEW MISSIONS EVERY 2 HOURS
-        List<Mission> missions;
-
-        if (!_canFetchNewMissions)
-            missions = _missionsPresenter.GetCurrentMissions();
-        else
-            missions = _missionsPresenter.GetNewRandomMissions(_missionsCount);
-
-        if (missions == null || missions.Count != _missionsCount)
+        try
         {
-            Debug.Log("An error occured while fetching missions.");
-            return;
+            List<Mission> missions = null;
+
+            DateTime lastFetchDateTime = DateTime.Now;
+
+            var lastFetchDateTimeStr = PlayerPrefs.GetString("LastFetchDateTime");
+            if (!lastFetchDateTimeStr.Equals(""))
+                lastFetchDateTime = DateTime.Parse(lastFetchDateTimeStr);
+
+            if (!_missionsPresenter.CanFetchNewMissions(lastFetchDateTime, DateTime.Now))
+            {
+                missions = await _missionsPresenter.GetLocalMissionsCacheData();
+                _messageText.text = "Missions already fetched. Back in 2 hours...";
+
+                float timeValue = CalculateElapsedTimeInMinutes(lastFetchDateTime, DateTime.Now);
+                _countdownTimer.SetTimer(timeValue);
+            }
+            else
+            {
+                //missions = await _missionsPresenter.GetRandomRemoteMissions(_missionsCount);
+                missions = _missionsPresenter.GetRandomLocalMissions(_missionsCount);
+                _missionsPresenter.SaveLocalMissionsCacheData(missions);
+                PlayerPrefs.SetString("LastFetchDateTime", DateTime.Now.ToString());
+                _messageText.text = "Just fetched new missions!";
+
+                _countdownTimer.SetTimer(120);
+            }
+
+            if (missions == null || missions.Count != _missionsCount)
+            {
+                Debug.Log("An error occured while fetching missions.");
+                return;
+            }
+
+            int i = 0;
+            foreach (Transform childGO in transform)
+            {
+                var missionCard = childGO.GetComponent<MissionCard>();
+                missionCard.SetMissionCardView(missions[i]);
+                missionCard.AddObserver(this);
+                i++;
+            }
         }
-
-        int i = 0;
-        foreach (Transform childGO in transform)
+        catch (Exception e)
         {
-            var missionCard = childGO.GetComponent<MissionCard>();
-            missionCard.SetMissionCardView(missions[i]);
-            missionCard.AddObserver(this);
-            i++;
+            ErrorScreen.Instance.Show(e.Message);
         }
     }
 
@@ -60,10 +92,17 @@ public class MissionsCacheView : MonoBehaviour, IObserver
 
     private void HandleSelectMissionAction(Mission mission)
     {
-        LoadingScreen.Instance.Open(2);
+        LoadingScreen.Instance.FakeOpen(2);
 
-        _missionsPresenter.CreateLocalMissionData(mission);
+        _missionsPresenter.SaveLocalMissionData(mission);
 
         GameManager.Instance.UpdateGameState(GameState.InitializingMission);
+    }
+
+    private float CalculateElapsedTimeInMinutes(DateTime dt1, DateTime dt2)
+    {
+        TimeSpan elapsedTime = dt2 - dt1;
+        float hours = (float)elapsedTime.TotalHours;
+        return hours * 60;
     }
 }

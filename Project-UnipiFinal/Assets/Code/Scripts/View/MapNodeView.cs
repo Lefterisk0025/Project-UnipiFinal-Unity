@@ -6,14 +6,18 @@ using UnityEngine.UI;
 
 public class MapNodeView : Subject, IPointerDownHandler
 {
-    public enum NodeState { Default, Selected, Completed }
+    public enum NodeState { Default, Selected, Pointed, Completed }
     public MapNode Node { get; set; }
 
-    [SerializeField] private GameObject SelectionIcon;
+    [SerializeField] private GameObject _selectionIcon;
+    [SerializeField] private GameObject _pointIcon;
 
     private void Start()
     {
         UpdateView(NodeState.Default);
+
+        _pointIcon.SetActive(false);
+        _selectionIcon.SetActive(false);
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -27,10 +31,13 @@ public class MapNodeView : Subject, IPointerDownHandler
         switch (nodeState)
         {
             case NodeState.Default:
-                SelectionIcon.SetActive(false);
+                _selectionIcon.SetActive(false);
                 break;
             case NodeState.Selected:
-                SelectionIcon.SetActive(true);
+                _selectionIcon.SetActive(true);
+                break;
+            case NodeState.Pointed:
+                _pointIcon.SetActive(true);
                 break;
         }
     }

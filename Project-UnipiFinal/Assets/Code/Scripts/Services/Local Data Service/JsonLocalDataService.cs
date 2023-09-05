@@ -4,12 +4,20 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using UnityEngine;
+using System.Threading.Tasks;
 
 public class JsonLocalDataService : ILocalDataService
 {
-    public bool SaveData<T>(string RelativePath, T Data, bool Encrypted)
+    string _persistentDataPath;
+
+    public JsonLocalDataService()
     {
-        string path = Application.persistentDataPath + RelativePath;
+        _persistentDataPath = Application.persistentDataPath;
+    }
+
+    public async Task<bool> SaveData<T>(string RelativePath, T Data, bool Encrypted)
+    {
+        string path = _persistentDataPath + RelativePath;
 
         try
         {
@@ -19,22 +27,29 @@ public class JsonLocalDataService : ILocalDataService
             }
             else
             {
+                // Handle file not exists
             }
+
             using FileStream stream = File.Create(path);
+            using (StreamWriter writer = new StreamWriter(stream))
+            {
+                string jsonData = JsonConvert.SerializeObject(Data);
+                await writer.WriteAsync(jsonData);
+            }
             stream.Close();
-            File.WriteAllText(path, JsonConvert.SerializeObject(Data));
+
             return true;
         }
         catch (Exception e)
         {
+            Debug.Log(e.Message);
             return false;
         }
-
     }
 
-    public T LoadData<T>(string RelativePath, bool Encrypted)
+    public async Task<T> LoadData<T>(string RelativePath, bool Encrypted)
     {
-        string path = Application.persistentDataPath + RelativePath;
+        string path = _persistentDataPath + RelativePath;
 
         if (!File.Exists(path))
         {
@@ -43,7 +58,7 @@ public class JsonLocalDataService : ILocalDataService
 
         try
         {
-            T data = JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
+            T data = JsonConvert.DeserializeObject<T>(await File.ReadAllTextAsync(path));
             return data;
         }
         catch (Exception e)
@@ -52,7 +67,7 @@ public class JsonLocalDataService : ILocalDataService
         }
     }
 
-    public bool DeleteData(string RelativePath)
+    public async Task<bool> DeleteData(string RelativePath)
     {
         string path = Application.persistentDataPath + RelativePath;
 
@@ -63,11 +78,12 @@ public class JsonLocalDataService : ILocalDataService
 
         try
         {
-            File.Delete(path);
+            await Task.Run(() => File.Delete(path));
             return true;
         }
         catch (Exception e)
         {
+            Debug.Log(e.Message);
             return false;
         }
     }

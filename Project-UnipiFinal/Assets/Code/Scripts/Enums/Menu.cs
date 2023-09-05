@@ -7,5 +7,7 @@ public enum Menu
     Help,
     StoreItem,
     MissionMap,
-    Login
+    Welcome,
+    Register,
+    PlayerInfoCreation,
 }

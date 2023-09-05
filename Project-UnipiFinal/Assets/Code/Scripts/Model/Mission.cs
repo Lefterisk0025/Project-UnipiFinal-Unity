@@ -1,31 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Firebase.Firestore;
 
-[System.Serializable]
+[FirestoreData]
 public class Mission
 {
-    [SerializeField] private string _title;
-    [SerializeField] private string _description;
-    [SerializeField] private Difficulty _difficulty;
-    [SerializeField] private int _minimumReputationNeeded;
-    [SerializeField] private bool _isCompleted;
+    [FirestoreProperty]
+    public string Title { get; set; }
 
-    public string Title { get => _title; set => _title = value; }
-    public string Description { get => _description; set => _description = value; }
-    public Difficulty Difficulty { get => _difficulty; private set => _difficulty = value; }
-    public int MinimumReputationNeeded { get => _minimumReputationNeeded; private set => _minimumReputationNeeded = value; }
-    public bool IsCompleted { get => _isCompleted; private set => _isCompleted = value; }
+    [FirestoreProperty]
+    public string Description { get; set; }
+
+    [FirestoreProperty]
+    public string Difficulty { get; set; }
+
+    public bool IsCompleted { get; private set; }
     public MapGraph MapGraph { get; set; }
-
-    public Mission(string title, string description, Difficulty difficulty, int minimumReputationNeeded)
-    {
-        _title = title;
-        _description = description;
-        _difficulty = difficulty;
-        _minimumReputationNeeded = minimumReputationNeeded;
-        _isCompleted = false;
-    }
-
-    public void CompleteAttack() => _isCompleted = true;
 }

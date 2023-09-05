@@ -10,7 +10,6 @@ public class MissionCard : Subject
     [SerializeField] private TextMeshProUGUI _titleTMP;
     [SerializeField] private TextMeshProUGUI _descriptionTMP;
     [SerializeField] private TextMeshProUGUI _difficultyTMP;
-    [SerializeField] private TextMeshProUGUI _minimumReputationTMP;
     [SerializeField] private GameObject CompletionOverlay;
 
     private void Awake()
@@ -30,8 +29,7 @@ public class MissionCard : Subject
 
         _titleTMP.text = mission.Title;
         _descriptionTMP.text = mission.Description;
-        _difficultyTMP.text = mission.Difficulty.ToString();
-        _minimumReputationTMP.text = mission.MinimumReputationNeeded.ToString();
+        _difficultyTMP.text = mission.Difficulty;
     }
 
     public void SelectMissionAction()

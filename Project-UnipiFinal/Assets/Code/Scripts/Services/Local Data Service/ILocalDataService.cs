@@ -1,8 +1,10 @@
+using System.Threading.Tasks;
+
 public interface ILocalDataService
 {
-    bool SaveData<T>(string RelativePath, T Data, bool Encrypted);
+    Task<bool> SaveData<T>(string RelativePath, T Data, bool Encrypted);
 
-    T LoadData<T>(string RelativePath, bool Encrypted);
+    Task<T> LoadData<T>(string RelativePath, bool Encrypted);
 
-    bool DeleteData(string RelativePath);
+    Task<bool> DeleteData(string RelativePath);
 }

@@ -83,3 +83,6 @@ crashlytics-build.properties
 
 # Google Play
 /[Aa]ssets/[Gg]ooglePlayGames/
+
+# Cyberpunk GUI
+/[Aa]ssets/[Cc]yberpunk_RPG_UI/

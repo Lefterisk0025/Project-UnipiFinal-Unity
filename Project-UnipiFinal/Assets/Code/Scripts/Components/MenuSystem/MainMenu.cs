@@ -1,17 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class MainMenu : MenuManager
 {
+    [SerializeField] private TextMeshProUGUI _welcomePlayer;
+
     private void Start()
     {
-        OpenLoginMenu();
+        OpenMainMenu();
     }
 
-    public void OpenLoginMenu()
+    private void OnEnable()
     {
-        ToggleMenu(Menu.Login);
+        if (PlayerManager.Instance.Player != null)
+            _welcomePlayer.text = "Username: " + PlayerManager.Instance.Player.DisplayName + "\nUserId: " + PlayerManager.Instance.Player.UserId;
+        else
+            _welcomePlayer.text = "There is no player...";
     }
 
     public void OpenMainMenu()
@@ -21,7 +27,8 @@ public class MainMenu : MenuManager
 
     public void OpenMissionsMenu()
     {
-        if (!GameManager.Instance.PlayerOnMission)
+        int onMission = PlayerPrefs.GetInt("OnMission");
+        if (onMission == 0)
             ToggleMenu(Menu.Missions);
         else
             ToggleMenu(Menu.MissionMap);

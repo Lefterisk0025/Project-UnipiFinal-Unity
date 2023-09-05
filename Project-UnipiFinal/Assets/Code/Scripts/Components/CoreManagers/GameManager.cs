@@ -7,11 +7,6 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    public bool PlayerOnMission = false;
-    public Firebase.FirebaseApp FBapp;
-
-    // Container for saving data
-    [SerializeField] private CoreGameDataSO coreGameDataSO;
 
     private void Awake()
     {
@@ -23,8 +18,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        // When the game launches
-        UpdateGameState(GameState.MainMenu);
+        UpdateGameState(GameState.Initialization);
     }
 
     public void UpdateGameState(GameState state)
@@ -33,6 +27,9 @@ public class GameManager : MonoBehaviour
         {
             case GameState.Initialization:
                 HandleInitializationState();
+                break;
+            case GameState.OnAuthMenu:
+                HandleOnAuthMenuState();
                 break;
             case GameState.MainMenu:
                 HandleOnMainMenuState();
@@ -48,18 +45,31 @@ public class GameManager : MonoBehaviour
 
     private void HandleInitializationState()
     {
+        // Logo screen
 
+        PlayerManager.Instance.SignInPlayer();
+    }
+
+    private void HandleOnAuthMenuState()
+    {
+        LoadingScreen.Instance.Open();
+
+        if (!SceneManager.GetSceneByName("AuthMenu").isLoaded)
+            SceneManager.LoadScene("AuthMenu", LoadSceneMode.Additive);
+
+        LoadingScreen.Instance.Close();
     }
 
     private void HandleOnMainMenuState()
     {
-        if (!SceneManager.GetSceneByName("MainMenu").isLoaded)
-            SceneManager.LoadScene("MainMenu", LoadSceneMode.Additive);
+        LoadingScreen.Instance.FakeOpen(2);
+
+        CustomSceneManager.Instance.SwitchScene("AuthMenu", "MainMenu");
     }
 
     private void HandleInitializingMissionState()
     {
-        PlayerOnMission = true;
+        PlayerPrefs.SetInt("OnMission", 1);
 
         MenuManager.Instance.ToggleMenu(Menu.MissionMap);
     }
@@ -73,7 +83,7 @@ public class GameManager : MonoBehaviour
 
     private void HandleAbandoningMissionState()
     {
-        PlayerOnMission = false;
+        PlayerPrefs.SetInt("OnMission", 0);
 
         MenuManager.Instance.ToggleMenu(Menu.MainMenu);
     }

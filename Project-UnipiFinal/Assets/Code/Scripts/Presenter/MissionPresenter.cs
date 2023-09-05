@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
+using System;
+using Random = UnityEngine.Random;
 
 public class MissionPresenter
 {
@@ -21,47 +24,94 @@ public class MissionPresenter
         _missionService = new MissionService();
     }
 
-    #region LOCAL CRUD
+    #region LOCAL DATA
 
-    public Mission GetLocalSavedMission()
+    // ----------------- MISSION -----------------
+
+    public async Task<Mission> GetLocalSavedMission()
     {
-        return _missionService.GetLocalMissionData();
+        return await _missionService.GetLocalMissionData();
     }
 
-    public void CreateLocalMissionData(Mission mission)
+    public async void SaveLocalMissionData(Mission mission)
     {
-        if (_missionService.SaveLocalMissionData(mission))
+        if (await _missionService.SaveLocalMissionData(mission))
         {
             Debug.Log("Data saved successfully!");
         }
     }
 
-    public bool UpdateLocalMissionData(Mission mission)
+    public async Task<bool> UpdateLocalMissionData(Mission mission)
     {
-        if (_missionService.SaveLocalMissionData(mission))
+        if (await _missionService.SaveLocalMissionData(mission))
             return true;
 
         return false;
     }
 
-    public bool DeleteLocalMissionData()
+    public async Task<bool> DeleteLocalMissionData()
     {
-        if (_missionService.DeleteLocalMission())
+        if (await _missionService.DeleteLocalMission())
             return true;
 
         return false;
+    }
+
+    // ----------------- MISSIONS CACHE -----------------
+
+    public async Task<List<Mission>> GetLocalMissionsCacheData()
+    {
+        return await _missionService.GetLocalMissionsCacheData();
+    }
+
+    public async void SaveLocalMissionsCacheData(List<Mission> missionsCache)
+    {
+        if (await _missionService.SaveLocalMissionsCacheData(missionsCache))
+        {
+            Debug.Log("Data saved successfully!");
+        }
+    }
+
+    public async Task<bool> UpdateLocalMissionsCacheData(List<Mission> missionsCache)
+    {
+        if (await _missionService.SaveLocalMissionsCacheData(missionsCache))
+            return true;
+
+        return false;
+    }
+
+    public async Task<bool> DeleteLocalMissionsCacheData()
+    {
+        if (await _missionService.DeleteLocalMissionCacheData())
+            return true;
+
+        return false;
+    }
+
+    // FOR TESTING
+    public List<Mission> GetRandomLocalMissions(int count)
+    {
+        return _missionService.GetRandomLocalMissions(count);
     }
 
     #endregion
 
-    public List<Mission> GetNewRandomMissions(int count)
+    #region REMOTE FETCH
+
+    public async Task<List<Mission>> GetRandomRemoteMissions(int count)
     {
-        return _missionService.GetNewRandomMissions(count);
+        return await _missionService.GetRandomRemoteMissions(count);
     }
 
-    public List<Mission> GetCurrentMissions()
+    #endregion
+
+    public bool CanFetchNewMissions(DateTime lastFetchDateTime, DateTime currDateTime)
     {
-        return null;
+        if (lastFetchDateTime == currDateTime)
+            return true;
+
+        // Check if 2 hours has passed since the last fetch time
+        return (lastFetchDateTime - currDateTime).TotalHours >= 2.0;
     }
 
     private void GenerateRandomSeed()
@@ -138,5 +188,10 @@ public class MissionPresenter
         Debug.Log("Node Groups: " + mapGraph.NodeGroups);
 
         return mapGraph;
+    }
+
+    public bool AreNodesNeighboring(MapNode node1, MapNode node2)
+    {
+        return false;
     }
 }

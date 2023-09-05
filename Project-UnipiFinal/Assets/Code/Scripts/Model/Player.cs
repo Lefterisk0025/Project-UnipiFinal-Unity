@@ -1,18 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Firebase.Firestore;
+using System;
 
-public class Player : MonoBehaviour
+[FirestoreData]
+public class Player
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [FirestoreProperty]
+    public bool IsRegistered { get; set; }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    [FirestoreProperty]
+    public string DisplayName { get; set; }
+
+    [FirestoreProperty]
+    public int Reputation { get; set; }
+
+    [FirestoreProperty]
+    public string UserId { get; set; }
+
+    [FirestoreProperty]
+    public DateTime LastTimeMissionsFetched { get; set; }
 }
