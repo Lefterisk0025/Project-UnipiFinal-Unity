@@ -5,18 +5,24 @@ using UnityEngine.UI;
 
 public class MapLineRender : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> _nodes;
-    [SerializeField] private Camera mainCamera;
+    public RectTransform firstUIElement;
+    public RectTransform secondUIElement;
+    public Image line;
 
-    UILineRenderer _lr;
+    public Transform parent;
 
-    private void Start()
+    public void DrawLine()
     {
-        _lr = GetComponent<UILineRenderer>();
+        Vector2 startScreenPos = firstUIElement.anchoredPosition;
+        Vector2 endScreenPos = secondUIElement.anchoredPosition;
 
-        Vector2 pos1 = _nodes[0].transform.position;
-        Vector2 pos2 = _nodes[1].transform.position;
+        Vector2 direction = (endScreenPos - startScreenPos).normalized;
+        float distance = Vector2.Distance(startScreenPos, endScreenPos);
 
-        _lr.DrawLine(pos1, pos2, transform);
+        line.rectTransform.sizeDelta = new Vector2(distance, 1);  // Assuming you want a 1-pixel wide line
+        line.rectTransform.anchoredPosition = startScreenPos;
+        line.rectTransform.pivot = new Vector2(0, 0.5f);  // Makes sure line extends to the right from start position
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        line.rectTransform.rotation = Quaternion.Euler(0, 0, angle);
     }
 }

@@ -31,7 +31,8 @@ public class MissionMapView : MonoBehaviour, IObserver
 
     private async void OnEnable()
     {
-        Mission mission = await _missionPresenter.GetLocalSavedMission();
+        //Mission mission = await _missionPresenter.GetLocalSavedMission();
+        Mission mission = new Mission() { Title = "A New Dawn", Description = "Something realy good is happening in the house of the rising sun.", Difficulty = "Medium" };
 
         _missionTitleGUI.text = "Mission: " + mission.Title;
         _missionDifficultyGUI.text = "Difficulty: " + mission.Difficulty.ToString();

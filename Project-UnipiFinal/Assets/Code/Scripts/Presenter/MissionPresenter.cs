@@ -131,8 +131,6 @@ public class MissionPresenter
         // Create node groups
         for (int i = 0; i < mapDepth; i++)
         {
-            Debug.Log("i: " + i);
-
             var tempGroup = new List<MapNode>();
 
             // Check for root or final node

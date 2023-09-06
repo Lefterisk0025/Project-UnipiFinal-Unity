@@ -15,7 +15,9 @@ public class MissionsCacheView : MonoBehaviour, IObserver
     [SerializeField] private TextMeshProUGUI _messageText;
     [SerializeField] private CountdownTimer _countdownTimer;
 
-    float timeTilNextFetch;
+    float timeTilNextFetch = 120;
+
+    public bool canFetch;
 
     private void Awake()
     {
@@ -44,8 +46,7 @@ public class MissionsCacheView : MonoBehaviour, IObserver
                 missions = await _missionsPresenter.GetLocalMissionsCacheData();
                 _messageText.text = "Missions already fetched. Back in 2 hours...";
 
-                float timeValue = CalculateElapsedTimeInMinutes(lastFetchDateTime, DateTime.Now);
-                _countdownTimer.SetTimer(timeValue);
+                //timeTilNextFetch = CalculateElapsedTimeInMinutes(lastFetchDateTime, DateTime.Now);
             }
             else
             {
@@ -55,8 +56,10 @@ public class MissionsCacheView : MonoBehaviour, IObserver
                 PlayerPrefs.SetString("LastFetchDateTime", DateTime.Now.ToString());
                 _messageText.text = "Just fetched new missions!";
 
-                _countdownTimer.SetTimer(120);
+                //timeTilNextFetch = 120;
             }
+
+            //_countdownTimer.SetTimer(timeTilNextFetch);
 
             if (missions == null || missions.Count != _missionsCount)
             {

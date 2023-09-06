@@ -59,7 +59,7 @@ public class DAG<T>
         return true;
     }
 
-    public Dictionary<T, List<T>> GetGraph()
+    public Dictionary<T, List<T>> GetGraphAsAdjacencyList()
     {
         return _vertexAdjList;
     }

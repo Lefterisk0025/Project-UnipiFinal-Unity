@@ -22,8 +22,8 @@ public class MapNodeView : Subject, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (Node.IsActive)
-            NotifyObservers(Actions.SelectNode);
+        // if (Node.IsActive)
+        //     NotifyObservers(Actions.SelectNode);
     }
 
     public void UpdateView(NodeState nodeState)
