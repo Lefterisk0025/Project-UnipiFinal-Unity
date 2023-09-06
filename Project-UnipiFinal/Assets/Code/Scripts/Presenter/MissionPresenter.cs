@@ -142,7 +142,13 @@ public class MissionPresenter
             }
 
             // Select random number of nodes per vertical line (group)
-            int randGroupSize = Random.Range(1, maxNodesPerVerticalLine + 1);
+            // In second group (i == 1), map can't have a single node
+            int randGroupSize = 0;
+            if (i == 1)
+                randGroupSize = Random.Range(2, maxNodesPerVerticalLine + 1);
+            else
+                randGroupSize = Random.Range(1, maxNodesPerVerticalLine + 1);
+
             int randNode = 0;
 
             // Check for avoiding same number of nodes per neighboring groups
@@ -170,6 +176,7 @@ public class MissionPresenter
         }
 
         // Connect Nodes between Node Groups
+        // Iterate node groups
         for (int i = 0; i < mapGraph.NodeGroups.Count; i++)
         {
             // Connect the root node with every node in the 2nd group
@@ -181,9 +188,9 @@ public class MissionPresenter
                     mapGraph.ConnectNodes(rootNode, node);
                 }
             }
-        }
 
-        Debug.Log("Node Groups: " + mapGraph.NodeGroups);
+
+        }
 
         return mapGraph;
     }

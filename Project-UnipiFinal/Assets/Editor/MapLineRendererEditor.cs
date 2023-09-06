@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(MapLineRender))]
-public class MapLineEditor : Editor
+[CustomEditor(typeof(MapLineRenderer))]
+public class MapLineRendererEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        MapLineRender mapLineRender = (MapLineRender)target;
+        MapLineRenderer mapLineRenderer = (MapLineRenderer)target;
 
         DrawDefaultInspector();
 
         if (GUILayout.Button("Draw Line"))
         {
-            mapLineRender.DrawLine();
+            //mapLineRenderer.DrawLine();
         }
     }
 }

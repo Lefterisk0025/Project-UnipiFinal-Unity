@@ -23,7 +23,7 @@ public class ErrorScreen : MonoBehaviour
 
     public void Show(string msg)
     {
-        _screen.SetActive(true);
-        _errorText.text = "An error occured: " + msg;
+        //_screen.SetActive(true);
+        //_errorText.text = "An error occured: " + msg;
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using TMPro;
 
 public class MissionMapView : MonoBehaviour, IObserver
@@ -13,20 +14,40 @@ public class MissionMapView : MonoBehaviour, IObserver
 
     [Header("Map Settings")]
     [SerializeField] private Transform _contentParent;
-    [SerializeField] private GameObject _verticalNodesContainerPrefab;
+    [SerializeField] private GameObject _horizontalNodesContainerPrefab;
     [SerializeField] private MapNodeView _attackNodePrefab;
     [SerializeField] private MapNodeView _boostHubNodePrefab;
-
     [SerializeField] private int mapDepth;
     [SerializeField] private int maxNodesPerVerticalLine;
 
+    [Header("Line Settings")]
+    [SerializeField] private GameObject _linePrefab;
+    [SerializeField] private Canvas _canvas;
+    [SerializeField] private Transform _linesParent;
+
     private IDictionary<MapNode, GameObject> _spawnedNodes; // Connect MapNode objects with their scene Game Objects 
+    private List<MapLineRenderer> _mapLinesList;
     private MapNodeView _selectedNode;
+
+    bool canUpdateLinesPosition;
 
     private void Awake()
     {
         _missionPresenter = new MissionPresenter(this);
         _spawnedNodes = new Dictionary<MapNode, GameObject>();
+        _mapLinesList = new List<MapLineRenderer>();
+    }
+
+    private void Update()
+    {
+        if (canUpdateLinesPosition)
+        {
+            foreach (var mapLine in _mapLinesList)
+            {
+                Debug.Log("Updating...");
+                mapLine.UpdateLinePosition(_canvas);
+            }
+        }
     }
 
     private async void OnEnable()
@@ -52,12 +73,12 @@ public class MissionMapView : MonoBehaviour, IObserver
 
             await _missionPresenter.UpdateLocalMissionData(mission);
 
-            GenerateGraphMap(mapGraph);
+            GenerateMissionMapGraphOnScene(mapGraph);
         }
         else
         {
             if (_contentParent.childCount == 0)
-                GenerateGraphMap(mission.MapGraph);
+                GenerateMissionMapGraphOnScene(mission.MapGraph);
         }
 
     }
@@ -98,17 +119,15 @@ public class MissionMapView : MonoBehaviour, IObserver
         if (_selectedNode.Node.NodeType != NodeType.Attack)
             return;
 
-
-
         GameManager.Instance.UpdateGameState(GameState.Playing);
     }
 
-    private void GenerateGraphMap(MapGraph mapGraph)
+    private void GenerateMissionMapGraphOnScene(MapGraph mapGraph)
     {
         MapNodeView mapNodeView;
         foreach (List<MapNode> nodesGroup in mapGraph.NodeGroups)
         {
-            var verticalLine = Instantiate(_verticalNodesContainerPrefab, _contentParent.transform);
+            var verticalLine = Instantiate(_horizontalNodesContainerPrefab, _contentParent.transform);
 
             foreach (MapNode node in nodesGroup)
             {
@@ -122,13 +141,42 @@ public class MissionMapView : MonoBehaviour, IObserver
                 mapNodeView.AddObserver(this);
             }
         }
+
+        StartCoroutine(DrawMapLines(mapGraph));
     }
 
-    public void ClearMap()
+    private IEnumerator DrawMapLines(MapGraph mapGraph)
     {
-        foreach (Transform child in _contentParent)
+        yield return new WaitForSeconds(1);
+
+        GameObject newLine = null;
+        RectTransform rectTransform = null;
+        MapLineRenderer mapLineRenderer = null;
+
+        var graph = mapGraph.GetGraphAsAdjacencyList();
+
+        foreach (KeyValuePair<MapNode, List<MapNode>> entry in graph)
         {
-            Destroy(child.gameObject);
+            GameObject originMapNodeGO = _spawnedNodes[entry.Key];
+            GameObject targetMapNodeGO = null;
+
+            foreach (MapNode targetNode in entry.Value)
+            {
+                targetMapNodeGO = _spawnedNodes[targetNode];
+
+                newLine = Instantiate(_linePrefab, _linesParent);
+                newLine.transform.SetSiblingIndex(0);
+
+                rectTransform = newLine.GetComponent<RectTransform>();
+                mapLineRenderer = newLine.GetComponent<MapLineRenderer>();
+
+                mapLineRenderer.SetLineRenderer(originMapNodeGO.transform, targetMapNodeGO.transform);
+                mapLineRenderer.UpdateLinePosition(_canvas);
+
+                _mapLinesList.Add(mapLineRenderer);
+            }
         }
+
+        canUpdateLinesPosition = true;
     }
 }

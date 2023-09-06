@@ -64,7 +64,7 @@ public class DAG<T>
         return _vertexAdjList;
     }
 
-    protected void DisplayGraph()
+    public void DisplayGraph()
     {
         foreach (var vertex in _vertexAdjList)
         {
