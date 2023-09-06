@@ -3,26 +3,50 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(Image))]
 public class MapLineRender : MonoBehaviour
 {
-    public RectTransform firstUIElement;
-    public RectTransform secondUIElement;
-    public Image line;
+    public Transform worldPointA; // Assign the first GameObject's Transform
+    public Transform worldPointB; // Assign the second GameObject's Transform
+    public Canvas canvas; // Assign your Screen Space - Overlay Canvas
+    private RectTransform rectTransform;
+    [SerializeField] private GameObject _linePrefab;
+    [SerializeField] private Transform _parent;
 
-    public Transform parent;
+    private void Update()
+    {
+        DrawLine();
+    }
 
     public void DrawLine()
     {
-        Vector2 startScreenPos = firstUIElement.anchoredPosition;
-        Vector2 endScreenPos = secondUIElement.anchoredPosition;
+        GameObject newLine = Instantiate(_linePrefab, canvas.transform);
+        RectTransform rectTransform = newLine.GetComponent<RectTransform>();
 
-        Vector2 direction = (endScreenPos - startScreenPos).normalized;
-        float distance = Vector2.Distance(startScreenPos, endScreenPos);
+        // Convert world positions to screen space
+        Vector2 screenPosA = RectTransformUtility.WorldToScreenPoint(Camera.main, worldPointA.position);
+        Vector2 screenPosB = RectTransformUtility.WorldToScreenPoint(Camera.main, worldPointB.position);
 
-        line.rectTransform.sizeDelta = new Vector2(distance, 1);  // Assuming you want a 1-pixel wide line
-        line.rectTransform.anchoredPosition = startScreenPos;
-        line.rectTransform.pivot = new Vector2(0, 0.5f);  // Makes sure line extends to the right from start position
+        // Convert screen positions to positions relative to the canvas
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, screenPosA, canvas.worldCamera, out Vector2 canvasPosA);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, screenPosB, canvas.worldCamera, out Vector2 canvasPosB);
+
+        // Calculate direction
+        Vector2 direction = canvasPosB - canvasPosA;
+        float distance = direction.magnitude;
+        direction.Normalize();
+
+        // Set the pivot to the start of the line
+        rectTransform.pivot = new Vector2(0, 0.5f);
+
+        // Position the line GameObject between the two points
+        rectTransform.anchoredPosition = canvasPosA;
+
+        // Set the rotation to point towards the target
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        line.rectTransform.rotation = Quaternion.Euler(0, 0, angle);
+        rectTransform.localEulerAngles = new Vector3(0, 0, angle);
+
+        // Scale the line to stretch between the two points
+        rectTransform.sizeDelta = new Vector2(distance, rectTransform.sizeDelta.y);
     }
 }

@@ -41,4 +41,9 @@ public class MapNodeView : Subject, IPointerDownHandler
                 break;
         }
     }
+
+    public void PrintPosition()
+    {
+        Debug.Log(this.transform.position);
+    }
 }
