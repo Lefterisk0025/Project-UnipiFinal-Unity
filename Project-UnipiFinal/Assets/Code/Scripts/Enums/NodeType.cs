@@ -1,5 +1,6 @@
 public enum NodeType
 {
+    Default,
     Begin,
     Attack,
     BoostHub,

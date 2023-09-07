@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
 using TMPro;
 using UnityEngine.AddressableAssets;
+using UnityEngine.UI;
 
 public class MissionMapView : MonoBehaviour, IObserver
 {
@@ -29,26 +30,32 @@ public class MissionMapView : MonoBehaviour, IObserver
     private IDictionary<MapNode, GameObject> _spawnedNodes; // Connect MapNode objects with their scene Game Objects 
     private List<MapLineRenderer> _mapLinesList;
     private MapNodeView _selectedNode;
-
-    bool canUpdateLinesPosition;
+    private ScrollRect _scrollRect;
+    private MapNodeView _currObjectiveNode;
 
     private void Awake()
     {
         _missionPresenter = new MissionPresenter(this);
         _spawnedNodes = new Dictionary<MapNode, GameObject>();
         _mapLinesList = new List<MapLineRenderer>();
+        _scrollRect = GetComponentInChildren<ScrollRect>();
+
+        if (_scrollRect != null)
+        {
+            _scrollRect.onValueChanged.AddListener(OnScrollMoved);
+        }
     }
 
     private void Update()
     {
-        if (canUpdateLinesPosition)
-        {
-            foreach (var mapLine in _mapLinesList)
-            {
-                Debug.Log("Updating...");
-                mapLine.UpdateLinePosition(_canvas);
-            }
-        }
+        // if (canUpdateLinesPosition)
+        // {
+        //     foreach (var mapLine in _mapLinesList)
+        //     {
+        //         Debug.Log("Updating...");
+        //         mapLine.UpdateLinePosition(_canvas);
+        //     }
+        // }
     }
 
     private void GenerateRandomSeed()
@@ -60,7 +67,7 @@ public class MissionMapView : MonoBehaviour, IObserver
     private async void OnEnable()
     {
         //Mission mission = await _missionPresenter.GetLocalSavedMission();
-        Mission mission = new Mission() { Title = "A New Dawn", Description = "Something realy good is happening in the house of the rising sun.", Difficulty = "Medium" };
+        Mission mission = new Mission() { Title = "A New Dawn", Description = "Something realy good is happening in the house of the rising sun.", Difficulty = "Hard" };
 
         _missionTitleGUI.text = "Mission: " + mission.Title;
         _missionDifficultyGUI.text = "Difficulty: " + mission.Difficulty.ToString();
@@ -97,6 +104,9 @@ public class MissionMapView : MonoBehaviour, IObserver
             await _missionPresenter.UpdateLocalMissionData(mission);
 
             GenerateMissionMapGraphOnScene(mapGraph);
+
+            _currObjectiveNode = _spawnedNodes[mapGraph.NodeGroups[0][0]].gameObject.GetComponent<MapNodeView>();
+            _currObjectiveNode.UpdateView(MapNodeView.NodeState.CurrentObjective);
         }
         else
         {
@@ -130,6 +140,9 @@ public class MissionMapView : MonoBehaviour, IObserver
 
     private void HandleNodeSelection(MapNodeView selectedMapNodeView)
     {
+        if (!_missionPresenter.CanVisitSelectedNode(_currObjectiveNode.Node, selectedMapNodeView.Node))
+            return;
+
         if (_selectedNode != null)
             _selectedNode.UpdateView(MapNodeView.NodeState.Default);
 
@@ -166,7 +179,7 @@ public class MissionMapView : MonoBehaviour, IObserver
 
             foreach (MapNode node in nodesGroup)
             {
-                if (node.NodeType == NodeType.Begin || node.NodeType == NodeType.Attack)
+                if (node.NodeType == NodeType.Begin || node.NodeType == NodeType.Attack || node.NodeType == NodeType.Default)
                     _spawnedNodes[node] = Instantiate(_attackNodePrefab, verticalLine.transform).gameObject;
                 else
                     _spawnedNodes[node] = Instantiate(_boostHubNodePrefab, verticalLine.transform).gameObject;
@@ -185,7 +198,6 @@ public class MissionMapView : MonoBehaviour, IObserver
         yield return new WaitForSeconds(1);
 
         GameObject newLine = null;
-        RectTransform rectTransform = null;
         MapLineRenderer mapLineRenderer = null;
 
         var graph = mapGraph.GetGraphAsAdjacencyList();
@@ -202,16 +214,20 @@ public class MissionMapView : MonoBehaviour, IObserver
                 newLine = Instantiate(_linePrefab, _linesParent);
                 newLine.transform.SetSiblingIndex(0);
 
-                rectTransform = newLine.GetComponent<RectTransform>();
                 mapLineRenderer = newLine.GetComponent<MapLineRenderer>();
-
                 mapLineRenderer.SetLineRenderer(originMapNodeGO.transform, targetMapNodeGO.transform);
                 mapLineRenderer.UpdateLinePosition(_canvas);
 
                 _mapLinesList.Add(mapLineRenderer);
             }
         }
+    }
 
-        canUpdateLinesPosition = true;
+    private void OnScrollMoved(Vector2 position)
+    {
+        foreach (var line in _mapLinesList)
+        {
+            line.UpdateLinePosition(_canvas);
+        }
     }
 }

@@ -6,24 +6,20 @@ using UnityEngine.UI;
 
 public class MapNodeView : Subject, IPointerDownHandler
 {
-    public enum NodeState { Default, Selected, Pointed, Completed }
+    public enum NodeState { Default, Selected, CurrentObjective, Completed }
     public MapNode Node { get; set; }
 
     [SerializeField] private GameObject _selectionIcon;
     [SerializeField] private GameObject _pointIcon;
 
-    private void Start()
+    private bool isCurrentObjective = false;
+
+    private void Awake()
     {
         UpdateView(NodeState.Default);
 
         _pointIcon.SetActive(false);
         _selectionIcon.SetActive(false);
-    }
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        // if (Node.IsActive)
-        //     NotifyObservers(Actions.SelectNode);
     }
 
     public void UpdateView(NodeState nodeState)
@@ -32,12 +28,13 @@ public class MapNodeView : Subject, IPointerDownHandler
         {
             case NodeState.Default:
                 _selectionIcon.SetActive(false);
+                _pointIcon.SetActive(false);
                 break;
             case NodeState.Selected:
                 _selectionIcon.SetActive(true);
                 break;
-            case NodeState.Pointed:
-                _pointIcon.SetActive(true);
+            case NodeState.CurrentObjective:
+                HandleCurrentObjectiveState();
                 break;
         }
     }
@@ -45,5 +42,17 @@ public class MapNodeView : Subject, IPointerDownHandler
     public void PrintPosition()
     {
         Debug.Log(this.transform.position);
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (Node.IsActive && !isCurrentObjective)
+            NotifyObservers(Actions.SelectNode);
+    }
+
+    private void HandleCurrentObjectiveState()
+    {
+        _pointIcon.SetActive(true);
+        isCurrentObjective = true;
     }
 }
