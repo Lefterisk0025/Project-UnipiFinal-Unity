@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Random = UnityEngine.Random;
 using TMPro;
+using UnityEngine.AddressableAssets;
 
 public class MissionMapView : MonoBehaviour, IObserver
 {
@@ -17,8 +19,7 @@ public class MissionMapView : MonoBehaviour, IObserver
     [SerializeField] private GameObject _horizontalNodesContainerPrefab;
     [SerializeField] private MapNodeView _attackNodePrefab;
     [SerializeField] private MapNodeView _boostHubNodePrefab;
-    [SerializeField] private int mapDepth;
-    [SerializeField] private int maxNodesPerVerticalLine;
+    [SerializeField] private List<MissionMapConfig> _missionMapConfigsList;
 
     [Header("Line Settings")]
     [SerializeField] private GameObject _linePrefab;
@@ -50,6 +51,12 @@ public class MissionMapView : MonoBehaviour, IObserver
         }
     }
 
+    private void GenerateRandomSeed()
+    {
+        int tempSeed = (int)System.DateTime.Now.Ticks;
+        Random.InitState(tempSeed);
+    }
+
     private async void OnEnable()
     {
         //Mission mission = await _missionPresenter.GetLocalSavedMission();
@@ -63,14 +70,30 @@ public class MissionMapView : MonoBehaviour, IObserver
 
         if (mission.MapGraph == null)
         {
+            GenerateRandomSeed();
+
+            // Set map config based on difficulty
+            MissionMapConfig tempConfig = null;
+            if (mission.Difficulty == "Easy")
+                tempConfig = GetMissionConfigBasedOnDifficulty(Difficulty.Easy);
+            else if (mission.Difficulty == "Medium")
+                tempConfig = GetMissionConfigBasedOnDifficulty(Difficulty.Medium);
+            else if (mission.Difficulty == "Hard")
+                tempConfig = GetMissionConfigBasedOnDifficulty(Difficulty.Hard);
+            else if (mission.Difficulty == "Very Hard")
+                tempConfig = GetMissionConfigBasedOnDifficulty(Difficulty.VeryHard);
+
+            // Initialize map's position to the screen
             RectTransform contectRectTransform = _contentParent.gameObject.GetComponent<RectTransform>();
             contectRectTransform.localPosition = new Vector3(0, _contentParent.transform.position.y);
 
-            // Check mission's difficulty to define mapDepth and maxNodesPerVerticalLine
-
-            MapGraph mapGraph = _missionPresenter.CreateMissionMapGraph(mapDepth, maxNodesPerVerticalLine);
+            // Choose random values based on intervals from map config
+            int mapDepth = Random.Range(tempConfig.MapDepth.x, tempConfig.MapDepth.y + 1);
+            // Ask presenter for map graph
+            MapGraph mapGraph = _missionPresenter.CreateMissionMapGraph(mapDepth, tempConfig.MaxNodesPerVerticalLine);
             mission.MapGraph = mapGraph;
 
+            // Update local data
             await _missionPresenter.UpdateLocalMissionData(mission);
 
             GenerateMissionMapGraphOnScene(mapGraph);
@@ -81,6 +104,18 @@ public class MissionMapView : MonoBehaviour, IObserver
                 GenerateMissionMapGraphOnScene(mission.MapGraph);
         }
 
+    }
+
+    private MissionMapConfig GetMissionConfigBasedOnDifficulty(Difficulty difficulty)
+    {
+        foreach (var config in _missionMapConfigsList)
+        {
+            if (config.Difficulty == difficulty)
+            {
+                return config;
+            }
+        }
+        return null;
     }
 
     public void OnNotify(ISubject subject, Actions action)

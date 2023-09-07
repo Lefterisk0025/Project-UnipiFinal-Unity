@@ -142,9 +142,9 @@ public class MissionPresenter
             }
 
             // Select random number of nodes per vertical line (group)
-            // In second group (i == 1), map can't have a single node
+            // In the second group or the one before final (i == 1 or i == mapDepth-2), map can't have a single node
             int randGroupSize = 0;
-            if (i == 1)
+            if (i == 1 || i == (mapDepth - 2))
                 randGroupSize = Random.Range(2, maxNodesPerVerticalLine + 1);
             else
                 randGroupSize = Random.Range(1, maxNodesPerVerticalLine + 1);
@@ -193,10 +193,5 @@ public class MissionPresenter
         }
 
         return mapGraph;
-    }
-
-    public bool AreNodesNeighboring(MapNode node1, MapNode node2)
-    {
-        return false;
     }
 }

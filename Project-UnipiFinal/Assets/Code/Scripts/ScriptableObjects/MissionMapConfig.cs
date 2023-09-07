@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class MissionDataSO : ScriptableObject
+public class MissionMapConfig : ScriptableObject
 {
     public Difficulty Difficulty;
-
-    public string Title;
+    public Vector2Int MapDepth;
+    public int MaxNodesPerVerticalLine;
 }

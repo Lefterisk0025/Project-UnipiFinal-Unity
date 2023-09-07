@@ -9,7 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a76e7b5de72d743489e488d1acb15936, type: 3}
-  m_Name: CoreGameData
+  m_Script: {fileID: 11500000, guid: b4ad034087f47064bb924cff00df05a3, type: 3}
+  m_Name: EasyMission
   m_EditorClassIdentifier: 
-  PlayerOnMission: 0
+  MapDepth: {x: 5, y: 7}
+  MaxNodesPerVerticalLine: 3

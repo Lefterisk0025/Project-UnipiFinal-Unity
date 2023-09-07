@@ -16,7 +16,15 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: 310b1cb74c7372647be58b771d182865
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: d32e2c70de0b022428533ff09f457b52
+    m_Address: Assets/Levels/Scriptable Objects/EasyMission.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 6782383a17ef9bd489d25ae23e83d2e9
+    m_Address: Assets/Levels/Scriptable Objects/MediumMission.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 7b0d08e274f82994b8f4120a1f2e2a9d, type: 2}
   m_SchemaSet:

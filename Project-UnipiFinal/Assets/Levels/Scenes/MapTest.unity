@@ -1426,8 +1426,9 @@ MonoBehaviour:
   _horizontalNodesContainerPrefab: {fileID: 8861410604669342999, guid: a0d1c7b214ba0ec41b9c89a62149018d, type: 3}
   _attackNodePrefab: {fileID: 457547932186896789, guid: 86311e94cdfac664a9be0b6e8cadef40, type: 3}
   _boostHubNodePrefab: {fileID: -5933814584308124747, guid: cc04a47b4da6d6b4ba6f88cfc2cb50b5, type: 3}
-  mapDepth: 10
-  maxNodesPerVerticalLine: 4
+  _missionMapConfigsList:
+  - {fileID: 11400000, guid: d32e2c70de0b022428533ff09f457b52, type: 2}
+  - {fileID: 11400000, guid: 6782383a17ef9bd489d25ae23e83d2e9, type: 2}
   _linePrefab: {fileID: 6238151029217825642, guid: f79fa548debc9254e94ed9902db73d2c, type: 3}
   _canvas: {fileID: 1959629250}
   _linesParent: {fileID: 420970116}
