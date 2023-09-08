@@ -7,7 +7,8 @@ using TMPro;
 
 public class MissionsCacheView : MonoBehaviour, IObserver
 {
-    MissionPresenter _missionsPresenter;
+    MissionsCachePresenter _missionsCachePresenter;
+    MissionPresenter _missionPresenter;
 
     [SerializeField] private MissionCard _missionCardsPrefab;
     [SerializeField] private int _missionsCount = 5;
@@ -21,7 +22,8 @@ public class MissionsCacheView : MonoBehaviour, IObserver
 
     private void Awake()
     {
-        _missionsPresenter = new MissionPresenter(this);
+        _missionsCachePresenter = new MissionsCachePresenter(this);
+        _missionPresenter = new MissionPresenter();
 
         for (int i = 0; i < _missionsCount; i++)
         {
@@ -41,9 +43,9 @@ public class MissionsCacheView : MonoBehaviour, IObserver
             if (!lastFetchDateTimeStr.Equals(""))
                 lastFetchDateTime = DateTime.Parse(lastFetchDateTimeStr);
 
-            if (!_missionsPresenter.CanFetchNewMissions(lastFetchDateTime, DateTime.Now))
+            if (!_missionsCachePresenter.CanFetchNewMissions(lastFetchDateTime, DateTime.Now))
             {
-                missions = await _missionsPresenter.GetLocalMissionsCacheData();
+                missions = await _missionsCachePresenter.GetLocalMissionsCacheData();
                 _messageText.text = "Missions already fetched. Back in 2 hours...";
 
                 //timeTilNextFetch = CalculateElapsedTimeInMinutes(lastFetchDateTime, DateTime.Now);
@@ -51,8 +53,8 @@ public class MissionsCacheView : MonoBehaviour, IObserver
             else
             {
                 //missions = await _missionsPresenter.GetRandomRemoteMissions(_missionsCount);
-                missions = _missionsPresenter.GetRandomLocalMissions(_missionsCount);
-                _missionsPresenter.SaveLocalMissionsCacheData(missions);
+                missions = _missionsCachePresenter.GetRandomLocalMissions(_missionsCount);
+                _missionsCachePresenter.SaveLocalMissionsCacheData(missions);
                 PlayerPrefs.SetString("LastFetchDateTime", DateTime.Now.ToString());
                 _messageText.text = "Just fetched new missions!";
 
@@ -97,7 +99,7 @@ public class MissionsCacheView : MonoBehaviour, IObserver
     {
         LoadingScreen.Instance.FakeOpen(2);
 
-        _missionsPresenter.SaveLocalMissionData(mission);
+        _missionPresenter.SaveLocalMissionData(mission);
 
         GameManager.Instance.UpdateGameState(GameState.InitializingMission);
     }
