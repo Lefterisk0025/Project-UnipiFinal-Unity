@@ -541,7 +541,19 @@ MonoBehaviour:
   m_VerticalScrollbarSpacing: -3
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &420970118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1433,6 +1445,7 @@ MonoBehaviour:
   _linePrefab: {fileID: 6238151029217825642, guid: f79fa548debc9254e94ed9902db73d2c, type: 3}
   _canvas: {fileID: 1959629250}
   _linesParent: {fileID: 420970116}
+  _currObjectiveNode: {fileID: 0}
 --- !u!224 &1611921734
 RectTransform:
   m_ObjectHideFlags: 0

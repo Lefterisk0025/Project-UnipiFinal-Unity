@@ -7,12 +7,13 @@ using UnityEngine.UI;
 public class MapNodeView : Subject, IPointerDownHandler
 {
     public enum NodeState { Default, Selected, CurrentObjective, Completed }
+
     public MapNode Node { get; set; }
 
     [SerializeField] private GameObject _selectionIcon;
     [SerializeField] private GameObject _pointIcon;
 
-    private bool isCurrentObjective = false;
+    bool isCurrentObjective = false;
 
     private void Awake()
     {

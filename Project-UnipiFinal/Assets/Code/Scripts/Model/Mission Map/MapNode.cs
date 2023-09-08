@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class MapNode
 {
+    public int Id { get; set; }
     public NodeType NodeType { get; set; }
     public bool IsActive { get; set; }
+    public Objective Objective { get; set; }
 
     public MapNode()
     {

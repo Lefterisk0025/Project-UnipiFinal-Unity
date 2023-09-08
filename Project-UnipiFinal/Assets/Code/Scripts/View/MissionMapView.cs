@@ -27,11 +27,11 @@ public class MissionMapView : MonoBehaviour, IObserver
     [SerializeField] private Canvas _canvas;
     [SerializeField] private Transform _linesParent;
 
-    private IDictionary<MapNode, GameObject> _spawnedNodes; // Connect MapNode objects with their scene Game Objects 
+    private IDictionary<MapNode, GameObject> _spawnedNodes; // Dict to connect MapNode objects with their scene Game Objects 
     private List<MapLineRenderer> _mapLinesList;
-    private MapNodeView _selectedNode;
     private ScrollRect _scrollRect;
-    private MapNodeView _currObjectiveNode;
+    private MapNodeView _selectedNodeView;
+    public MapNodeView _currObjectiveNode;
 
     private void Awake()
     {
@@ -46,77 +46,16 @@ public class MissionMapView : MonoBehaviour, IObserver
         }
     }
 
-    private void Update()
+    private void OnEnable()
     {
-        // if (canUpdateLinesPosition)
-        // {
-        //     foreach (var mapLine in _mapLinesList)
-        //     {
-        //         Debug.Log("Updating...");
-        //         mapLine.UpdateLinePosition(_canvas);
-        //     }
-        // }
+        _missionPresenter.InitializeMission();
+
+        // Initialize map's position to the screen
+        RectTransform contectRectTransform = _contentParent.gameObject.GetComponent<RectTransform>();
+        contectRectTransform.localPosition = new Vector3(0, _contentParent.transform.position.y);
     }
 
-    private void GenerateRandomSeed()
-    {
-        int tempSeed = (int)System.DateTime.Now.Ticks;
-        Random.InitState(tempSeed);
-    }
-
-    private async void OnEnable()
-    {
-        //Mission mission = await _missionPresenter.GetLocalSavedMission();
-        Mission mission = new Mission() { Title = "A New Dawn", Description = "Something realy good is happening in the house of the rising sun.", Difficulty = "Hard" };
-
-        _missionTitleGUI.text = "Mission: " + mission.Title;
-        _missionDifficultyGUI.text = "Difficulty: " + mission.Difficulty.ToString();
-
-        if (_contentParent.childCount > 0)
-            return;
-
-        if (mission.MapGraph == null)
-        {
-            GenerateRandomSeed();
-
-            // Set map config based on difficulty
-            MissionMapConfig tempConfig = null;
-            if (mission.Difficulty == "Easy")
-                tempConfig = GetMissionConfigBasedOnDifficulty(Difficulty.Easy);
-            else if (mission.Difficulty == "Medium")
-                tempConfig = GetMissionConfigBasedOnDifficulty(Difficulty.Medium);
-            else if (mission.Difficulty == "Hard")
-                tempConfig = GetMissionConfigBasedOnDifficulty(Difficulty.Hard);
-            else if (mission.Difficulty == "Very Hard")
-                tempConfig = GetMissionConfigBasedOnDifficulty(Difficulty.VeryHard);
-
-            // Initialize map's position to the screen
-            RectTransform contectRectTransform = _contentParent.gameObject.GetComponent<RectTransform>();
-            contectRectTransform.localPosition = new Vector3(0, _contentParent.transform.position.y);
-
-            // Choose random values based on intervals from map config
-            int mapDepth = Random.Range(tempConfig.MapDepth.x, tempConfig.MapDepth.y + 1);
-            // Ask presenter for map graph
-            MapGraph mapGraph = _missionPresenter.CreateMissionMapGraph(mapDepth, tempConfig.MaxNodesPerVerticalLine);
-            mission.MapGraph = mapGraph;
-
-            // Update local data
-            await _missionPresenter.UpdateLocalMissionData(mission);
-
-            GenerateMissionMapGraphOnScene(mapGraph);
-
-            _currObjectiveNode = _spawnedNodes[mapGraph.NodeGroups[0][0]].gameObject.GetComponent<MapNodeView>();
-            _currObjectiveNode.UpdateView(MapNodeView.NodeState.CurrentObjective);
-        }
-        else
-        {
-            if (_contentParent.childCount == 0)
-                GenerateMissionMapGraphOnScene(mission.MapGraph);
-        }
-
-    }
-
-    private MissionMapConfig GetMissionConfigBasedOnDifficulty(Difficulty difficulty)
+    public MissionMapConfig GetMissionMapConfigBasedOnDifficulty(Difficulty difficulty)
     {
         foreach (var config in _missionMapConfigsList)
         {
@@ -143,14 +82,14 @@ public class MissionMapView : MonoBehaviour, IObserver
         if (!_missionPresenter.CanVisitSelectedNode(_currObjectiveNode.Node, selectedMapNodeView.Node))
             return;
 
-        if (_selectedNode != null)
-            _selectedNode.UpdateView(MapNodeView.NodeState.Default);
+        if (_selectedNodeView != null)
+            _selectedNodeView.UpdateView(MapNodeView.NodeState.Default);
 
-        _selectedNode = selectedMapNodeView;
-        _selectedNode.UpdateView(MapNodeView.NodeState.Selected);
+        _selectedNodeView = selectedMapNodeView;
+        _selectedNodeView.UpdateView(MapNodeView.NodeState.Selected);
     }
 
-    public async void AbandonMission()
+    public async void InvokeAbandonMission()
     {
         foreach (Transform child in _contentParent)
         {
@@ -164,15 +103,27 @@ public class MissionMapView : MonoBehaviour, IObserver
 
     public void InvokeAttack()
     {
-        if (_selectedNode.Node.NodeType != NodeType.Attack)
+        if (_selectedNodeView.Node.NodeType != NodeType.Attack)
             return;
+
+        PlayerPrefs.SetInt("ObjectiveNodeId", _selectedNodeView.Node.Id);
 
         GameManager.Instance.UpdateGameState(GameState.Playing);
     }
 
-    private void GenerateMissionMapGraphOnScene(MapGraph mapGraph)
+    public void SetMissionUI(Mission mission)
     {
+        _missionTitleGUI.text = "Mission: " + mission.Title;
+        _missionDifficultyGUI.text = "Difficulty: " + mission.Difficulty.ToString();
+    }
+
+    public void GenerateMissionMapGraphOnScene(MapGraph mapGraph)
+    {
+        if (_contentParent.childCount > 0)
+            return;
+
         MapNodeView mapNodeView;
+        int id = 0;
         foreach (List<MapNode> nodesGroup in mapGraph.NodeGroups)
         {
             var verticalLine = Instantiate(_horizontalNodesContainerPrefab, _contentParent.transform);
@@ -185,8 +136,11 @@ public class MissionMapView : MonoBehaviour, IObserver
                     _spawnedNodes[node] = Instantiate(_boostHubNodePrefab, verticalLine.transform).gameObject;
 
                 mapNodeView = _spawnedNodes[node].GetComponent<MapNodeView>();
-                mapNodeView.Node = node;
+                mapNodeView.Node = node; // Connect views with models
+                mapNodeView.Node.Id = id;
                 mapNodeView.AddObserver(this);
+
+                id++;
             }
         }
 
@@ -229,5 +183,13 @@ public class MissionMapView : MonoBehaviour, IObserver
         {
             line.UpdateLinePosition(_canvas);
         }
+    }
+
+    public async void SetCurrentSelectedObjectiveNode(MapNode mapNode)
+    {
+        _currObjectiveNode = _spawnedNodes[mapNode].gameObject.GetComponent<MapNodeView>();
+        _currObjectiveNode.UpdateView(MapNodeView.NodeState.CurrentObjective);
+
+        await _missionPresenter.SaveConnectedNodesOfMapNode(mapNode);
     }
 }

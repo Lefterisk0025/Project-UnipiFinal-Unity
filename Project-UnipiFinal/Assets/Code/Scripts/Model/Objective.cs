@@ -4,5 +4,6 @@ using UnityEngine;
 
 public class Objective
 {
-
+    public Grid Grid { get; set; }
+    public bool IsCompleted { get; set; }
 }

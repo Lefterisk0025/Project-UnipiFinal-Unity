@@ -65,10 +65,67 @@ public class MissionPresenter
 
     #endregion
 
+    #region MAP NODE OPERATIONS
+
+    public MapNode GetRootMapNode()
+    {
+        return _mission.MapGraph.NodeGroups[0][0];
+    }
+
+    public async Task<bool> SaveConnectedNodesOfMapNode(MapNode mapNode)
+    {
+        // Get connected nodes
+        var graph = _mission.MapGraph.GetGraphAsAdjacencyList();
+        var connectedNodes = graph[mapNode];
+
+        // Save connected nodes
+        await _missionService.SaveLocalMapNodesListData(connectedNodes);
+
+        return false;
+    }
+
+    #endregion
+
     private void GenerateRandomSeed()
     {
         int tempSeed = (int)System.DateTime.Now.Ticks;
         Random.InitState(tempSeed);
+    }
+
+    public async void InitializeMission()
+    {
+        //_mission = await GetLocalSavedMission();
+        _mission = new Mission() { Title = "A New Dawn", Description = "Something realy good is happening in the house of the rising sun.", Difficulty = "Hard" };
+
+        if (_mission.MapGraph == null)
+        {
+            MissionMapConfig tempConfig = null;
+            if (_mission.Difficulty == "Easy")
+                tempConfig = _missionMapView.GetMissionMapConfigBasedOnDifficulty(Difficulty.Easy);
+            else if (_mission.Difficulty == "Medium")
+                tempConfig = _missionMapView.GetMissionMapConfigBasedOnDifficulty(Difficulty.Medium);
+            else if (_mission.Difficulty == "Hard")
+                tempConfig = _missionMapView.GetMissionMapConfigBasedOnDifficulty(Difficulty.Hard);
+            else if (_mission.Difficulty == "Very Hard")
+                tempConfig = _missionMapView.GetMissionMapConfigBasedOnDifficulty(Difficulty.VeryHard);
+
+            // Choose random values based on intervals from map config
+            int mapDepth = Random.Range(tempConfig.MapDepth.x, tempConfig.MapDepth.y + 1);
+            // Ask presenter for map graph
+            _mission.MapGraph = CreateMissionMapGraph(mapDepth, tempConfig.MaxNodesPerVerticalLine);
+
+            // Update local data
+            await UpdateLocalMissionData(_mission);
+
+            _missionMapView.GenerateMissionMapGraphOnScene(_mission.MapGraph);
+
+            _missionMapView.SetCurrentSelectedObjectiveNode(GetRootMapNode());
+        }
+        else
+        {
+            _missionMapView.GenerateMissionMapGraphOnScene(_mission.MapGraph);
+            _missionMapView.SetCurrentSelectedObjectiveNode(_mission.CurrectSelectedObjective);
+        }
     }
 
     public MapGraph CreateMissionMapGraph(int mapDepth, int maxNodesPerVerticalLine)
