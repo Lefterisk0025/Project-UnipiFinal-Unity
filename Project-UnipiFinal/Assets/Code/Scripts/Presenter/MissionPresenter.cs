@@ -34,15 +34,7 @@ public class MissionPresenter
         return await _missionService.GetLocalMissionData();
     }
 
-    public async void SaveLocalMissionData(Mission mission)
-    {
-        if (await _missionService.SaveLocalMissionData(mission))
-        {
-            Debug.Log("Data saved successfully!");
-        }
-    }
-
-    public async Task<bool> UpdateLocalMissionData(Mission mission)
+    public async Task<bool> SaveLocalMissionData(Mission mission)
     {
         if (await _missionService.SaveLocalMissionData(mission))
             return true;
@@ -74,14 +66,7 @@ public class MissionPresenter
 
     public async Task<bool> SaveConnectedNodesOfMapNode(MapNode mapNode)
     {
-        // Get connected nodes
-        var graph = _mission.MapGraph.GetGraphAsAdjacencyList();
-        var connectedNodes = graph[mapNode];
-
-        // Save connected nodes
-        await _missionService.SaveLocalMapNodesListData(connectedNodes);
-
-        return false;
+        return await _missionService.SaveLocalMapNodesListData(mapNode.ConnectedNodes);
     }
 
     #endregion
@@ -114,19 +99,14 @@ public class MissionPresenter
             // Ask presenter for map graph
             _mission.MapGraph = CreateMissionMapGraph(mapDepth, tempConfig.MaxNodesPerVerticalLine);
 
+            _mission.MapGraph.CurrectPointedNode = GetRootMapNode();
+
             // Update local data
-            await UpdateLocalMissionData(_mission);
+            await SaveLocalMissionData(_mission);
         }
 
+        _missionMapView.SetMissionUI(_mission);
         _missionMapView.GenerateMissionMapGraphOnScene(_mission.MapGraph);
-        Debug.Log("Graph: " + _mission.MapGraph.GetGraphAsAdjacencyList());
-    }
-
-    public async void SetCurrentSelectedObjectiveNode(MapNode mapNode)
-    {
-        _mission.CurrectSelectedObjective = mapNode;
-        _missionMapView.DisplayCurrentSelectedObjectiveNode(mapNode);
-        await SaveConnectedNodesOfMapNode(GetRootMapNode());
     }
 
     public MapGraph CreateMissionMapGraph(int mapDepth, int maxNodesPerVerticalLine)
@@ -136,7 +116,7 @@ public class MissionPresenter
         GenerateRandomSeed();
 
         int prevSize = 0;
-
+        int id = 0;
         // Create node groups
         for (int i = 0; i < mapDepth; i++)
         {
@@ -145,8 +125,12 @@ public class MissionPresenter
             // Check for root or final node
             if (i == 0 || i == (mapDepth - 1))
             {
-                tempGroup.Add(new MapNode(NodeType.Begin));
+                MapNode mapNode = new MapNode(NodeType.Begin);
+                mapNode.Id = id;
+                tempGroup.Add(mapNode);
                 _mission.MapGraph.AddNodesGroup(tempGroup);
+
+                id++;
                 continue;
             }
 
@@ -167,7 +151,10 @@ public class MissionPresenter
             // Initialize empty nodes in the node groups
             for (int j = 0; j < randGroupSize; j++)
             {
-                tempGroup.Add(new MapNode(NodeType.Attack));
+                MapNode mapNode = new MapNode(NodeType.Begin);
+                mapNode.Id = id;
+                tempGroup.Add(mapNode);
+                id++;
             }
 
             _mission.MapGraph.AddNodesGroup(tempGroup);
@@ -233,7 +220,7 @@ public class MissionPresenter
                 var rootNode = _mission.MapGraph.NodeGroups[0][0];
                 foreach (var node in _mission.MapGraph.NodeGroups[1])
                 {
-                    _mission.MapGraph.ConnectNodes(rootNode, node);
+                    rootNode.ConnectedNodes.Add(node);
                 }
                 continue;
             }
@@ -244,7 +231,7 @@ public class MissionPresenter
                 var lastNode = _mission.MapGraph.NodeGroups[i + 1][0];
                 foreach (var node in _mission.MapGraph.NodeGroups[i])
                 {
-                    _mission.MapGraph.ConnectNodes(lastNode, node);
+                    lastNode.ConnectedNodes.Add(node);
                 }
                 break;
             }
@@ -258,7 +245,7 @@ public class MissionPresenter
                 var currNode = currNodeGroup[0];
                 foreach (var targetNode in nextNodeGroup)
                 {
-                    _mission.MapGraph.ConnectNodes(currNode, targetNode);
+                    currNode.ConnectedNodes.Add(targetNode);
                 }
 
                 continue;
@@ -270,7 +257,7 @@ public class MissionPresenter
                 var currNextNode = nextNodeGroup[0];
                 foreach (var targetNode in currNodeGroup)
                 {
-                    _mission.MapGraph.ConnectNodes(currNextNode, targetNode);
+                    currNextNode.ConnectedNodes.Add(targetNode);
                 }
 
                 continue;
@@ -280,20 +267,20 @@ public class MissionPresenter
             if (currNodeGroup.Count == 2)
             {
                 // Always connect the two upper edge nodes 
-                _mission.MapGraph.ConnectNodes(currNodeGroup[0], nextNodeGroup[0]);
+                currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[0]);
                 // Always connect the two bottom edge nodes 
-                _mission.MapGraph.ConnectNodes(currNodeGroup[1], nextNodeGroup[nextNodeGroup.Count - 1]);
+                currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[nextNodeGroup.Count - 1]);
 
                 if (nextNodeGroup.Count == 3)
                 {
                     randNum = Random.Range(0, 3); // 0 or 1 or 2
                     if (randNum == 2)
                     {
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[0], nextNodeGroup[1]);
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[1], nextNodeGroup[1]);
+                        currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[1]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1]);
                         continue;
                     }
-                    _mission.MapGraph.ConnectNodes(currNodeGroup[randNum], nextNodeGroup[1]);
+                    currNodeGroup[randNum].ConnectedNodes.Add(nextNodeGroup[1]);
                 }
 
                 if (nextNodeGroup.Count == 4)
@@ -304,11 +291,11 @@ public class MissionPresenter
                         randNum = Random.Range(1, 4); // 1 or 2 or 3
                         if (randNum == 3)
                         {
-                            _mission.MapGraph.ConnectNodes(currNodeGroup[j], nextNodeGroup[1]);
-                            _mission.MapGraph.ConnectNodes(currNodeGroup[j], nextNodeGroup[2]);
+                            currNodeGroup[j].ConnectedNodes.Add(nextNodeGroup[1]);
+                            currNodeGroup[j].ConnectedNodes.Add(nextNodeGroup[2]);
                             continue;
                         }
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[j], nextNodeGroup[randNum]);
+                        currNodeGroup[j].ConnectedNodes.Add(nextNodeGroup[randNum]);
                     }
                 }
             }
@@ -316,20 +303,20 @@ public class MissionPresenter
             if (currNodeGroup.Count == 3)
             {
                 // Always connect the two upper edge nodes 
-                _mission.MapGraph.ConnectNodes(currNodeGroup[0], nextNodeGroup[0]);
+                currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[0]);
                 // Always connect the two bottom edge nodes 
-                _mission.MapGraph.ConnectNodes(currNodeGroup[2], nextNodeGroup[nextNodeGroup.Count - 1]);
+                currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[nextNodeGroup.Count - 1]);
 
                 if (nextNodeGroup.Count == 2)
                 {
                     randNum = Random.Range(0, 3); // 0 or 1 or 2
                     if (randNum == 2)
                     {
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[1], nextNodeGroup[0]);
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[1], nextNodeGroup[1]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[0]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1]);
                         continue;
                     }
-                    _mission.MapGraph.ConnectNodes(currNodeGroup[1], nextNodeGroup[randNum]);
+                    currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[randNum]);
                 }
 
                 if (nextNodeGroup.Count == 4)
@@ -340,7 +327,7 @@ public class MissionPresenter
                     randNum = Random.Range(0, 2); // 0 or 1
                     if (randNum == 1)
                     {
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[0], nextNodeGroup[1]);
+                        currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[1]);
                         isNodeWithIndex1Connected = true;
                     }
 
@@ -348,31 +335,31 @@ public class MissionPresenter
                     randNum = Random.Range(1, 4); // 1 or 2 or 3
                     if (randNum == 3)
                     {
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[1], nextNodeGroup[1]);
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[1], nextNodeGroup[2]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[2]);
                         isNodeWithIndex1Connected = true;
                         isNodeWithIndex2Connected = true;
                     }
-                    _mission.MapGraph.ConnectNodes(currNodeGroup[1], nextNodeGroup[randNum]);
+                    currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[randNum]);
 
                     // For node with index 2 in the current group
                     randNum = Random.Range(0, 2); // 0 or 1
                     if (randNum == 1)
                     {
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[2], nextNodeGroup[2]);
+                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[2]);
                         isNodeWithIndex2Connected = true;
                     }
 
                     if (!isNodeWithIndex1Connected)
                     {
                         randNum = Random.Range(0, 2); // 0 or 1
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[randNum], nextNodeGroup[1]);
+                        currNodeGroup[randNum].ConnectedNodes.Add(nextNodeGroup[1]);
                     }
 
                     if (!isNodeWithIndex2Connected)
                     {
                         randNum = Random.Range(1, 3); // 1 or 2
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[randNum], nextNodeGroup[2]);
+                        currNodeGroup[randNum].ConnectedNodes.Add(nextNodeGroup[2]);
                     }
 
                 }
@@ -382,33 +369,33 @@ public class MissionPresenter
             {
 
                 // Always connect the two upper edge nodes 
-                _mission.MapGraph.ConnectNodes(currNodeGroup[0], nextNodeGroup[0]);
+                currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[0]);
                 // Always connect the two bottom edge nodes 
-                _mission.MapGraph.ConnectNodes(currNodeGroup[3], nextNodeGroup[nextNodeGroup.Count - 1]);
+                currNodeGroup[3].ConnectedNodes.Add(nextNodeGroup[nextNodeGroup.Count - 1]);
 
                 if (nextNodeGroup.Count == 2)
                 {
                     randNum = Random.Range(0, 3); // 0 or 1 or 2
                     if (randNum == 2)
                     {
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[1], nextNodeGroup[0]);
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[1], nextNodeGroup[1]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[0]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1]);
                     }
                     else
                     {
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[1], nextNodeGroup[randNum]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[randNum]);
                     }
 
 
                     randNum = Random.Range(0, 3); // 0 or 1 or 2
                     if (randNum == 2)
                     {
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[2], nextNodeGroup[0]);
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[2], nextNodeGroup[1]);
+                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[0]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1]);
                     }
                     else
                     {
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[2], nextNodeGroup[randNum]);
+                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[randNum]);
                     }
                 }
 
@@ -419,13 +406,13 @@ public class MissionPresenter
                     randNum = Random.Range(0, 3); // 0 or 1 or 2
                     if (randNum == 2)
                     {
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[1], nextNodeGroup[0]);
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[1], nextNodeGroup[1]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[0]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1]);
                         isTheMiddleNodeConnected = true;
                     }
                     else
                     {
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[1], nextNodeGroup[randNum]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[randNum]);
                         if (randNum == 1)
                             isTheMiddleNodeConnected = true;
                     }
@@ -434,13 +421,13 @@ public class MissionPresenter
                     randNum = Random.Range(1, 4); // 1 or 2 or 3
                     if (randNum == 3)
                     {
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[2], nextNodeGroup[1]);
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[2], nextNodeGroup[2]);
+                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[1]);
+                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[2]);
                         isTheMiddleNodeConnected = true;
                     }
                     else
                     {
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[2], nextNodeGroup[randNum]);
+                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[randNum]);
                         if (randNum == 1)
                             isTheMiddleNodeConnected = true;
                     }
@@ -448,7 +435,7 @@ public class MissionPresenter
                     if (!isTheMiddleNodeConnected)
                     {
                         randNum = Random.Range(1, 3); // 1 or 2
-                        _mission.MapGraph.ConnectNodes(currNodeGroup[randNum], nextNodeGroup[1]);
+                        currNodeGroup[randNum].ConnectedNodes.Add(nextNodeGroup[1]);
                     }
                 }
             }
@@ -457,12 +444,18 @@ public class MissionPresenter
         return _mission.MapGraph;
     }
 
-    public bool CanVisitSelectedNode(MapNode objectiveNode, MapNode selectedNode)
+    public bool CanVisitSelectedNode(MapNode pointedNode, MapNode selectedNode)
     {
-        var graph = _mission.MapGraph.GetGraphAsAdjacencyList();
-        var connectedNodes = graph[objectiveNode];
-        if (connectedNodes.Contains(selectedNode))
-            return true;
+        foreach (var nodeGroup in _mission.MapGraph.NodeGroups)
+        {
+            foreach (var node in nodeGroup)
+            {
+                if (node == pointedNode)
+                {
+                    return true;
+                }
+            }
+        }
 
         return false;
     }

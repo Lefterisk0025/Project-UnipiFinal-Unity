@@ -32,7 +32,7 @@ public class MainMenu : MenuManager
             ToggleMenu(Menu.Missions);
         else
         {
-            LoadingScreen.Instance.FakeOpen(2);
+            LoadingScreen.Instance.FakeOpen(1);
             ToggleMenu(Menu.MissionMap);
         }
     }

@@ -6,6 +6,8 @@ public class MapGraph : DAG<MapNode>
 {
     public List<List<MapNode>> NodeGroups { get; private set; }
 
+    public MapNode CurrectPointedNode { get; set; }
+
     public MapGraph()
     {
         NodeGroups = new List<List<MapNode>>();

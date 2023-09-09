@@ -17,5 +17,4 @@ public class Mission
 
     public bool IsCompleted { get; private set; }
     public MapGraph MapGraph { get; set; }
-    public MapNode CurrectSelectedObjective { get; set; }
 }

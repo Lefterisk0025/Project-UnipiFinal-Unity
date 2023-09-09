@@ -94,11 +94,11 @@ public class MissionsCacheView : MonoBehaviour, IObserver
         }
     }
 
-    private void HandleSelectMissionAction(Mission mission)
+    private async void HandleSelectMissionAction(Mission mission)
     {
         LoadingScreen.Instance.FakeOpen(2);
 
-        _missionPresenter.SaveLocalMissionData(mission);
+        await _missionPresenter.SaveLocalMissionData(mission);
 
         GameManager.Instance.UpdateGameState(GameState.InitializingMission);
     }

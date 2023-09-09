@@ -13,7 +13,7 @@ public class MapNodeView : Subject, IPointerDownHandler
     [SerializeField] private GameObject _selectionIcon;
     [SerializeField] private GameObject _pointIcon;
 
-    bool isCurrentObjective = false;
+    bool isPointed = false;
 
     private void Awake()
     {
@@ -47,13 +47,13 @@ public class MapNodeView : Subject, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (Node.IsActive && !isCurrentObjective)
+        if (Node.IsActive && !isPointed)
             NotifyObservers(Actions.SelectNode);
     }
 
     private void HandleCurrentObjectiveState()
     {
         _pointIcon.SetActive(true);
-        isCurrentObjective = true;
+        isPointed = true;
     }
 }

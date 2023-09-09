@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1838684345484608152}
   - component: {fileID: 457547932186896789}
-  - component: {fileID: 3296428043430802553}
+  - component: {fileID: 5896915912681925214}
   m_Layer: 5
   m_Name: AttackNode
   m_TagString: Untagged
@@ -55,19 +55,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _selectionIcon: {fileID: 2147131623124624642}
   _pointIcon: {fileID: 3360810396083592164}
---- !u!65 &3296428043430802553
-BoxCollider:
+--- !u!61 &5896915912681925214
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2141709963520570954}
+  m_Enabled: 1
+  m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1 &2147131623124624642
 GameObject:
   m_ObjectHideFlags: 0

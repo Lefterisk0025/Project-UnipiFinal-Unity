@@ -15,6 +15,7 @@ public class MapNode
         NodeType = NodeType.Default;
         IsActive = true;
         Objective = new Objective();
+        ConnectedNodes = new List<MapNode>();
     }
 
     public MapNode(NodeType nodeType)
@@ -22,5 +23,6 @@ public class MapNode
         NodeType = nodeType;
         IsActive = true;
         Objective = new Objective();
+        ConnectedNodes = new List<MapNode>();
     }
 }

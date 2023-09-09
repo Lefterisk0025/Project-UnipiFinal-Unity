@@ -27,16 +27,16 @@ public class MissionMapView : MonoBehaviour, IObserver
     [SerializeField] private Canvas _canvas;
     [SerializeField] private Transform _linesParent;
 
-    private IDictionary<MapNode, GameObject> _spawnedNodes; // Dict to connect MapNode objects with their scene Game Objects 
+    private List<GameObject> _spawnedNodesList; // Dict to connect MapNode objects with their scene Game Objects 
     private List<MapLineRenderer> _mapLinesList;
     private ScrollRect _scrollRect;
-    private MapNodeView _selectedNodeView;
-    private MapNodeView _currObjectiveNode;
+    public MapNodeView _selectedNodeView;
+    public MapNodeView _currObjectiveNode;
 
     private void Awake()
     {
         _missionPresenter = new MissionPresenter(this);
-        _spawnedNodes = new Dictionary<MapNode, GameObject>();
+        _spawnedNodesList = new List<GameObject>();
         _mapLinesList = new List<MapLineRenderer>();
         _scrollRect = GetComponentInChildren<ScrollRect>();
 
@@ -53,6 +53,12 @@ public class MissionMapView : MonoBehaviour, IObserver
         // Initialize map's position to the screen
         RectTransform contectRectTransform = _contentParent.gameObject.GetComponent<RectTransform>();
         contectRectTransform.localPosition = new Vector3(0, _contentParent.transform.position.y);
+
+        if (_selectedNodeView != null)
+        {
+            _selectedNodeView.UpdateView(MapNodeView.NodeState.Default);
+            _selectedNodeView = null;
+        }
     }
 
     public MissionMapConfig GetMissionMapConfigBasedOnDifficulty(Difficulty difficulty)
@@ -79,6 +85,7 @@ public class MissionMapView : MonoBehaviour, IObserver
 
     private void HandleNodeSelection(MapNodeView selectedMapNodeView)
     {
+
         if (!_missionPresenter.CanVisitSelectedNode(_currObjectiveNode.Node, selectedMapNodeView.Node))
             return;
 
@@ -96,6 +103,15 @@ public class MissionMapView : MonoBehaviour, IObserver
             Destroy(child.gameObject);
         }
 
+        foreach (Transform child in _linesParent)
+        {
+            if (child.name.Contains("LinePrefab"))
+                Destroy(child.gameObject);
+        }
+
+        _spawnedNodesList.Clear();
+        _mapLinesList.Clear();
+
         await _missionPresenter.DeleteLocalMissionData();
 
         GameManager.Instance.UpdateGameState(GameState.AbandoningMission);
@@ -108,7 +124,9 @@ public class MissionMapView : MonoBehaviour, IObserver
 
         PlayerPrefs.SetInt("SelectedNodeId", _selectedNodeView.Node.Id);
 
-        GameManager.Instance.UpdateGameState(GameState.Playing);
+        //_missionPresenter.SetCurrentSelectedObjectiveNode(_selectedNodeView.Node);
+
+        //GameManager.Instance.UpdateGameState(GameState.Playing);
     }
 
     public void SetMissionUI(Mission mission)
@@ -123,32 +141,23 @@ public class MissionMapView : MonoBehaviour, IObserver
             return;
 
         MapNodeView mapNodeView;
-        int id = 0;
         foreach (List<MapNode> nodesGroup in mapGraph.NodeGroups)
         {
             var verticalLine = Instantiate(_horizontalNodesContainerPrefab, _contentParent.transform);
 
             foreach (MapNode node in nodesGroup)
             {
+                GameObject spawnedNode = null;
                 if (node.NodeType == NodeType.Begin || node.NodeType == NodeType.Attack || node.NodeType == NodeType.Default)
-                    _spawnedNodes[node] = Instantiate(_attackNodePrefab, verticalLine.transform).gameObject;
+                    spawnedNode = Instantiate(_attackNodePrefab, verticalLine.transform).gameObject;
                 else
-                    _spawnedNodes[node] = Instantiate(_boostHubNodePrefab, verticalLine.transform).gameObject;
+                    spawnedNode = Instantiate(_boostHubNodePrefab, verticalLine.transform).gameObject;
 
-                mapNodeView = _spawnedNodes[node].GetComponent<MapNodeView>();
-                mapNodeView.Node = node; // Connect views with models
-                mapNodeView.Node.Id = id;
+                _spawnedNodesList.Add(spawnedNode);
+
+                mapNodeView = spawnedNode.GetComponent<MapNodeView>();
+                mapNodeView.Node = node; // Connect views (gameobjects) with models
                 mapNodeView.AddObserver(this);
-
-                id++;
-            }
-        }
-
-        foreach (KeyValuePair<MapNode, List<MapNode>> entry in mapGraph.GetGraphAsAdjacencyList())
-        {
-            foreach (MapNode targetNode in entry.Value)
-            {
-                Debug.Log("Id: " + targetNode.Id + ", Type: " + targetNode.NodeType.ToString());
             }
         }
 
@@ -162,27 +171,30 @@ public class MissionMapView : MonoBehaviour, IObserver
         GameObject newLine = null;
         MapLineRenderer mapLineRenderer = null;
 
-        var graph = mapGraph.GetGraphAsAdjacencyList();
-
-        foreach (KeyValuePair<MapNode, List<MapNode>> entry in graph)
+        foreach (var nodeGroup in mapGraph.NodeGroups)
         {
-            GameObject originMapNodeGO = _spawnedNodes[entry.Key];
-            GameObject targetMapNodeGO = null;
-
-            foreach (MapNode targetNode in entry.Value)
+            foreach (var node in nodeGroup)
             {
-                targetMapNodeGO = _spawnedNodes[targetNode];
+                GameObject originMapNodeGO = GetNodeGameObjectMyMapNodeId(node.Id);
+                GameObject targetMapNodeGO = null;
 
-                newLine = Instantiate(_linePrefab, _linesParent);
-                newLine.transform.SetSiblingIndex(0);
+                foreach (MapNode targetNode in node.ConnectedNodes)
+                {
+                    targetMapNodeGO = GetNodeGameObjectMyMapNodeId(targetNode.Id);
 
-                mapLineRenderer = newLine.GetComponent<MapLineRenderer>();
-                mapLineRenderer.SetLineRenderer(originMapNodeGO.transform, targetMapNodeGO.transform);
-                mapLineRenderer.UpdateLinePosition(_canvas);
+                    newLine = Instantiate(_linePrefab, _linesParent);
+                    newLine.transform.SetSiblingIndex(0);
 
-                _mapLinesList.Add(mapLineRenderer);
+                    mapLineRenderer = newLine.GetComponent<MapLineRenderer>();
+                    mapLineRenderer.SetLineRenderer(originMapNodeGO.transform, targetMapNodeGO.transform);
+                    mapLineRenderer.UpdateLinePosition(_canvas);
+
+                    _mapLinesList.Add(mapLineRenderer);
+                }
             }
         }
+
+        SetCurrentPointObjectiveNode(mapGraph.CurrectPointedNode);
     }
 
     private void OnScrollMoved(Vector2 position)
@@ -193,9 +205,21 @@ public class MissionMapView : MonoBehaviour, IObserver
         }
     }
 
-    public void DisplayCurrentSelectedObjectiveNode(MapNode mapNode)
+    public void SetCurrentPointObjectiveNode(MapNode mapNode)
     {
-        _currObjectiveNode = _spawnedNodes[mapNode].gameObject.GetComponent<MapNodeView>();
+        _currObjectiveNode = GetNodeGameObjectMyMapNodeId(mapNode.Id).GetComponent<MapNodeView>();
         _currObjectiveNode.UpdateView(MapNodeView.NodeState.CurrentObjective);
+    }
+
+    private GameObject GetNodeGameObjectMyMapNodeId(int id)
+    {
+        foreach (var nodeGO in _spawnedNodesList)
+        {
+            var mapNodeView = nodeGO.GetComponent<MapNodeView>();
+            if (mapNodeView.Node.Id == id)
+                return nodeGO;
+        }
+
+        return null;
     }
 }

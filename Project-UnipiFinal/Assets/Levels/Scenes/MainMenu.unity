@@ -4856,7 +4856,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1696463637
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4905,9 +4905,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d32e2c70de0b022428533ff09f457b52, type: 2}
   - {fileID: 11400000, guid: 6782383a17ef9bd489d25ae23e83d2e9, type: 2}
   - {fileID: 11400000, guid: 42cebf2bb662c9345b0e7856da3114f4, type: 2}
+  - {fileID: 11400000, guid: 43ae98140e5c2e848b44f9e0b139d10a, type: 2}
   _linePrefab: {fileID: 6238151029217825642, guid: f79fa548debc9254e94ed9902db73d2c, type: 3}
   _canvas: {fileID: 2116310091}
   _linesParent: {fileID: 609462032}
+  _selectedNodeView: {fileID: 0}
+  _currObjectiveNode: {fileID: 0}
 --- !u!65 &1696463639
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5572,7 +5575,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2015859092
 RectTransform:
   m_ObjectHideFlags: 0
