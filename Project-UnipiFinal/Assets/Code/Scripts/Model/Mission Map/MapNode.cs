@@ -8,6 +8,7 @@ public class MapNode
     public NodeType NodeType { get; set; }
     public bool IsActive { get; set; }
     public Objective Objective { get; set; }
+    public List<MapNode> ConnectedNodes { get; set; }
 
     public MapNode()
     {

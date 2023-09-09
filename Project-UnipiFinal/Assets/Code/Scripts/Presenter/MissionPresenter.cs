@@ -94,8 +94,8 @@ public class MissionPresenter
 
     public async void InitializeMission()
     {
-        //_mission = await GetLocalSavedMission();
-        _mission = new Mission() { Title = "A New Dawn", Description = "Something realy good is happening in the house of the rising sun.", Difficulty = "Hard" };
+        _mission = await GetLocalSavedMission();
+        //_mission = new Mission() { Title = "A New Dawn", Description = "Something realy good is happening in the house of the rising sun.", Difficulty = "Hard" };
 
         if (_mission.MapGraph == null)
         {
@@ -116,16 +116,17 @@ public class MissionPresenter
 
             // Update local data
             await UpdateLocalMissionData(_mission);
-
-            _missionMapView.GenerateMissionMapGraphOnScene(_mission.MapGraph);
-
-            _missionMapView.SetCurrentSelectedObjectiveNode(GetRootMapNode());
         }
-        else
-        {
-            _missionMapView.GenerateMissionMapGraphOnScene(_mission.MapGraph);
-            _missionMapView.SetCurrentSelectedObjectiveNode(_mission.CurrectSelectedObjective);
-        }
+
+        _missionMapView.GenerateMissionMapGraphOnScene(_mission.MapGraph);
+        Debug.Log("Graph: " + _mission.MapGraph.GetGraphAsAdjacencyList());
+    }
+
+    public async void SetCurrentSelectedObjectiveNode(MapNode mapNode)
+    {
+        _mission.CurrectSelectedObjective = mapNode;
+        _missionMapView.DisplayCurrentSelectedObjectiveNode(mapNode);
+        await SaveConnectedNodesOfMapNode(GetRootMapNode());
     }
 
     public MapGraph CreateMissionMapGraph(int mapDepth, int maxNodesPerVerticalLine)

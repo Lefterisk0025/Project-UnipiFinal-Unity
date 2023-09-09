@@ -33,7 +33,11 @@ public class JsonLocalDataService : ILocalDataService
             using FileStream stream = File.Create(path);
             using (StreamWriter writer = new StreamWriter(stream))
             {
-                string jsonData = JsonConvert.SerializeObject(Data, Formatting.Indented);
+                string jsonData = JsonConvert.SerializeObject(Data, Formatting.Indented, new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
+
                 await writer.WriteAsync(jsonData);
             }
             stream.Close();

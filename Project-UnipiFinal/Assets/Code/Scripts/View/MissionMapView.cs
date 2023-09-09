@@ -144,6 +144,14 @@ public class MissionMapView : MonoBehaviour, IObserver
             }
         }
 
+        foreach (KeyValuePair<MapNode, List<MapNode>> entry in mapGraph.GetGraphAsAdjacencyList())
+        {
+            foreach (MapNode targetNode in entry.Value)
+            {
+                Debug.Log("Id: " + targetNode.Id + ", Type: " + targetNode.NodeType.ToString());
+            }
+        }
+
         StartCoroutine(DrawMapLines(mapGraph));
     }
 
@@ -185,11 +193,9 @@ public class MissionMapView : MonoBehaviour, IObserver
         }
     }
 
-    public async void SetCurrentSelectedObjectiveNode(MapNode mapNode)
+    public void DisplayCurrentSelectedObjectiveNode(MapNode mapNode)
     {
         _currObjectiveNode = _spawnedNodes[mapNode].gameObject.GetComponent<MapNodeView>();
         _currObjectiveNode.UpdateView(MapNodeView.NodeState.CurrentObjective);
-
-        await _missionPresenter.SaveConnectedNodesOfMapNode(mapNode);
     }
 }

@@ -31,7 +31,10 @@ public class MainMenu : MenuManager
         if (onMission == 0)
             ToggleMenu(Menu.Missions);
         else
+        {
+            LoadingScreen.Instance.FakeOpen(2);
             ToggleMenu(Menu.MissionMap);
+        }
     }
 
     public void OpenStoreMenu()

@@ -52,12 +52,11 @@ public class MissionsCacheView : MonoBehaviour, IObserver
             }
             else
             {
-                //missions = await _missionsPresenter.GetRandomRemoteMissions(_missionsCount);
-                missions = _missionsCachePresenter.GetRandomLocalMissions(_missionsCount);
+                missions = await _missionsCachePresenter.GetRandomRemoteMissions(_missionsCount);
+                //missions = _missionsCachePresenter.GetRandomLocalMissions(_missionsCount);
                 _missionsCachePresenter.SaveLocalMissionsCacheData(missions);
                 PlayerPrefs.SetString("LastFetchDateTime", DateTime.Now.ToString());
                 _messageText.text = "Just fetched new missions!";
-
                 //timeTilNextFetch = 120;
             }
 
