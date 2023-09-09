@@ -344,7 +344,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1611921733}
         m_TargetAssemblyTypeName: MissionMapView, Assembly-CSharp
-        m_MethodName: DrawEdges
+        m_MethodName: InvokeAttack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1445,7 +1445,6 @@ MonoBehaviour:
   _linePrefab: {fileID: 6238151029217825642, guid: f79fa548debc9254e94ed9902db73d2c, type: 3}
   _canvas: {fileID: 1959629250}
   _linesParent: {fileID: 420970116}
-  _currObjectiveNode: {fileID: 0}
 --- !u!224 &1611921734
 RectTransform:
   m_ObjectHideFlags: 0

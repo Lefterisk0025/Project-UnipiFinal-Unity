@@ -27,13 +27,13 @@ public class JsonLocalDataService : ILocalDataService
             }
             else
             {
-                // Handle file not exists
+                Debug.Log("File doesn't exists!");
             }
 
             using FileStream stream = File.Create(path);
             using (StreamWriter writer = new StreamWriter(stream))
             {
-                string jsonData = JsonConvert.SerializeObject(Data);
+                string jsonData = JsonConvert.SerializeObject(Data, Formatting.Indented);
                 await writer.WriteAsync(jsonData);
             }
             stream.Close();
@@ -42,7 +42,12 @@ public class JsonLocalDataService : ILocalDataService
         }
         catch (Exception e)
         {
-            Debug.Log(e.Message);
+            using FileStream stream = File.Create(_persistentDataPath + "/errors.txt");
+            using (StreamWriter writer = new StreamWriter(stream))
+            {
+                await writer.WriteAsync(e.Message);
+            }
+            stream.Close();
             return false;
         }
     }

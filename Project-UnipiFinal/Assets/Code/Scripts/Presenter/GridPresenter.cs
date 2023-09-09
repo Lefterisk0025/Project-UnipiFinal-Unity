@@ -7,10 +7,20 @@ public class GridPresenter
     GridView _gridView;
     Grid _grid;
     TilesComparator _tilesComparator;
+    MissionService _missionService;
 
     public GridPresenter(GridView gridView)
     {
         _gridView = gridView;
+        _missionService = new MissionService();
+    }
+
+    public Grid InitializeGrid(int height)
+    {
+        _grid = new Grid(height);
+        _grid.Tiles = CreateTiles(height);
+
+        return _grid;
     }
 
     private void GenerateRandomSeed()
@@ -21,7 +31,7 @@ public class GridPresenter
 
     public List<Tile> CreateTiles(int height)
     {
-        _grid = new Grid(height);
+        List<Tile> tempTiles = new List<Tile>();
 
         GenerateRandomSeed();
 
@@ -30,23 +40,23 @@ public class GridPresenter
         {
             for (int col = 0; col < _grid.Width; col++)
             {
-                //int value = Random.Range(1, 10);
-                int value = 7;
+                int value = Random.Range(1, 10);
+                //int value = 7;
                 Vector2 positionInGrid = new Vector2((float)row, (float)col);
 
                 tile = new Tile(value, positionInGrid);
 
-                _grid.AddTile(tile);
+                tempTiles.Add(tile);
             }
         }
 
-        return _grid.Tiles;
+        return tempTiles;
     }
 
     public void DeactivateTile(TileView tileView)
     {
         tileView.UpdateView(TileState.Deactivated);
-        tileView.Tile.DeactivateTile();
+        tileView.Tile.IsActive = false;
     }
 
     public void ValidateTileMatch(TileView tile1View, TileView tile2View)

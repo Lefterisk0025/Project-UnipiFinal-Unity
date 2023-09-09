@@ -77,10 +77,13 @@ public class MissionService
     // ----------------- CURRECT OBJECTIVES -----------------
     public async Task<bool> SaveLocalMapNodesListData(List<MapNode> mapNodesList)
     {
-        return await _dataService.SaveData(localObjectivesFileName, mapNodesList, true);
+        if (await _dataService.SaveData(localObjectivesFileName, mapNodesList, true))
+            return true;
+
+        return false;
     }
 
-    public async Task<List<MapNode>> GetLocalMapNodesList()
+    public async Task<List<MapNode>> LoadLocalMapNodesList()
     {
         return await _dataService.LoadData<List<MapNode>>(localObjectivesFileName, true);
     }

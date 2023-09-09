@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
+[Serializable]
 public class Grid
 {
     private const int width = 9;

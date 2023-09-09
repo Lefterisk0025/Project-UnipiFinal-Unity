@@ -31,7 +31,7 @@ public class MissionMapView : MonoBehaviour, IObserver
     private List<MapLineRenderer> _mapLinesList;
     private ScrollRect _scrollRect;
     private MapNodeView _selectedNodeView;
-    public MapNodeView _currObjectiveNode;
+    private MapNodeView _currObjectiveNode;
 
     private void Awake()
     {
@@ -106,7 +106,7 @@ public class MissionMapView : MonoBehaviour, IObserver
         if (_selectedNodeView.Node.NodeType != NodeType.Attack)
             return;
 
-        PlayerPrefs.SetInt("ObjectiveNodeId", _selectedNodeView.Node.Id);
+        PlayerPrefs.SetInt("SelectedNodeId", _selectedNodeView.Node.Id);
 
         GameManager.Instance.UpdateGameState(GameState.Playing);
     }

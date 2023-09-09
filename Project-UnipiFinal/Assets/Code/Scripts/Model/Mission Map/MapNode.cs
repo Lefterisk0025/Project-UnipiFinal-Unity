@@ -13,11 +13,13 @@ public class MapNode
     {
         NodeType = NodeType.Default;
         IsActive = true;
+        Objective = new Objective();
     }
 
     public MapNode(NodeType nodeType)
     {
         NodeType = nodeType;
         IsActive = true;
+        Objective = new Objective();
     }
 }

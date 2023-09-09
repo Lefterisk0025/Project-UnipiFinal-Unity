@@ -1,14 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Tile
 {
-    private bool _isActive;
-
     public int Value { get; set; }
     public Vector2 PositionInGrid { get; set; }
-    public bool IsActive { get => _isActive; set => _isActive = value; }
+    public bool IsActive { get; set; }
 
     public Tile(int value, Vector2 positionInGrid)
     {
@@ -20,7 +19,5 @@ public class Tile
     {
         return "Tile " + "(" + PositionInGrid.x + ", " + PositionInGrid.y + ") " + "value: " + Value;
     }
-    public void ActivateTile() => _isActive = true;
-    public void DeactivateTile() => _isActive = false;
 
 }

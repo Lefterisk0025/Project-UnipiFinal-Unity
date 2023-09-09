@@ -40,6 +40,9 @@ public class GameManager : MonoBehaviour
             case GameState.AbandoningMission:
                 HandleAbandoningMissionState();
                 break;
+            case GameState.Playing:
+                HandlePlayingState();
+                break;
         }
     }
 
@@ -86,5 +89,12 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("OnMission", 0);
 
         MenuManager.Instance.ToggleMenu(Menu.MainMenu);
+    }
+
+    private void HandlePlayingState()
+    {
+        LoadingScreen.Instance.FakeOpen(3);
+
+        CustomSceneManager.Instance.SwitchScene("MapTest", "Game");
     }
 }

@@ -28,7 +28,7 @@ public class GridView : MonoBehaviour, IObserver
 
     private void Start()
     {
-        SetInitialGrid();
+        //SetInitialGrid();
     }
 
     public void OnNotify(ISubject subject, Actions action)
@@ -44,13 +44,12 @@ public class GridView : MonoBehaviour, IObserver
         }
     }
 
-    public void SetInitialGrid()
+    public Grid InitializeGrid(int height)
     {
-        List<Tile> tiles = _gridPresenter.CreateTiles(_height);
-        GenerateTiles(tiles);
+        return _gridPresenter.InitializeGrid(height);
     }
 
-    private void GenerateTiles(List<Tile> tiles)
+    public void GenerateTilesOnScene(List<Tile> tiles)
     {
         TileView spawnedTileView;
         foreach (var tile in tiles)
@@ -98,7 +97,7 @@ public class GridView : MonoBehaviour, IObserver
         if (tilesLine == null)
             return;
 
-        GenerateTiles(tilesLine);
+        GenerateTilesOnScene(tilesLine);
     }
 
     public void RemoveTiles(List<Tile> tiles)
