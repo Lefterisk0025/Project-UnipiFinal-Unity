@@ -10,6 +10,7 @@ public class CustomSceneManager : MonoBehaviour
 
     public UnityEvent OnSceneUnloaded = new UnityEvent();
     public UnityEvent OnSceneLoaded = new UnityEvent();
+    public UnityEvent OnMissionMapMenuLoaded = new UnityEvent();
 
     private void Awake()
     {
@@ -50,5 +51,8 @@ public class CustomSceneManager : MonoBehaviour
             yield return null;
         }
         OnSceneLoaded.Invoke();
+
+        if (sceneToLoad == "MainMenu" && sceneToUnload == "Game")
+            OnMissionMapMenuLoaded.Invoke();
     }
 }

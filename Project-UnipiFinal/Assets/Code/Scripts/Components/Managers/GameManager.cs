@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -42,6 +43,9 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.Playing:
                 HandlePlayingState();
+                break;
+            case GameState.FinishPlaying:
+                HandleFinishPlayingState();
                 break;
         }
     }
@@ -95,6 +99,20 @@ public class GameManager : MonoBehaviour
     {
         LoadingScreen.Instance.FakeOpen(3);
 
-        CustomSceneManager.Instance.SwitchScene("MapTest", "Game");
+        CustomSceneManager.Instance.SwitchScene("MainMenu", "Game");
+    }
+
+    private void HandleFinishPlayingState()
+    {
+        LoadingScreen.Instance.FakeOpen(2);
+
+        //CustomSceneManager.Instance.OnSceneLoaded.AddListener(LoadMissionMap);
+
+        CustomSceneManager.Instance.SwitchScene("Game", "MainMenu");
+    }
+
+    private void LoadMissionMap()
+    {
+        MenuManager.Instance.ToggleMenu(Menu.MissionMap);
     }
 }

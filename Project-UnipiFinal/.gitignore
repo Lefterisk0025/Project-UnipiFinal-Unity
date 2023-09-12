@@ -86,3 +86,6 @@ crashlytics-build.properties
 
 # Cyberpunk GUI
 /[Aa]ssets/[Cc]yberpunk_RPG_UI/
+
+# LeanTween
+/[Aa]ssets/[Ll]eantween/

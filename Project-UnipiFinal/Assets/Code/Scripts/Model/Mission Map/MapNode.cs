@@ -7,14 +7,12 @@ public class MapNode
     public int Id { get; set; }
     public NodeType NodeType { get; set; }
     public bool IsActive { get; set; }
-    public Objective Objective { get; set; }
     public List<MapNode> ConnectedNodes { get; set; }
 
     public MapNode()
     {
         NodeType = NodeType.Default;
         IsActive = true;
-        Objective = new Objective();
         ConnectedNodes = new List<MapNode>();
     }
 
@@ -22,7 +20,6 @@ public class MapNode
     {
         NodeType = nodeType;
         IsActive = true;
-        Objective = new Objective();
         ConnectedNodes = new List<MapNode>();
     }
 }

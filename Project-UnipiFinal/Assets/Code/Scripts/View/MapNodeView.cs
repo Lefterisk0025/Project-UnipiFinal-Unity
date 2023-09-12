@@ -45,6 +45,16 @@ public class MapNodeView : Subject, IPointerDownHandler
         Debug.Log(this.transform.position);
     }
 
+    public void PrintNodeInfo()
+    {
+        Debug.Log($"<color=green>-------------- Node {Node.Id} - Type: {Node.NodeType.ToString()} --------------</color>");
+        foreach (var item in Node.ConnectedNodes)
+        {
+            Debug.Log($"<color=green>Child Node {item.Id} - Type: {item.NodeType.ToString()}</color>");
+
+        }
+    }
+
     public void OnPointerDown(PointerEventData eventData)
     {
         if (Node.IsActive && !isPointed)

@@ -11,13 +11,15 @@ public class MissionPresenter
     MissionMapView _missionMapView;
     MissionsCacheView _missionsCacheView;
     MissionService _missionService;
+    ObjectiveService _objectiveService;
     Mission _mission;
 
     public MissionPresenter(MissionMapView missionMapView)
     {
         _missionMapView = missionMapView;
         _missionService = new MissionService();
-        _mission = new Mission();
+        _objectiveService = new ObjectiveService();
+        //_mission = new Mission();
     }
 
     public MissionPresenter()
@@ -64,9 +66,32 @@ public class MissionPresenter
         return _mission.MapGraph.NodeGroups[0][0];
     }
 
-    public async Task<bool> SaveConnectedNodesOfMapNode(MapNode mapNode)
+    public async Task<bool> SaveObjectivesOfConnectedNodes(MapNode mapNode)
     {
-        return await _missionService.SaveLocalMapNodesListData(mapNode.ConnectedNodes);
+        var connectedNodes = mapNode.ConnectedNodes;
+
+        List<Objective> objectivesList = new List<Objective>();
+        Objective objective;
+        for (int i = 0; i < connectedNodes.Count; i++)
+        {
+            objective = new Objective();
+            objective.Id = i;
+            objective.MapNodeId = connectedNodes[i].Id;
+            objective.Difficulty = _mission.Difficulty;
+
+            int randGameMode = Random.Range(0, 2); // 0 or 1
+            if (randGameMode == 0)
+                objective.GameMode = GameMode.TimeAttack;
+            else
+                objective.GameMode = GameMode.MatchPoint;
+
+            objectivesList.Add(objective);
+        }
+
+        if (await _objectiveService.SaveLocalObjectivesListData(objectivesList))
+            return true;
+        else
+            return false;
     }
 
     #endregion
@@ -80,6 +105,7 @@ public class MissionPresenter
     public async void InitializeMission()
     {
         _mission = await GetLocalSavedMission();
+
         //_mission = new Mission() { Title = "A New Dawn", Description = "Something realy good is happening in the house of the rising sun.", Difficulty = "Hard" };
 
         if (_mission.MapGraph == null)
@@ -96,10 +122,9 @@ public class MissionPresenter
 
             // Choose random values based on intervals from map config
             int mapDepth = Random.Range(tempConfig.MapDepth.x, tempConfig.MapDepth.y + 1);
-            // Ask presenter for map graph
             _mission.MapGraph = CreateMissionMapGraph(mapDepth, tempConfig.MaxNodesPerVerticalLine);
 
-            _mission.MapGraph.CurrectPointedNode = GetRootMapNode();
+            _missionMapView.SetCurrentPointedNodeId(GetRootMapNode().Id);
 
             // Update local data
             await SaveLocalMissionData(_mission);
@@ -151,7 +176,7 @@ public class MissionPresenter
             // Initialize empty nodes in the node groups
             for (int j = 0; j < randGroupSize; j++)
             {
-                MapNode mapNode = new MapNode(NodeType.Begin);
+                MapNode mapNode = new MapNode(NodeType.Attack);
                 mapNode.Id = id;
                 tempGroup.Add(mapNode);
                 id++;
@@ -214,6 +239,7 @@ public class MissionPresenter
         // Iterate node groups
         for (int i = 0; i < mapDepth; i++)
         {
+            // Check for the root node
             // Connect the root node with every node in the 2nd group
             if (i == 0)
             {
@@ -225,6 +251,7 @@ public class MissionPresenter
                 continue;
             }
 
+            // Check for the destination node
             // Connect the last node for every node the previous group
             if (i == (mapDepth - 2))
             {
@@ -239,27 +266,24 @@ public class MissionPresenter
             var currNodeGroup = _mission.MapGraph.NodeGroups[i];
             var nextNodeGroup = _mission.MapGraph.NodeGroups[i + 1];
 
-            // When the current group has only one node, it must be connected with every node on the next group
+            // When the next group has only one node, it must be connected with every node on the current group
             if (currNodeGroup.Count == 1)
             {
-                var currNode = currNodeGroup[0];
-                foreach (var targetNode in nextNodeGroup)
+                foreach (var nextNode in nextNodeGroup)
                 {
-                    currNode.ConnectedNodes.Add(targetNode);
+                    Debug.Log("Node connected to single node!");
+                    currNodeGroup[0].ConnectedNodes.Add(nextNode);
                 }
-
                 continue;
             }
 
-            // When the next group has only one node, it must be connected with every node on the current group
             if (nextNodeGroup.Count == 1)
             {
-                var currNextNode = nextNodeGroup[0];
-                foreach (var targetNode in currNodeGroup)
+                foreach (var currNode in currNodeGroup)
                 {
-                    currNextNode.ConnectedNodes.Add(targetNode);
+                    Debug.Log("Node connected to single node!");
+                    currNode.ConnectedNodes.Add(nextNodeGroup[0]);
                 }
-
                 continue;
             }
 
@@ -367,7 +391,6 @@ public class MissionPresenter
 
             if (currNodeGroup.Count == 4)
             {
-
                 // Always connect the two upper edge nodes 
                 currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[0]);
                 // Always connect the two bottom edge nodes 
@@ -444,17 +467,31 @@ public class MissionPresenter
         return _mission.MapGraph;
     }
 
-    public bool CanVisitSelectedNode(MapNode pointedNode, MapNode selectedNode)
+    public MapNode GetMapNodeById(int id)
     {
         foreach (var nodeGroup in _mission.MapGraph.NodeGroups)
         {
             foreach (var node in nodeGroup)
             {
-                if (node == pointedNode)
+                if (node.Id == id)
                 {
-                    return true;
+                    return node;
                 }
             }
+        }
+
+        return null;
+    }
+
+    public bool CanVisitSelectedNode(int pointedNodeId, int selectedNodeId)
+    {
+        var pointedNode = GetMapNodeById(pointedNodeId);
+        var selectedNode = GetMapNodeById(selectedNodeId);
+
+        foreach (var connectedNode in pointedNode.ConnectedNodes)
+        {
+            if (selectedNode.Id == connectedNode.Id)
+                return true;
         }
 
         return false;

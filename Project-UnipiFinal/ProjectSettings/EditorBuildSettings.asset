@@ -20,7 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Levels/Scenes/MapTest.unity
     guid: 7bd01a67c56d9f64385ed058a09f4130
-  - enabled: 0
+  - enabled: 1
     path: Assets/Levels/Scenes/Game.unity
     guid: 2593cb0f7b815b8478a7f78741beeca8
   m_configObjects:

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.Events;
 
 public class GridView : MonoBehaviour, IObserver
 {
@@ -10,13 +11,15 @@ public class GridView : MonoBehaviour, IObserver
     TileView _selectedTile1;
     TileView _selectedTile2;
 
+    public UnityEvent OnMatchFound;
+
     [SerializeField] private List<TileView> _tilesPrefabs;
     private IDictionary<Tile, TileView> _spawnedTiles;
     [SerializeField] private int _height;
 
     private void Awake()
     {
-        _gridPresenter = new GridPresenter(this);
+        //_gridPresenter = new GridPresenter(this);
 
         _spawnedTiles = new Dictionary<Tile, TileView>();
     }
@@ -29,6 +32,11 @@ public class GridView : MonoBehaviour, IObserver
     private void Start()
     {
         //SetInitialGrid();
+    }
+
+    public void InjectGridPresenter(GridPresenter gridPresenter)
+    {
+        _gridPresenter = gridPresenter;
     }
 
     public void OnNotify(ISubject subject, Actions action)
@@ -44,10 +52,10 @@ public class GridView : MonoBehaviour, IObserver
         }
     }
 
-    public Grid InitializeGrid(int height)
-    {
-        return _gridPresenter.InitializeGrid(height);
-    }
+    // public Grid InitializeGrid(int height)
+    // {
+    //     return _gridPresenter.InitializeGrid(height);
+    // }
 
     public void GenerateTilesOnScene(List<Tile> tiles)
     {
@@ -85,7 +93,8 @@ public class GridView : MonoBehaviour, IObserver
             _selectedTile2 = tileView;
         }
 
-        _gridPresenter.ValidateTileMatch(_selectedTile1, _selectedTile2);
+        if (_gridPresenter.ValidateTileMatch(_selectedTile1, _selectedTile2))
+            OnMatchFound.Invoke();
 
         _selectedTile1 = null;
         _selectedTile2 = null;

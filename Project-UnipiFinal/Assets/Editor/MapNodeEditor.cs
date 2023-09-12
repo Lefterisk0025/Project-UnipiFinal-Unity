@@ -16,5 +16,10 @@ public class MapNodeEditor : Editor
         {
             mapNodeView.PrintPosition();
         }
+
+        if (GUILayout.Button("Print Information"))
+        {
+            mapNodeView.PrintNodeInfo();
+        }
     }
 }

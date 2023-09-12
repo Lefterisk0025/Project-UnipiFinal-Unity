@@ -15,12 +15,21 @@ public class GridPresenter
         _missionService = new MissionService();
     }
 
-    public Grid InitializeGrid(int height)
+    public Grid CreateAndInitializeGrid(int height)
     {
         _grid = new Grid(height);
         _grid.Tiles = CreateTiles(height);
 
+        _gridView.GenerateTilesOnScene(_grid.Tiles);
+
         return _grid;
+    }
+
+    public void InitializeGrid(Grid grid)
+    {
+        _grid = grid;
+
+        _gridView.GenerateTilesOnScene(_grid.Tiles);
     }
 
     private void GenerateRandomSeed()
@@ -59,10 +68,14 @@ public class GridPresenter
         tileView.Tile.IsActive = false;
     }
 
-    public void ValidateTileMatch(TileView tile1View, TileView tile2View)
+    public bool ValidateTileMatch(TileView tile1View, TileView tile2View)
     {
         if (_grid == null)
-            return;
+        {
+            Debug.Log("There is no grid bro...");
+            return false;
+        }
+
 
         _tilesComparator = new TilesComparator(_grid);
 
@@ -87,11 +100,15 @@ public class GridPresenter
                 List<Tile> tilesToBeRemoved2 = RemoveTilesInRow(tile2Row);
                 _gridView.RemoveTiles(tilesToBeRemoved2);
             }
+
+            return true;
         }
         else
         {
             tile1View.UpdateView(TileState.Default);
             tile2View.UpdateView(TileState.Default);
+
+            return false;
         }
     }
 

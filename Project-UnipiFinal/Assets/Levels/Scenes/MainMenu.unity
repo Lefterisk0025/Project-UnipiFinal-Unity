@@ -4910,7 +4910,7 @@ MonoBehaviour:
   _canvas: {fileID: 2116310091}
   _linesParent: {fileID: 609462032}
   _selectedNodeView: {fileID: 0}
-  _currObjectiveNode: {fileID: 0}
+  _currPointedNodeView: {fileID: 0}
 --- !u!65 &1696463639
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5575,7 +5575,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2015859092
 RectTransform:
   m_ObjectHideFlags: 0

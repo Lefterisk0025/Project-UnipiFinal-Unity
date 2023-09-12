@@ -13,7 +13,6 @@ public class MissionService
 {
     private const string localMissionFileName = "/mission.json";
     private const string localMissionsCacheFileName = "/missions-chache.json";
-    private const string localObjectivesFileName = "/objectives.json";
 
     ILocalDataService _dataService;
     FirebaseFirestore _fsDB;
@@ -72,25 +71,6 @@ public class MissionService
     public async Task<bool> DeleteLocalMission()
     {
         return await _dataService.DeleteData(localMissionFileName);
-    }
-
-    // ----------------- CURRECT OBJECTIVES -----------------
-    public async Task<bool> SaveLocalMapNodesListData(List<MapNode> mapNodesList)
-    {
-        if (await _dataService.SaveData(localObjectivesFileName, mapNodesList, true))
-            return true;
-
-        return false;
-    }
-
-    public async Task<List<MapNode>> LoadLocalMapNodesList()
-    {
-        return await _dataService.LoadData<List<MapNode>>(localObjectivesFileName, true);
-    }
-
-    public async Task<bool> DeleteMapNodesList()
-    {
-        return await _dataService.DeleteData(localObjectivesFileName);
     }
 
     // ----------------- MISSIONS CACHE -----------------
