@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class TimeAttackConfig : ScriptableObject
+public class TimeAttackConfig : MatchConfig
 {
-
+    public int FindMatchTime;
+    public int NumberOfMatchesPerTime;
 }

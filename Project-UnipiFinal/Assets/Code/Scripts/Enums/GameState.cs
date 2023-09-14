@@ -7,5 +7,6 @@ public enum GameState
     Loading,
     Playing,
     OnAuthMenu,
-    FinishPlaying
+    FinishingMatch,
+    TerminatingMission
 }

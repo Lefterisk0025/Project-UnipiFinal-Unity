@@ -1,12 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class LoadingScreen : MonoBehaviour
 {
     public static LoadingScreen Instance { get; private set; }
 
     [SerializeField] private GameObject _screen;
+
+    public UnityEvent OnLoadFinish;
 
     private void Awake()
     {
@@ -28,6 +32,16 @@ public class LoadingScreen : MonoBehaviour
         _screen.SetActive(true);
 
         yield return new WaitForSeconds(sec);
+
+        try
+        {
+            OnLoadFinish.Invoke();
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+        }
+
 
         _screen.SetActive(false);
     }

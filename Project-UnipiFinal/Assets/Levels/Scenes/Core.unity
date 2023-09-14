@@ -224,6 +224,9 @@ MonoBehaviour:
   OnSceneLoaded:
     m_PersistentCalls:
       m_Calls: []
+  OnMissionMapMenuLoaded:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1022056311
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class MatchPointConfig : ScriptableObject
+public class MatchPointConfig : MatchConfig
 {
-
+    public int ScoreGoal;
+    public int PointsPerMatch;
 }

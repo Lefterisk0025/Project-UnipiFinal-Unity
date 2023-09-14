@@ -3,11 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+
+    [HideInInspector] public UnityEvent OnMissionTerminate;
 
     private void Awake()
     {
@@ -44,8 +47,10 @@ public class GameManager : MonoBehaviour
             case GameState.Playing:
                 HandlePlayingState();
                 break;
-            case GameState.FinishPlaying:
+            case GameState.FinishingMatch:
                 HandleFinishPlayingState();
+                break;
+            case GameState.TerminatingMission:
                 break;
         }
     }
@@ -78,14 +83,9 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("OnMission", 1);
 
+        PlayerPrefs.SetInt("TerminateMission", 0);
+
         MenuManager.Instance.ToggleMenu(Menu.MissionMap);
-    }
-
-    private void HandleOnMatchPointMatchState()
-    {
-        SceneManager.LoadScene("test", LoadSceneMode.Additive);
-
-        SceneManager.UnloadSceneAsync("MainMenu");
     }
 
     private void HandleAbandoningMissionState()
@@ -98,16 +98,12 @@ public class GameManager : MonoBehaviour
     private void HandlePlayingState()
     {
         LoadingScreen.Instance.FakeOpen(3);
-
         CustomSceneManager.Instance.SwitchScene("MainMenu", "Game");
     }
 
     private void HandleFinishPlayingState()
     {
         LoadingScreen.Instance.FakeOpen(2);
-
-        //CustomSceneManager.Instance.OnSceneLoaded.AddListener(LoadMissionMap);
-
         CustomSceneManager.Instance.SwitchScene("Game", "MainMenu");
     }
 

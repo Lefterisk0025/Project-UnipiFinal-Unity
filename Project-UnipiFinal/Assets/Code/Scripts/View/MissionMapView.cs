@@ -212,12 +212,17 @@ public class MissionMapView : MonoBehaviour, IObserver
         _currPointedNodeView = GetNodeGameObjectMyMapNodeId(nodeId).GetComponent<MapNodeView>();
         _currPointedNodeView.UpdateView(MapNodeView.NodeState.CurrentObjective);
 
-        if (await _missionPresenter.SaveObjectivesOfConnectedNodes(_currPointedNodeView.Node))
+        int prevNodeId = PlayerPrefs.GetInt("PreviousPointedNodeId");
+        if (prevNodeId != nodeId)
         {
-            Debug.Log($"<color=green>Objectives saved successfully!</color>");
+            if (await _missionPresenter.CreateAndSaveObjectivesOfConnectedNodes(_currPointedNodeView.Node))
+            {
+                PlayerPrefs.SetInt("PreviousPointedNodeId", nodeId);
+                Debug.Log($"<color=green>Objectives saved successfully!</color>");
+            }
+            else
+                Debug.Log($"<color=red>An error occured while saving objectives!</color>");
         }
-        else
-            Debug.Log($"<color=red>An error occured while saving objectives!</color>");
     }
 
     private GameObject GetNodeGameObjectMyMapNodeId(int id)
@@ -232,13 +237,15 @@ public class MissionMapView : MonoBehaviour, IObserver
         return null;
     }
 
+    // Method for pointed node's is INITIALIZATION
     public void SetCurrentPointedNodeId(int mapNodeId)
     {
         PlayerPrefs.SetInt("CurrentPointedNodeId", mapNodeId);
+        PlayerPrefs.SetInt("PreviousPointedNodeId", -1);
     }
 
     public int GetCurrentPointedNodeId()
     {
-        return PlayerPrefs.GetInt("CurrentPointedNodeId");
+        return PlayerPrefs.GetInt("CurrentPointedNodeId"); ;
     }
 }

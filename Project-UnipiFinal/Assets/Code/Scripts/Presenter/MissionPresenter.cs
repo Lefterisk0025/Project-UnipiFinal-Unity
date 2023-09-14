@@ -66,7 +66,7 @@ public class MissionPresenter
         return _mission.MapGraph.NodeGroups[0][0];
     }
 
-    public async Task<bool> SaveObjectivesOfConnectedNodes(MapNode mapNode)
+    public async Task<bool> CreateAndSaveObjectivesOfConnectedNodes(MapNode mapNode)
     {
         var connectedNodes = mapNode.ConnectedNodes;
 

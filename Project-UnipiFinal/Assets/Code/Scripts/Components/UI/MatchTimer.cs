@@ -16,9 +16,9 @@ public class MatchTimer : MonoBehaviour
     int _durationTilRepeat;
     RectTransform _timerBarRectTransform;
 
-    public void InitializeTimeAttackTimer(int duration)
+    public void InitializeTimeAttackTimer(int durationTilRepeat)
     {
-        _durationTilRepeat = duration;
+        _durationTilRepeat = durationTilRepeat;
 
         InitializeTimer();
     }
