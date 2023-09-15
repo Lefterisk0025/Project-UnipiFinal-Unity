@@ -17,4 +17,5 @@ public class Mission
 
     public bool IsCompleted { get; private set; }
     public MapGraph MapGraph { get; set; }
+    public MissionPerformance PlayerMissionPerformance { get; set; }
 }

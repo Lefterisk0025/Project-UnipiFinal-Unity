@@ -32,9 +32,8 @@ public class MissionMapView : MonoBehaviour, IObserver
     private List<GameObject> _spawnedNodesList; // Dict to connect MapNode objects with their scene Game Objects 
     private List<MapLineRenderer> _mapLinesList;
     private ScrollRect _scrollRect;
-    public MapNodeView _selectedNodeView;
-    public MapNodeView _currPointedNodeView;
-
+    private MapNodeView _selectedNodeView;
+    private MapNodeView _currPointedNodeView;
     int tempCurrentPointedNodeId = 0;
 
     private void Awake()
@@ -52,8 +51,13 @@ public class MissionMapView : MonoBehaviour, IObserver
 
     private void OnEnable()
     {
+        GameManager.Instance.DisableMainCamera();
+
         if (_contentParent.childCount > 0)
+        {
+            DisplayCurrentPointedNode(GetCurrentPointedNodeId());
             return;
+        }
 
         _missionPresenter.InitializeMission();
 
@@ -130,7 +134,6 @@ public class MissionMapView : MonoBehaviour, IObserver
 
         PlayerPrefs.SetInt("SelectedNodeId", _selectedNodeView.Node.Id);
 
-
         GameManager.Instance.UpdateGameState(GameState.Playing);
     }
 
@@ -168,7 +171,7 @@ public class MissionMapView : MonoBehaviour, IObserver
 
     private IEnumerator DrawMapLines(MapGraph mapGraph)
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
 
         GameObject newLine = null;
         MapLineRenderer mapLineRenderer = null;
@@ -212,6 +215,11 @@ public class MissionMapView : MonoBehaviour, IObserver
         _currPointedNodeView = GetNodeGameObjectMyMapNodeId(nodeId).GetComponent<MapNodeView>();
         _currPointedNodeView.UpdateView(MapNodeView.NodeState.CurrentObjective);
 
+        _selectedNodeView = null;
+
+        //if (_currPointedNodeView.Node.NodeType == NodeType.Final)
+
+        // Reset prev node
         int prevNodeId = PlayerPrefs.GetInt("PreviousPointedNodeId");
         if (prevNodeId != nodeId)
         {
@@ -223,6 +231,12 @@ public class MissionMapView : MonoBehaviour, IObserver
             else
                 Debug.Log($"<color=red>An error occured while saving objectives!</color>");
         }
+    }
+
+    public void ResetNodeState(int nodeId)
+    {
+        var node = GetNodeGameObjectMyMapNodeId(nodeId).GetComponent<MapNodeView>();
+        node.UpdateView(MapNodeView.NodeState.Default);
     }
 
     private GameObject GetNodeGameObjectMyMapNodeId(int id)
@@ -237,7 +251,7 @@ public class MissionMapView : MonoBehaviour, IObserver
         return null;
     }
 
-    // Method for pointed node's is INITIALIZATION
+    // Method for pointed node's INITIALIZATION
     public void SetCurrentPointedNodeId(int mapNodeId)
     {
         PlayerPrefs.SetInt("CurrentPointedNodeId", mapNodeId);
@@ -246,6 +260,11 @@ public class MissionMapView : MonoBehaviour, IObserver
 
     public int GetCurrentPointedNodeId()
     {
-        return PlayerPrefs.GetInt("CurrentPointedNodeId"); ;
+        return PlayerPrefs.GetInt("CurrentPointedNodeId");
+    }
+
+    public void SetResultsScreenUi()
+    {
+
     }
 }

@@ -20,18 +20,16 @@ public class GridView : MonoBehaviour, IObserver
     private void Awake()
     {
         //_gridPresenter = new GridPresenter(this);
-
-        _spawnedTiles = new Dictionary<Tile, TileView>();
     }
 
     private void OnDisable()
     {
-        //_tileSubject.RemoveObserver(this);
+        _spawnedTiles.Clear();
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        //SetInitialGrid();
+        _spawnedTiles = new Dictionary<Tile, TileView>();
     }
 
     public void InjectGridPresenter(GridPresenter gridPresenter)
@@ -126,5 +124,17 @@ public class GridView : MonoBehaviour, IObserver
     public void PrintTiles()
     {
         _gridPresenter.PrintTiles();
+    }
+
+    public void ClearGrid()
+    {
+        _gridPresenter.ClearGrid();
+
+        _spawnedTiles.Clear();
+
+        foreach (Transform child in this.gameObject.transform)
+        {
+            Destroy(child.gameObject);
+        }
     }
 }

@@ -224,4 +224,9 @@ public class GridPresenter
         }
         Debug.Log("-------------- END TILES --------------");
     }
+
+    public void ClearGrid()
+    {
+        _grid = null;
+    }
 }

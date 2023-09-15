@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using TMPro;
+using UnityEngine.Events;
 
 public class MatchManager : MonoBehaviour
 {
@@ -17,13 +18,15 @@ public class MatchManager : MonoBehaviour
     [Header("Diffuculty configs")]
     [SerializeField] private List<TimeAttackConfig> _timeAttackDifficultyConfigs;
     [SerializeField] private List<MatchPointConfig> _matchPointDifficultyConfigs;
+    [SerializeField] private MissionMapView _missionMapView;
 
     [Header("General settings")]
     [SerializeField] private GridView _gridView;
-    [SerializeField] private MatchTimer _matchTimer;
-    [SerializeField] private CountdownTimer _startGameCountdownTimer;
-    [SerializeField] private CountdownTimer _matchCountdownTimer;
+    [SerializeField] private BarCountdownTimer _repeatBarTimer;
+    [SerializeField] private TextCountdownTimer _startGameCountdownTimer;
+    [SerializeField] private TextCountdownTimer _generalCountdownTimer;
     [SerializeField] private PlayerMatchPerformanceView _performanceView;
+    [SerializeField] private MatchResultsView _matchResultsView;
 
     [Header("Time Attack")]
     [SerializeField] private TMP_Text _timeAttackHeader;
@@ -36,7 +39,6 @@ public class MatchManager : MonoBehaviour
     Objective _currObjective;
     List<Objective> _connectedObjectivesList;
     int _objIndex;
-
     int _height = 0;
     int _totalTime = 0;
 
@@ -51,12 +53,17 @@ public class MatchManager : MonoBehaviour
         _gridPresenter = new GridPresenter(_gridView);
     }
 
-    private async void Start()
+    private void Start()
     {
-        _matchTimer.gameObject.SetActive(false);
-        _testSettingsPanel.SetActive(false);
-
         LoadingScreen.Instance.OnLoadFinish.AddListener(InitializeGame);
+    }
+
+    // Being called after load screen finishes
+    private async void InitializeGame()
+    {
+        GameManager.Instance.EnableMainCamera();
+        _repeatBarTimer.gameObject.SetActive(false);
+        _testSettingsPanel.SetActive(false);
 
         // Load list with the objectives (connected to pointed node)
         _connectedObjectivesList = new List<Objective>(await _objectiveService.LoadLocalObjectivesList());
@@ -79,11 +86,6 @@ public class MatchManager : MonoBehaviour
         else
             Debug.Log($"<color=yellow>Grid found!</color>");
 
-    }
-
-    // Being called after load screen finishes
-    private void InitializeGame()
-    {
         MatchConfig matchConfig = null;
         if (_currObjective.Difficulty == "Easy")
             matchConfig = GetMatchConfigBasedOnDifficulty(Difficulty.Easy);
@@ -124,20 +126,20 @@ public class MatchManager : MonoBehaviour
         // Setup stats text
         _performanceView.InitializeTimeAttackPerformanceStats(numberOfMatchesPerTime);
 
-        _matchTimer.gameObject.SetActive(true);
+        _repeatBarTimer.gameObject.SetActive(true);
 
         // Setup events
-        _startGameCountdownTimer.OnCountdownEnd.AddListener(StartTimeAttackGame);
-        _matchCountdownTimer.OnCountdownEnd.AddListener(_performanceView.OpenResultScreen);
-        _matchTimer.OnTimerEnd.AddListener(_performanceView.DecreaseLives);
-        _matchTimer.OnTimerEnd.AddListener(_performanceView.ResetNumberOfMatchesFound);
-        _performanceView.OnLivesDrain.AddListener(_matchTimer.StopTimer);
+        _startGameCountdownTimer.OnTimerEnd.AddListener(StartTimeAttackGame);
+        _generalCountdownTimer.OnTimerEnd.AddListener(_performanceView.OpenResultScreen);
+        _repeatBarTimer.OnTimerEnd.AddListener(_performanceView.DecreaseLives);
+        _repeatBarTimer.OnTimerEnd.AddListener(_performanceView.ResetNumberOfMatchesFound);
+        _performanceView.OnLivesDrain.AddListener(_repeatBarTimer.StopTimer);
         _performanceView.OnLivesDrain.AddListener(_performanceView.OpenResultScreen);
-        _performanceView.OnAllMatchesFound.AddListener(_matchTimer.StartAndRepeatTimer);
+        _performanceView.OnAllMatchesFound.AddListener(_repeatBarTimer.StartAndRepeatBarTimer);
         _gridView.OnMatchFound.AddListener(_performanceView.IncreaseScore);
         _gridView.OnMatchFound.AddListener(_performanceView.IncreaseNumberOfMatchesFound);
 
-        _matchTimer.InitializeTimeAttackTimer(findMatchTime);
+        _repeatBarTimer.InitializeRepeatTimer(findMatchTime);
 
         StartCoroutine(_startGameCountdownTimer.StartCountDown(3));
     }
@@ -148,8 +150,8 @@ public class MatchManager : MonoBehaviour
         _performanceView.InitializeMatchPointPerformanceStats(pointsGoal, pointsPerMatch);
 
         // Setup events
-        _startGameCountdownTimer.OnCountdownEnd.AddListener(StartMatchPointGame);
-        _matchCountdownTimer.OnCountdownEnd.AddListener(_performanceView.OpenResultScreen);
+        _startGameCountdownTimer.OnTimerEnd.AddListener(StartMatchPointGame);
+        _generalCountdownTimer.OnTimerEnd.AddListener(_performanceView.OpenResultScreen);
         _performanceView.OnScoreGoalReached.AddListener(_performanceView.OpenResultScreen);
         _gridView.OnMatchFound.AddListener(_performanceView.IncreaseScore);
         _gridView.OnMatchFound.AddListener(_performanceView.IncreaseNumberOfMatchesFound);
@@ -161,8 +163,8 @@ public class MatchManager : MonoBehaviour
     {
         GenerateGrid();
 
-        StartCoroutine(_matchCountdownTimer.StartCountDownTime(_totalTime));
-        _matchTimer.StartAndRepeatTimer();
+        StartCoroutine(_generalCountdownTimer.StartCountDownInTimeFormat(_totalTime));
+        _repeatBarTimer.StartAndRepeatBarTimer();
 
     }
 
@@ -170,7 +172,7 @@ public class MatchManager : MonoBehaviour
     {
         GenerateGrid();
 
-        StartCoroutine(_matchCountdownTimer.StartCountDownTime(_totalTime));
+        StartCoroutine(_generalCountdownTimer.StartCountDownInTimeFormat(_totalTime));
     }
 
     private async void GenerateGrid()
@@ -193,22 +195,6 @@ public class MatchManager : MonoBehaviour
         }
 
         _gridView.InjectGridPresenter(_gridPresenter);
-    }
-
-
-    public void FinishGame()
-    {
-        LoadingScreen.Instance.OnLoadFinish.RemoveListener(InitializeGame);
-
-        PlayerPrefs.SetInt("PreviousPointedNodeId", PlayerPrefs.GetInt("CurrentPointedNodeId"));
-        PlayerPrefs.SetInt("CurrentPointedNodeId", PlayerPrefs.GetInt("SelectedNodeId"));
-
-        Debug.Log("Terminate Mission: " + PlayerPrefs.GetInt("TerminateMission"));
-
-        if (PlayerPrefs.GetInt("TerminateMission") == 0)
-            GameManager.Instance.UpdateGameState(GameState.FinishingMatch);
-        else
-            GameManager.Instance.UpdateGameState(GameState.AbandoningMission);
     }
 
     private MatchConfig GetMatchConfigBasedOnDifficulty(Difficulty difficulty)
@@ -238,5 +224,37 @@ public class MatchManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void FinishGame()
+    {
+        _gridView.ClearGrid();
+        _connectedObjectivesList.Clear();
+
+        _repeatBarTimer.StopTimer();
+
+        _matchResultsView.ResetUI();
+
+        // Clear all events
+        _startGameCountdownTimer.OnTimerEnd.RemoveAllListeners();
+        _generalCountdownTimer.OnTimerEnd.RemoveAllListeners();
+        _repeatBarTimer.OnTimerEnd.RemoveAllListeners();
+        _performanceView.OnLivesDrain.RemoveAllListeners();
+        _performanceView.OnAllMatchesFound.RemoveAllListeners();
+        _gridView.OnMatchFound.RemoveAllListeners();
+
+        Time.timeScale = 1;
+
+        if (PlayerPrefs.GetInt("TerminateMission") == 0)
+        {
+            PlayerPrefs.SetInt("PreviousPointedNodeId", PlayerPrefs.GetInt("CurrentPointedNodeId"));
+            PlayerPrefs.SetInt("CurrentPointedNodeId", PlayerPrefs.GetInt("SelectedNodeId"));
+
+            GameManager.Instance.UpdateGameState(GameState.FinishingMatch);
+        }
+        else
+        {
+            _missionMapView.InvokeAbandonMission();
+        }
     }
 }

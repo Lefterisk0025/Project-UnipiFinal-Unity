@@ -12,18 +12,26 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector] public UnityEvent OnMissionTerminate;
 
+    [SerializeField] private Camera mainCamera;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
             Destroy(this);
         else
             Instance = this;
+
+        DisableMainCamera();
     }
 
     private void Start()
     {
         UpdateGameState(GameState.Initialization);
     }
+
+    public void DisableMainCamera() => mainCamera.gameObject.SetActive(false);
+    public void EnableMainCamera() => mainCamera.gameObject.SetActive(true);
+
 
     public void UpdateGameState(GameState state)
     {
@@ -48,7 +56,7 @@ public class GameManager : MonoBehaviour
                 HandlePlayingState();
                 break;
             case GameState.FinishingMatch:
-                HandleFinishPlayingState();
+                HandleFinishPlayingtate();
                 break;
             case GameState.TerminatingMission:
                 break;
@@ -83,7 +91,7 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("OnMission", 1);
 
-        PlayerPrefs.SetInt("TerminateMission", 0);
+        PlayerManager.Instance.UpdatePlayerMissionPerformance(new MatchResults());
 
         MenuManager.Instance.ToggleMenu(Menu.MissionMap);
     }
@@ -92,23 +100,21 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("OnMission", 0);
 
+        PlayerManager.Instance.OpenMissionResultsUI();
+
         MenuManager.Instance.ToggleMenu(Menu.MainMenu);
     }
 
     private void HandlePlayingState()
     {
-        LoadingScreen.Instance.FakeOpen(3);
-        CustomSceneManager.Instance.SwitchScene("MainMenu", "Game");
+        LoadingScreen.Instance.FakeOpen(1);
+
+        MenuManager.Instance.ToggleMenu(Menu.Game);
     }
 
-    private void HandleFinishPlayingState()
+    private void HandleFinishPlayingtate()
     {
-        LoadingScreen.Instance.FakeOpen(2);
-        CustomSceneManager.Instance.SwitchScene("Game", "MainMenu");
-    }
 
-    private void LoadMissionMap()
-    {
         MenuManager.Instance.ToggleMenu(Menu.MissionMap);
     }
 }

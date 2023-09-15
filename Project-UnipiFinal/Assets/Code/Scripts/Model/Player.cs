@@ -7,6 +7,8 @@ using System;
 [FirestoreData]
 public class Player
 {
+    public string Uid { get; set; }
+
     [FirestoreProperty]
     public bool IsRegistered { get; set; }
 
@@ -21,4 +23,5 @@ public class Player
 
     [FirestoreProperty]
     public DateTime LastTimeMissionsFetched { get; set; }
+    public MissionPerformance CurrentMissionPerformance { get; set; }
 }

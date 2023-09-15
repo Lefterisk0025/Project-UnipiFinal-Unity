@@ -65,5 +65,6 @@ public class MapNodeView : Subject, IPointerDownHandler
     {
         _pointIcon.SetActive(true);
         isPointed = true;
+        Node.IsActive = false;
     }
 }

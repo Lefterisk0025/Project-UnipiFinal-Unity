@@ -31,17 +31,10 @@ public class LoadingScreen : MonoBehaviour
     {
         _screen.SetActive(true);
 
+        Debug.Log("Before Wait..");
         yield return new WaitForSeconds(sec);
 
-        try
-        {
-            OnLoadFinish.Invoke();
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e);
-        }
-
+        OnLoadFinish.Invoke();
 
         _screen.SetActive(false);
     }

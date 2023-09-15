@@ -10,4 +10,5 @@ public enum Menu
     Welcome,
     Register,
     PlayerInfoCreation,
+    Game
 }

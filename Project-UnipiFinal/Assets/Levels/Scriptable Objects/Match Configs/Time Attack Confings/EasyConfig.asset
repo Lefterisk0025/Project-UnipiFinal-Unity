@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EasyConfig
   m_EditorClassIdentifier: 
   Difficulty: 0
-  TotalTime: 40
+  TotalTime: 5
   Height: 8
   FindMatchTime: 7
   NumberOfMatchesPerTime: 3

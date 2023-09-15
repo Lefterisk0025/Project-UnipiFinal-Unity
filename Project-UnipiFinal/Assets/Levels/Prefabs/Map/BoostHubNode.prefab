@@ -238,7 +238,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7607885846260675416}
   - component: {fileID: 3915917980299166626}
-  - component: {fileID: -5933814584308124747}
+  - component: {fileID: 2369978978919962771}
   m_Layer: 5
   m_Name: BoostHubNode
   m_TagString: Untagged
@@ -282,7 +282,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-5933814584308124747
+--- !u!114 &2369978978919962771
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -291,7 +291,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7901587161168119690}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daf7ed6da0cc70e40b5da6fa5b6b54c0, type: 3}
+  m_Script: {fileID: 11500000, guid: 587cb3d55cb610645b16c57a65966a78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _selectionIcon: {fileID: 1547604559729895824}

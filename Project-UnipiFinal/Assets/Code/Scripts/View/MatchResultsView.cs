@@ -5,7 +5,7 @@ using TMPro;
 
 public class MatchResultsView : MonoBehaviour
 {
-    [SerializeField] private GameObject _resultsMenu;
+    [SerializeField] private GameObject _resultsPanel;
     [SerializeField] private TMP_Text _resultHeader;
     [SerializeField] private TMP_Text _totalScoreText;
     [SerializeField] private TMP_Text _matchesFoundText;
@@ -14,17 +14,22 @@ public class MatchResultsView : MonoBehaviour
 
     private void Start()
     {
+        ResetUI();
+    }
+
+    public void ResetUI()
+    {
         _resultHeader.text = "";
         _totalScoreText.text = "";
         _matchesFoundText.text = "";
         _livesLostText.text = "";
         _reputationEarnedText.text = "";
-        _resultsMenu.SetActive(false);
+        _resultsPanel.SetActive(false);
     }
 
     public void SetResultsScreenUi(MatchResults matchResults)
     {
-        _resultsMenu.SetActive(true);
+        _resultsPanel.SetActive(true);
 
         if (matchResults.IsVictory)
             _resultHeader.text = $"<color=#009510>Victory!</color>";

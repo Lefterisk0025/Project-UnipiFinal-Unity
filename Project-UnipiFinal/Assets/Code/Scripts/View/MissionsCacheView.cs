@@ -14,7 +14,6 @@ public class MissionsCacheView : MonoBehaviour, IObserver
     [SerializeField] private int _missionsCount = 5;
     [SerializeField] private bool _canFetchNewMissions = true;
     [SerializeField] private TextMeshProUGUI _messageText;
-    [SerializeField] private CountdownTimer _countdownTimer;
 
     float timeTilNextFetch = 120;
 

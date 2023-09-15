@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -81,5 +82,44 @@ public class PlayerPresenter
             Debug.Log(e.Message);
             return false;
         }
+    }
+
+    public async Task<MissionPerformance> GetPlayerMissionPerformance()
+    {
+        return await _playerService.LoadLocalPlayerMissionPerformanceDataAsync();
+    }
+
+    public async Task<bool> UpdatePlayerMissionPerformance(MatchResults matchResults)
+    {
+        // Save the local data
+        MissionPerformance missionPerformance = null;
+        try
+        {
+            missionPerformance = await _playerService.LoadLocalPlayerMissionPerformanceDataAsync();
+        }
+        catch (FileNotFoundException e)
+        {
+            Debug.Log(e.Message);
+
+            missionPerformance = new MissionPerformance();
+        }
+
+        missionPerformance.TotalMissionScore += matchResults.TotalScore;
+        missionPerformance.TotalReputation += matchResults.ReputationEarned;
+
+        await _playerService.SaveLocalPlayerMissionPerformanceDataAsync(missionPerformance);
+
+        return true;
+
+        // Update player data to the server the match results
+        if (await _playerService.UpdateRemoteProgressionStatsOfPlayer(matchResults, PlayerManager.Instance.Player.UserId))
+            return true;
+        else
+            return false;
+    }
+
+    public async Task<bool> DeleteMissionPerformace()
+    {
+        return await _playerService.DeleteLocalPlayerMissionPerformanceDataAsync();
     }
 }

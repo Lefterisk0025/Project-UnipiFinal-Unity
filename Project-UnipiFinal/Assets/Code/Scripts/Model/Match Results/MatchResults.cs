@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class MatchResults
+public class MatchResults
 {
     public int TotalScore { get; set; }
     public int MatchesFound { get; set; }

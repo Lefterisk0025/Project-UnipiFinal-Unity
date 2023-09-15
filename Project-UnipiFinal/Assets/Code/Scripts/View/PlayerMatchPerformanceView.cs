@@ -33,7 +33,12 @@ public class PlayerMatchPerformanceView : MonoBehaviour
     [HideInInspector] public UnityEvent OnAllMatchesFound;
     [HideInInspector] public UnityEvent OnScoreGoalReached;
 
-    private void Start()
+    private void OnEnable()
+    {
+        ResetUI();
+    }
+
+    public void ResetUI()
     {
         _scoreText.text = "";
         _livesText.text = "";
@@ -61,6 +66,7 @@ public class PlayerMatchPerformanceView : MonoBehaviour
         _currScore = 0;
         _scoreGoal = pointsGoal;
         _scoreEarnedPerMatch = pointsPerMatch;
+        _isVictory = false;
 
         _scoreText.text = $"Score: {_currScore}/{_scoreGoal}";
     }
@@ -88,7 +94,7 @@ public class PlayerMatchPerformanceView : MonoBehaviour
             _currScore += _scoreAmountOnTimeAttack;
             _scoreText.text = "Score: " + _currScore;
         }
-        else
+        else if (_currGameMode == GameMode.MatchPoint)
         {
             _currScore += _scoreEarnedPerMatch;
             _scoreText.text = $"Score: {_currScore}/{_scoreGoal}";
@@ -149,6 +155,7 @@ public class PlayerMatchPerformanceView : MonoBehaviour
             };
 
             _matchResultsView.SetResultsScreenUi(matchResults);
+            PlayerManager.Instance.UpdatePlayerMissionPerformance(matchResults);
         }
         else if (_currGameMode == GameMode.MatchPoint)
         {
@@ -162,6 +169,7 @@ public class PlayerMatchPerformanceView : MonoBehaviour
             };
 
             _matchResultsView.SetResultsScreenUi(matchResults);
+            PlayerManager.Instance.UpdatePlayerMissionPerformance(matchResults);
         }
     }
 

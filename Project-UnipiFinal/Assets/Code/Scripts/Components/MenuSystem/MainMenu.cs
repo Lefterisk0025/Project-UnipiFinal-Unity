@@ -46,4 +46,9 @@ public class MainMenu : MenuManager
     {
         ToggleMenu(Menu.StoreItem);
     }
+
+    public void OpenGame()
+    {
+        ToggleMenu(Menu.Game);
+    }
 }
