@@ -58,82 +58,15 @@ public class MissionService
 
     // ----------------- MISSION -----------------
 
-    public async Task<bool> SaveLocalMissionData(Mission mission)
-    {
-        return await _dataService.SaveData(localMissionFileName, mission, true);
-    }
 
-    public async Task<Mission> GetLocalMissionData()
-    {
-        return await _dataService.LoadData<Mission>(localMissionFileName, true);
-    }
-
-    public async Task<bool> DeleteLocalMission()
-    {
-        return await _dataService.DeleteData(localMissionFileName);
-    }
 
     // ----------------- MISSIONS CACHE -----------------
 
-    public async Task<bool> SaveLocalMissionsCacheData(List<Mission> missionsChache)
-    {
-        return await _dataService.SaveData(localMissionsCacheFileName, missionsChache, true);
-    }
-
-    public async Task<List<Mission>> GetLocalMissionsCacheData()
-    {
-        return await _dataService.LoadData<List<Mission>>(localMissionsCacheFileName, true);
-    }
-
-    public async Task<bool> DeleteLocalMissionCacheData()
-    {
-        return await _dataService.DeleteData(localMissionsCacheFileName);
-    }
 
     #endregion
 
     #region REMOTE DATA
 
-    public async Task<List<Mission>> GetRandomRemoteMissions(int count)
-    {
-        try
-        {
-            List<Mission> missionsList = new List<Mission>();
-
-            Query missionsQuery = _fsDB.Collection("missions");
-            QuerySnapshot missionsSnapshot = await missionsQuery.GetSnapshotAsync();
-
-            if (missionsSnapshot.Count > 0)
-            {
-                foreach (var doc in missionsSnapshot.Documents)
-                {
-                    Mission mission = doc.ConvertTo<Mission>();
-                    missionsList.Add(mission);
-                }
-
-                // Get x (=count) random missions from missionsList
-                List<Mission> randomMissionsList = new List<Mission>(missionsList);
-                int n = missionsList.Count;
-                while (n > 1)
-                {
-                    n--;
-                    int k = Random.Range(0, n + 1);
-                    Mission value = randomMissionsList[k];
-                    randomMissionsList[k] = randomMissionsList[n];
-                    randomMissionsList[n] = value;
-                }
-
-                return randomMissionsList.Take(count).ToList();
-            }
-
-            return null;
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e);
-            return null;
-        }
-    }
 
     #endregion
 }

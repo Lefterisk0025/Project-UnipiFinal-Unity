@@ -4,81 +4,61 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using TMPro;
+using UnityEngine.Events;
 
 public class MissionsCacheView : MonoBehaviour, IObserver
 {
     MissionsCachePresenter _missionsCachePresenter;
     MissionPresenter _missionPresenter;
 
-    [SerializeField] private MissionCard _missionCardsPrefab;
+    [Header("Settings")]
+    [SerializeField] private bool _canFetchNewMissions;
     [SerializeField] private int _missionsCount = 5;
-    [SerializeField] private bool _canFetchNewMissions = true;
-    [SerializeField] private TextMeshProUGUI _messageText;
 
-    float timeTilNextFetch = 120;
+    [Header("General UI")]
+    [SerializeField] private MissionCard _missionCardPrefab;
+    [SerializeField] private TextMeshProUGUI _headerText;
+    [SerializeField] private Transform _missionCardsParent;
 
-    public bool canFetch;
+    [HideInInspector] public UnityEvent<int, bool> OnViewInitialized;
+    [HideInInspector] public UnityEvent OnViewDisabled;
 
     private void Awake()
     {
-        _missionsCachePresenter = new MissionsCachePresenter(this);
-        _missionPresenter = new MissionPresenter();
-
+        // Setup view
         for (int i = 0; i < _missionsCount; i++)
+            Instantiate(_missionCardPrefab, _missionCardsParent);
+    }
+
+    private void OnEnable()
+    {
+        _missionsCachePresenter = new MissionsCachePresenter(this);
+
+        OnViewInitialized.Invoke(_missionsCount, _canFetchNewMissions);
+    }
+
+    private void OnDisable()
+    {
+        OnViewDisabled.Invoke();
+    }
+
+    public void DisplayMissions(List<Mission> missionsList)
+    {
+        int i = 0;
+        foreach (Transform item in _missionCardsParent.transform)
         {
-            Instantiate(_missionCardsPrefab, transform);
+            var cardView = item.GetComponent<MissionCard>();
+            cardView.SetMissionCardView(missionsList[i]);
+            cardView.AddObserver(this);
+            i++;
         }
     }
 
-    private async void OnEnable()
+    public void ClearMissionCards()
     {
-        try
+        foreach (Transform cardGO in _missionCardsParent)
         {
-            List<Mission> missions = null;
-
-            DateTime lastFetchDateTime = DateTime.Now;
-
-            var lastFetchDateTimeStr = PlayerPrefs.GetString("LastFetchDateTime");
-            if (!lastFetchDateTimeStr.Equals(""))
-                lastFetchDateTime = DateTime.Parse(lastFetchDateTimeStr);
-
-            if (!_missionsCachePresenter.CanFetchNewMissions(lastFetchDateTime, DateTime.Now))
-            {
-                missions = await _missionsCachePresenter.GetLocalMissionsCacheData();
-                _messageText.text = "Missions already fetched. Back in 2 hours...";
-
-                //timeTilNextFetch = CalculateElapsedTimeInMinutes(lastFetchDateTime, DateTime.Now);
-            }
-            else
-            {
-                missions = await _missionsCachePresenter.GetRandomRemoteMissions(_missionsCount);
-                //missions = _missionsCachePresenter.GetRandomLocalMissions(_missionsCount);
-                _missionsCachePresenter.SaveLocalMissionsCacheData(missions);
-                PlayerPrefs.SetString("LastFetchDateTime", DateTime.Now.ToString());
-                _messageText.text = "Just fetched new missions!";
-                //timeTilNextFetch = 120;
-            }
-
-            //_countdownTimer.SetTimer(timeTilNextFetch);
-
-            if (missions == null || missions.Count != _missionsCount)
-            {
-                Debug.Log("An error occured while fetching missions.");
-                return;
-            }
-
-            int i = 0;
-            foreach (Transform childGO in transform)
-            {
-                var missionCard = childGO.GetComponent<MissionCard>();
-                missionCard.SetMissionCardView(missions[i]);
-                missionCard.AddObserver(this);
-                i++;
-            }
-        }
-        catch (Exception e)
-        {
-            ErrorScreen.Instance.Show(e.Message);
+            cardGO.GetComponent<MissionCard>().RemoveObserver(this);
         }
     }
 
@@ -93,19 +73,8 @@ public class MissionsCacheView : MonoBehaviour, IObserver
         }
     }
 
-    private async void HandleSelectMissionAction(Mission mission)
+    private void HandleSelectMissionAction(Mission mission)
     {
-        LoadingScreen.Instance.FakeOpen(2);
-
-        await _missionPresenter.SaveLocalMissionData(mission);
-
-        GameManager.Instance.UpdateGameState(GameState.InitializingMission);
-    }
-
-    private float CalculateElapsedTimeInMinutes(DateTime dt1, DateTime dt2)
-    {
-        TimeSpan elapsedTime = dt2 - dt1;
-        float hours = (float)elapsedTime.TotalHours;
-        return hours * 60;
+        Debug.Log("Mission with title " + mission.Title + " selected!");
     }
 }

@@ -4900,8 +4900,9 @@ GameObject:
   m_Component:
   - component: {fileID: 742144397}
   - component: {fileID: 742144398}
+  - component: {fileID: 742144399}
   m_Layer: 5
-  m_Name: Missions Menu
+  m_Name: MissionsCache View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4948,6 +4949,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MenuType: 2
+--- !u!114 &742144399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 742144396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea63533067533954584f9b70ecfd5ed9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _canFetchNewMissions: 0
+  _missionsCount: 5
+  _missionCardPrefab: {fileID: 1531567546429701500, guid: 3bab1f5523cd6804886ef53d1ce38542, type: 3}
+  _headerText: {fileID: 841744088}
+  _missionCardsParent: {fileID: 2048529341}
+  _scrollMenu: {fileID: 2048529343}
+  OnViewInitialized:
+    m_PersistentCalls:
+      m_Calls: []
+  OnViewDisabled:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &743669265
 GameObject:
   m_ObjectHideFlags: 0
@@ -13961,7 +13986,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2048529341}
-  - component: {fileID: 2048529342}
   - component: {fileID: 2048529343}
   m_Layer: 5
   m_Name: Missions
@@ -13990,23 +14014,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2048529342
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2048529340}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea63533067533954584f9b70ecfd5ed9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _missionCardsPrefab: {fileID: 1531567546429701500, guid: 3bab1f5523cd6804886ef53d1ce38542, type: 3}
-  _missionsCount: 5
-  _canFetchNewMissions: 1
-  _messageText: {fileID: 841744088}
-  canFetch: 0
 --- !u!114 &2048529343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14019,6 +14026,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae17aa040ea17124db650c1cc4e4dbe4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _itemGOsList: []
 --- !u!1 &2059414735
 GameObject:
   m_ObjectHideFlags: 0

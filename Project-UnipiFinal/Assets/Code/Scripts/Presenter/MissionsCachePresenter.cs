@@ -3,58 +3,58 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
+using System.IO;
+using System.Runtime.InteropServices;
 
 public class MissionsCachePresenter
 {
-    MissionService _missionService;
+    const int _missionsCount = 5;
+
+    MissionLocalService _missionLocalService;
+    MissionRemoteService _missionRemoteService;
     MissionsCacheView _missionsCacheView;
-    List<Mission> _missionsCache;
+    List<Mission> _missionsList;
+
+    //bool canFetch = false;
 
     public MissionsCachePresenter(MissionsCacheView missionsCacheView)
     {
         _missionsCacheView = missionsCacheView;
-        _missionService = new MissionService();
-        _missionsCache = new List<Mission>();
+        _missionLocalService = new MissionLocalService();
+        _missionRemoteService = new MissionRemoteService();
+
+        _missionsCacheView.OnViewInitialized.AddListener(HandleViewInitialized);
     }
 
-    public async Task<List<Mission>> GetLocalMissionsCacheData()
+    public async void HandleViewInitialized(int count, bool canFetch)
     {
-        return await _missionService.GetLocalMissionsCacheData();
-    }
-
-    public async void SaveLocalMissionsCacheData(List<Mission> missionsCache)
-    {
-        if (await _missionService.SaveLocalMissionsCacheData(missionsCache))
+        List<Mission> tempMissions = null;
+        if (!canFetch)
         {
-            Debug.Log("Data saved successfully!");
+            try
+            {
+                tempMissions = await _missionLocalService.LoadAllMissions();
+            }
+            catch (Exception e)
+            {
+                if (e.GetType() == typeof(FileNotFoundException))
+                {
+                    canFetch = true;
+                }
+            }
         }
-    }
 
-    public async Task<bool> UpdateLocalMissionsCacheData(List<Mission> missionsCache)
-    {
-        if (await _missionService.SaveLocalMissionsCacheData(missionsCache))
-            return true;
+        if (canFetch)
+        {
+            LoadingScreen.Instance.FakeOpen(1);
 
-        return false;
-    }
+            _missionsCacheView.ClearMissionCards();
+            tempMissions = await _missionRemoteService.GetRandomRemoteMissions(_missionsCount);
+            await _missionLocalService.SaveAllMissions(tempMissions);
+            PlayerPrefs.SetString("LastFetchDateTime", DateTime.Now.ToString());
+        }
 
-    public async Task<bool> DeleteLocalMissionsCacheData()
-    {
-        if (await _missionService.DeleteLocalMissionCacheData())
-            return true;
-
-        return false;
-    }
-
-    // FOR TESTING
-    public List<Mission> GetRandomLocalMissions(int count)
-    {
-        return _missionService.GetRandomLocalMissions(count);
-    }
-
-    public async Task<List<Mission>> GetRandomRemoteMissions(int count)
-    {
-        return await _missionService.GetRandomRemoteMissions(count);
+        _missionsCacheView.DisplayMissions(tempMissions);
     }
 
     public bool CanFetchNewMissions(DateTime lastFetchDateTime, DateTime currDateTime)

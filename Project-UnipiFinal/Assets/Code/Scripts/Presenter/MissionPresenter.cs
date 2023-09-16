@@ -27,42 +27,6 @@ public class MissionPresenter
         _missionService = new MissionService();
     }
 
-    #region LOCAL DATA
-
-    // ----------------- MISSION -----------------
-
-    public async Task<Mission> GetLocalSavedMission()
-    {
-        return await _missionService.GetLocalMissionData();
-    }
-
-    public async Task<bool> SaveLocalMissionData(Mission mission)
-    {
-        if (await _missionService.SaveLocalMissionData(mission))
-            return true;
-
-        return false;
-    }
-
-    public async Task<bool> DeleteLocalMissionData()
-    {
-        _mission = null;
-
-        if (await _missionService.DeleteLocalMission())
-            return true;
-
-        return false;
-    }
-
-    #endregion
-
-    #region REMOTE FETCH
-
-
-    #endregion
-
-    #region MAP NODE OPERATIONS
-
     public MapNode GetRootMapNode()
     {
         return _mission.MapGraph.NodeGroups[0][0];
@@ -96,8 +60,6 @@ public class MissionPresenter
             return false;
     }
 
-    #endregion
-
     private void GenerateRandomSeed()
     {
         int tempSeed = (int)System.DateTime.Now.Ticks;
@@ -106,7 +68,7 @@ public class MissionPresenter
 
     public async void InitializeMission()
     {
-        _mission = await GetLocalSavedMission();
+        //_mission = await GetLocalSavedMission();
 
         //_mission = new Mission() { Title = "A New Dawn", Description = "Something realy good is happening in the house of the rising sun.", Difficulty = "Hard" };
 
@@ -129,7 +91,6 @@ public class MissionPresenter
             _missionMapView.SetCurrentPointedNodeId(GetRootMapNode().Id);
 
             // Update local data
-            await SaveLocalMissionData(_mission);
         }
 
         _missionMapView.SetMissionUI(_mission);

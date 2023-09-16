@@ -124,7 +124,7 @@ public class MissionMapView : MonoBehaviour, IObserver
 
         _mapLinesList.Clear();
 
-        await _missionPresenter.DeleteLocalMissionData();
+        //Delete local mission data
 
         GameManager.Instance.UpdateGameState(GameState.AbandoningMission);
     }
@@ -263,10 +263,5 @@ public class MissionMapView : MonoBehaviour, IObserver
     public int GetCurrentPointedNodeId()
     {
         return PlayerPrefs.GetInt("CurrentPointedNodeId");
-    }
-
-    public void SetResultsScreenUi()
-    {
-
     }
 }

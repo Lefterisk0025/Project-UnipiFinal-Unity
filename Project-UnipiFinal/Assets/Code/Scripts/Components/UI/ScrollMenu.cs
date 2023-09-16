@@ -6,52 +6,60 @@ public class ScrollMenu : MonoBehaviour
 {
     int currentPanelIndex = 0;
     int prevPanelIndex = 0;
-    List<GameObject> _menusGOsList = new List<GameObject>();
+    public List<GameObject> _itemGOsList = new List<GameObject>();
 
     private void Update()
     {
-        if (_menusGOsList.Count <= 0)
+        if (_itemGOsList.Count == 0)
             InitializeScroll();
     }
 
-    private void InitializeScroll()
+    public void InitializeScroll()
     {
+        currentPanelIndex = 0;
+        prevPanelIndex = 0;
+
         foreach (Transform child in transform)
         {
-            _menusGOsList.Add(child.gameObject);
+            _itemGOsList.Add(child.gameObject);
             child.gameObject.SetActive(false);
         }
 
-        _menusGOsList[currentPanelIndex].SetActive(true);
+        _itemGOsList[currentPanelIndex].SetActive(true);
+    }
+
+    public void ClearScroll()
+    {
+        _itemGOsList.Clear();
     }
 
     public void NextTarget()
     {
         prevPanelIndex = currentPanelIndex;
 
-        _menusGOsList[currentPanelIndex].SetActive(false);
+        _itemGOsList[currentPanelIndex].SetActive(false);
 
         currentPanelIndex++;
-        if (currentPanelIndex > _menusGOsList.Count - 1)
+        if (currentPanelIndex > _itemGOsList.Count - 1)
         {
             currentPanelIndex = 0;
         }
 
-        _menusGOsList[currentPanelIndex].SetActive(true);
+        _itemGOsList[currentPanelIndex].SetActive(true);
     }
 
     public void PreviousTarget()
     {
         prevPanelIndex = currentPanelIndex;
 
-        _menusGOsList[currentPanelIndex].SetActive(false);
+        _itemGOsList[currentPanelIndex].SetActive(false);
 
         currentPanelIndex--;
         if (currentPanelIndex < 0)
         {
-            currentPanelIndex = _menusGOsList.Count - 1;
+            currentPanelIndex = _itemGOsList.Count - 1;
         }
 
-        _menusGOsList[currentPanelIndex].SetActive(true);
+        _itemGOsList[currentPanelIndex].SetActive(true);
     }
 }
