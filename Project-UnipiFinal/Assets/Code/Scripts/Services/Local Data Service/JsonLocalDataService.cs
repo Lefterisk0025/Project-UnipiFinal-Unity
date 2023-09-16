@@ -46,7 +46,7 @@ public class JsonLocalDataService : ILocalDataService
         }
         catch (Exception e)
         {
-            ExportError(e.Message, "save-errors");
+            Debug.Log(e.Message);
             return false;
         }
     }
@@ -67,7 +67,7 @@ public class JsonLocalDataService : ILocalDataService
         }
         catch (Exception e)
         {
-            ExportError(e.Message, "load-errors");
+            Debug.Log(e.Message);
             throw e;
         }
     }
@@ -88,18 +88,8 @@ public class JsonLocalDataService : ILocalDataService
         }
         catch (Exception e)
         {
-            ExportError(e.Message, "delete-errors");
+            Debug.Log(e.Message);
             return false;
         }
-    }
-
-    private async void ExportError(string msg, string filename)
-    {
-        using FileStream stream = File.Create(_persistentDataPath + $"/{filename}.txt");
-        using (StreamWriter writer = new StreamWriter(stream))
-        {
-            await writer.WriteAsync(msg);
-        }
-        stream.Close();
     }
 }

@@ -51,6 +51,7 @@ public class MissionMapView : MonoBehaviour, IObserver
 
     private void OnEnable()
     {
+        Debug.Log($"<color=red>OnEnable called!</color>");
         GameManager.Instance.DisableMainCamera();
 
         if (_contentParent.childCount > 0)
@@ -120,6 +121,7 @@ public class MissionMapView : MonoBehaviour, IObserver
         }
 
         _spawnedNodesList.Clear();
+
         _mapLinesList.Clear();
 
         await _missionPresenter.DeleteLocalMissionData();

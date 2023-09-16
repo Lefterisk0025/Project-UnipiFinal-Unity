@@ -46,6 +46,8 @@ public class MissionPresenter
 
     public async Task<bool> DeleteLocalMissionData()
     {
+        _mission = null;
+
         if (await _missionService.DeleteLocalMission())
             return true;
 
