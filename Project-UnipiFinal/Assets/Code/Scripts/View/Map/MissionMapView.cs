@@ -7,11 +7,12 @@ using Random = UnityEngine.Random;
 using TMPro;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 
 public class MissionMapView : MonoBehaviour, IObserver
 {
-    MissionPresenter _missionPresenter;
+    MissionMapPresenter _missionMapPresenter;
 
     [Header("General UI")]
     [SerializeField] private TextMeshProUGUI _missionTitleGUI;
@@ -29,60 +30,33 @@ public class MissionMapView : MonoBehaviour, IObserver
     [SerializeField] private Canvas _canvas;
     [SerializeField] private Transform _linesParent;
 
-    private List<GameObject> _spawnedNodesList; // Dict to connect MapNode objects with their scene Game Objects 
+    private List<GameObject> _nodeGameObjectsList;
     private List<MapLineRenderer> _mapLinesList;
     private ScrollRect _scrollRect;
     private MapNodeView _selectedNodeView;
-    private MapNodeView _currPointedNodeView;
+    private MapNodeView _pointedNodeView;
     int tempCurrentPointedNodeId = 0;
+
+    [HideInInspector] public UnityEvent OnViewInitialized;
+    [HideInInspector] public UnityEvent OnViewDisabled;
+    [HideInInspector] public UnityEvent OnMapGenerated;
 
     private void Awake()
     {
-        _missionPresenter = new MissionPresenter(this);
-        _spawnedNodesList = new List<GameObject>();
+        _missionMapPresenter = new MissionMapPresenter(this);
+        _nodeGameObjectsList = new List<GameObject>();
         _mapLinesList = new List<MapLineRenderer>();
         _scrollRect = GetComponentInChildren<ScrollRect>();
-
-        if (_scrollRect != null)
-        {
-            _scrollRect.onValueChanged.AddListener(OnScrollMoved);
-        }
     }
 
     private void OnEnable()
     {
-        Debug.Log($"<color=red>OnEnable called!</color>");
-        //GameManager.Instance.DisableMainCamera();
-
-        if (_contentParent.childCount > 0)
-        {
-            DisplayCurrentPointedNode(GetCurrentPointedNodeId());
-            return;
-        }
-
-        _missionPresenter.InitializeMission();
-
-        // Initialize map's position to the screen
-        RectTransform contectRectTransform = _contentParent.gameObject.GetComponent<RectTransform>();
-        contectRectTransform.localPosition = new Vector3(0, _contentParent.transform.position.y);
-
-        if (_selectedNodeView != null)
-        {
-            _selectedNodeView.UpdateView(MapNodeView.NodeState.Default);
-            _selectedNodeView = null;
-        }
+        OnViewInitialized.Invoke();
     }
 
-    public MissionMapConfig GetMissionMapConfigBasedOnDifficulty(Difficulty difficulty)
+    private void OnDisable()
     {
-        foreach (var config in _missionMapConfigsList)
-        {
-            if (config.Difficulty == difficulty)
-            {
-                return config;
-            }
-        }
-        return null;
+        OnViewDisabled.Invoke();
     }
 
     public void OnNotify(ISubject subject, Actions action)
@@ -90,24 +64,20 @@ public class MissionMapView : MonoBehaviour, IObserver
         switch (action)
         {
             case Actions.SelectNode:
-                HandleNodeSelection((MapNodeView)subject);
+                OnNodeSelected((MapNodeView)subject);
                 break;
         }
     }
 
-    private void HandleNodeSelection(MapNodeView selectedMapNodeView)
+    private void OnScrollMoved(Vector2 position)
     {
-        if (!_missionPresenter.CanVisitSelectedNode(_currPointedNodeView.Node.Id, selectedMapNodeView.Node.Id))
-            return;
-
-        if (_selectedNodeView != null)
-            _selectedNodeView.UpdateView(MapNodeView.NodeState.Default);
-
-        _selectedNodeView = selectedMapNodeView;
-        _selectedNodeView.UpdateView(MapNodeView.NodeState.Selected);
+        foreach (var line in _mapLinesList)
+        {
+            line.UpdateLinePosition(_canvas);
+        }
     }
 
-    public async void InvokeAbandonMission()
+    public void OnAbandonButtonClicked()
     {
         foreach (Transform child in _contentParent)
         {
@@ -120,33 +90,49 @@ public class MissionMapView : MonoBehaviour, IObserver
                 Destroy(child.gameObject);
         }
 
-        _spawnedNodesList.Clear();
-
+        _nodeGameObjectsList.Clear();
         _mapLinesList.Clear();
 
-        //Delete local mission data
+        _missionMapPresenter.AbandonMission();
 
         GameManager.Instance.UpdateGameState(GameState.AbandoningMission);
     }
 
-    public void InvokeAttack()
+    public void OnNodeSelected(MapNodeView nodeView)
     {
-        // if (_selectedNodeView.Node.NodeType != NodeType.Attack)
-        //     return;
-
-        PlayerPrefs.SetInt("SelectedNodeId", _selectedNodeView.Node.Id);
-
-        GameManager.Instance.UpdateGameState(GameState.Playing);
+        _missionMapPresenter.SetSelectedNode(nodeView.Node);
     }
 
-    public void SetMissionUI(Mission mission)
+    public void OnAttackButtonClicked()
+    {
+        if (_selectedNodeView == null)
+            return;
+
+        _missionMapPresenter.HandleAttackOnNode(_selectedNodeView.Node);
+    }
+
+    public MissionMapConfig GetMissionMapConfigBasedOnDifficulty(Difficulty difficulty)
+    {
+        foreach (var config in _missionMapConfigsList)
+        {
+            if (config.Difficulty == difficulty)
+            {
+                return config;
+            }
+        }
+
+        return null;
+    }
+
+    public void DisplayMissionInfo(Mission mission)
     {
         _missionTitleGUI.text = "Mission: " + mission.Title;
         _missionDifficultyGUI.text = "Difficulty: " + mission.Difficulty.ToString();
     }
 
-    public void GenerateMissionMapGraphOnScene(MapGraph mapGraph)
+    public void DisplayMap(MapGraph mapGraph)
     {
+        Debug.Log("Display Map called");
         MapNodeView mapNodeView;
         foreach (List<MapNode> nodesGroup in mapGraph.NodeGroups)
         {
@@ -160,7 +146,7 @@ public class MissionMapView : MonoBehaviour, IObserver
                 else
                     spawnedNode = Instantiate(_boostHubNodePrefab, verticalLine.transform).gameObject;
 
-                _spawnedNodesList.Add(spawnedNode);
+                _nodeGameObjectsList.Add(spawnedNode);
 
                 mapNodeView = spawnedNode.GetComponent<MapNodeView>();
                 mapNodeView.Node = node; // Connect views (gameobjects) with models
@@ -182,12 +168,12 @@ public class MissionMapView : MonoBehaviour, IObserver
         {
             foreach (var node in nodeGroup)
             {
-                GameObject originMapNodeGO = GetNodeGameObjectMyMapNodeId(node.Id);
+                GameObject originMapNodeGO = GetNodeGameObjectById(node.Id);
                 GameObject targetMapNodeGO = null;
 
                 foreach (MapNode targetNode in node.ConnectedNodes)
                 {
-                    targetMapNodeGO = GetNodeGameObjectMyMapNodeId(targetNode.Id);
+                    targetMapNodeGO = GetNodeGameObjectById(targetNode.Id);
 
                     newLine = Instantiate(_linePrefab, _linesParent);
                     newLine.transform.SetSiblingIndex(0);
@@ -201,67 +187,41 @@ public class MissionMapView : MonoBehaviour, IObserver
             }
         }
 
-        DisplayCurrentPointedNode(GetCurrentPointedNodeId());
+        if (_scrollRect != null)
+            _scrollRect.onValueChanged.AddListener(OnScrollMoved);
+
+        OnMapGenerated.Invoke();
     }
 
-    private void OnScrollMoved(Vector2 position)
+    public void DisplayPointedNode(int nodeId)
     {
-        foreach (var line in _mapLinesList)
-        {
-            line.UpdateLinePosition(_canvas);
-        }
+        // Reset previous pointed node
+        if (_pointedNodeView != null)
+            _pointedNodeView.UpdateView(MapNodeView.NodeState.Default);
+        // Set the new one
+        _pointedNodeView = GetNodeGameObjectById(nodeId).GetComponent<MapNodeView>();
+        _pointedNodeView.UpdateView(MapNodeView.NodeState.CurrentObjective);
     }
 
-    public async void DisplayCurrentPointedNode(int nodeId)
+    public void DisplaySelectedNode(int nodeId)
     {
-        _currPointedNodeView = GetNodeGameObjectMyMapNodeId(nodeId).GetComponent<MapNodeView>();
-        _currPointedNodeView.UpdateView(MapNodeView.NodeState.CurrentObjective);
-
-        _selectedNodeView = null;
-
-        //if (_currPointedNodeView.Node.NodeType == NodeType.Final)
-
-        // Reset prev node
-        int prevNodeId = PlayerPrefs.GetInt("PreviousPointedNodeId");
-        if (prevNodeId != nodeId)
-        {
-            if (await _missionPresenter.CreateAndSaveObjectivesOfConnectedNodes(_currPointedNodeView.Node))
-            {
-                PlayerPrefs.SetInt("PreviousPointedNodeId", nodeId);
-                Debug.Log($"<color=green>Objectives saved successfully!</color>");
-            }
-            else
-                Debug.Log($"<color=red>An error occured while saving objectives!</color>");
-        }
+        // Reset previous selected node
+        if (_selectedNodeView != null)
+            _selectedNodeView.UpdateView(MapNodeView.NodeState.Default);
+        // Set the new one
+        _selectedNodeView = GetNodeGameObjectById(nodeId).GetComponent<MapNodeView>();
+        _selectedNodeView.UpdateView(MapNodeView.NodeState.Selected);
     }
 
-    public void ResetNodeState(int nodeId)
+    private GameObject GetNodeGameObjectById(int nodeId)
     {
-        var node = GetNodeGameObjectMyMapNodeId(nodeId).GetComponent<MapNodeView>();
-        node.UpdateView(MapNodeView.NodeState.Default);
-    }
-
-    private GameObject GetNodeGameObjectMyMapNodeId(int id)
-    {
-        foreach (var nodeGO in _spawnedNodesList)
+        foreach (var nodeGO in _nodeGameObjectsList)
         {
             var mapNodeView = nodeGO.GetComponent<MapNodeView>();
-            if (mapNodeView.Node.Id == id)
+            if (mapNodeView.Node.Id == nodeId)
                 return nodeGO;
         }
 
         return null;
-    }
-
-    // Method for pointed node's INITIALIZATION
-    public void SetCurrentPointedNodeId(int mapNodeId)
-    {
-        PlayerPrefs.SetInt("CurrentPointedNodeId", mapNodeId);
-        PlayerPrefs.SetInt("PreviousPointedNodeId", -1);
-    }
-
-    public int GetCurrentPointedNodeId()
-    {
-        return PlayerPrefs.GetInt("CurrentPointedNodeId");
     }
 }

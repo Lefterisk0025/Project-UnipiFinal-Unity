@@ -35,9 +35,6 @@ public class MatchManager : MonoBehaviour
     [SerializeField] private TMP_Text _matchPointHeader;
 
     GridPresenter _gridPresenter;
-    ObjectiveService _objectiveService;
-    Objective _currObjective;
-    List<Objective> _connectedObjectivesList;
     int _objIndex;
     int _height = 0;
     int _totalTime = 0;
@@ -49,7 +46,6 @@ public class MatchManager : MonoBehaviour
         else
             Instance = this;
 
-        _objectiveService = new ObjectiveService();
         _gridPresenter = new GridPresenter(_gridView);
     }
 
@@ -66,7 +62,7 @@ public class MatchManager : MonoBehaviour
         _testSettingsPanel.SetActive(false);
 
         // Load list with the objectives (connected to pointed node)
-        _connectedObjectivesList = new List<Objective>(await _objectiveService.LoadLocalObjectivesList());
+        //_connectedObjectivesList = new List<Objective>(await _objectiveService.LoadLocalObjectivesList());
         int selectedMapNodeId = PlayerPrefs.GetInt("SelectedNodeId");
 
         // Get selected objective from list
@@ -254,7 +250,7 @@ public class MatchManager : MonoBehaviour
         }
         else
         {
-            _missionMapView.InvokeAbandonMission();
+            //_missionMapView.InvokeAbandonMission();
         }
     }
 }

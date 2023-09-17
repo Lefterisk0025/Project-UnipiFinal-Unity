@@ -7,12 +7,12 @@ public class GridPresenter
     GridView _gridView;
     Grid _grid;
     TilesComparator _tilesComparator;
-    MissionService _missionService;
+    MissionLocalService _missionService;
 
     public GridPresenter(GridView gridView)
     {
         _gridView = gridView;
-        _missionService = new MissionService();
+        _missionService = new MissionLocalService();
     }
 
     public Grid CreateAndInitializeGrid(int height)

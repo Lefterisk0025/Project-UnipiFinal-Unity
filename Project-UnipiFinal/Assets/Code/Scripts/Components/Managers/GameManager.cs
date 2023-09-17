@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
     private void HandleInitializationState()
     {
         // Logo screen
-
+        PlayerPrefs.SetInt("OnMission", 0);
         PlayerManager.Instance.SignInPlayer();
     }
 
@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("OnMission", 0);
 
-        PlayerManager.Instance.OpenMissionResultsUI();
+        //PlayerManager.Instance.OpenMissionResultsUI();
 
         MenuManager.Instance.ToggleMenu(Menu.MainMenu);
     }

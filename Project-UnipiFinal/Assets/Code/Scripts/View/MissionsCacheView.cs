@@ -30,7 +30,6 @@ public class MissionsCacheView : MonoBehaviour, IObserver
             Instantiate(_missionCardPrefab, _missionCardsParent);
 
         _missionsCachePresenter = new MissionsCachePresenter(this);
-
     }
 
     private void OnEnable()

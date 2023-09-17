@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4ad034087f47064bb924cff00df05a3, type: 3}
   m_Name: EasyMissionConfig
   m_EditorClassIdentifier: 
+  Difficulty: 0
   MapDepth: {x: 5, y: 7}
-  MaxNodesPerVerticalLine: 3
+  MaxNodesPerLine: 3

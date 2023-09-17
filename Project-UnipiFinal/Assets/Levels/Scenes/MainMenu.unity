@@ -2590,7 +2590,7 @@ GameObject:
   - component: {fileID: 337192794}
   - component: {fileID: 337192795}
   m_Layer: 5
-  m_Name: Game
+  m_Name: Level
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12253,6 +12253,15 @@ MonoBehaviour:
   _linePrefab: {fileID: 6238151029217825642, guid: f79fa548debc9254e94ed9902db73d2c, type: 3}
   _canvas: {fileID: 2116310091}
   _linesParent: {fileID: 609462032}
+  OnViewInitialized:
+    m_PersistentCalls:
+      m_Calls: []
+  OnViewDisabled:
+    m_PersistentCalls:
+      m_Calls: []
+  OnMapGenerated:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1702067289
 GameObject:
   m_ObjectHideFlags: 0
