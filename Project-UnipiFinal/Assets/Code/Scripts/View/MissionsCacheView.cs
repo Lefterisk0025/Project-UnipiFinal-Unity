@@ -9,7 +9,6 @@ using UnityEngine.Events;
 public class MissionsCacheView : MonoBehaviour, IObserver
 {
     MissionsCachePresenter _missionsCachePresenter;
-    MissionPresenter _missionPresenter;
 
     [Header("Settings")]
     [SerializeField] private bool _canFetchNewMissions;
@@ -19,8 +18,9 @@ public class MissionsCacheView : MonoBehaviour, IObserver
     [SerializeField] private MissionCard _missionCardPrefab;
     [SerializeField] private TextMeshProUGUI _headerText;
     [SerializeField] private Transform _missionCardsParent;
+    public TextCountdownTimer MissionsRefreshTimer;
 
-    [HideInInspector] public UnityEvent<int, bool> OnViewInitialized;
+    [HideInInspector] public UnityEvent OnViewInitialized;
     [HideInInspector] public UnityEvent OnViewDisabled;
 
     private void Awake()
@@ -28,18 +28,21 @@ public class MissionsCacheView : MonoBehaviour, IObserver
         // Setup view
         for (int i = 0; i < _missionsCount; i++)
             Instantiate(_missionCardPrefab, _missionCardsParent);
+
+        _missionsCachePresenter = new MissionsCachePresenter(this);
+
     }
 
     private void OnEnable()
     {
-        _missionsCachePresenter = new MissionsCachePresenter(this);
-
-        OnViewInitialized.Invoke(_missionsCount, _canFetchNewMissions);
+        OnViewInitialized.Invoke();
     }
 
     private void OnDisable()
     {
         OnViewDisabled.Invoke();
+
+        StopAllCoroutines();
     }
 
     public void DisplayMissions(List<Mission> missionsList)
@@ -62,19 +65,24 @@ public class MissionsCacheView : MonoBehaviour, IObserver
         }
     }
 
+    public void DisplayTimeUntilRefresh(int timeInSec)
+    {
+        StartCoroutine(MissionsRefreshTimer.StartCountDownInTimeFormatHours(timeInSec));
+    }
+
     public void OnNotify(ISubject subject, Actions action)
     {
         switch (action)
         {
             case Actions.SelectMission:
                 var missionCard = (MissionCard)subject;
-                HandleSelectMissionAction(missionCard.Mission);
+                InvokeSelectMission(missionCard.Mission);
                 break;
         }
     }
 
-    private void HandleSelectMissionAction(Mission mission)
+    private void InvokeSelectMission(Mission mission)
     {
-        Debug.Log("Mission with title " + mission.Title + " selected!");
+        _missionsCachePresenter.HandleMissionSelect(mission);
     }
 }

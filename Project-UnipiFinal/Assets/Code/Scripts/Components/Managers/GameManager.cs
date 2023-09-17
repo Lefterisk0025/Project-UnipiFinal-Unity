@@ -91,7 +91,7 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("OnMission", 1);
 
-        PlayerManager.Instance.UpdatePlayerMissionPerformance(new MatchResults());
+        //PlayerManager.Instance.UpdatePlayerMissionPerformance(new MatchResults());
 
         MenuManager.Instance.ToggleMenu(Menu.MissionMap);
     }

@@ -52,7 +52,7 @@ public class MissionMapView : MonoBehaviour, IObserver
     private void OnEnable()
     {
         Debug.Log($"<color=red>OnEnable called!</color>");
-        GameManager.Instance.DisableMainCamera();
+        //GameManager.Instance.DisableMainCamera();
 
         if (_contentParent.childCount > 0)
         {

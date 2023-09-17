@@ -4966,7 +4966,7 @@ MonoBehaviour:
   _missionCardPrefab: {fileID: 1531567546429701500, guid: 3bab1f5523cd6804886ef53d1ce38542, type: 3}
   _headerText: {fileID: 841744088}
   _missionCardsParent: {fileID: 2048529341}
-  _scrollMenu: {fileID: 2048529343}
+  MissionsRefreshTimer: {fileID: 1001716653}
   OnViewInitialized:
     m_PersistentCalls:
       m_Calls: []
@@ -7127,7 +7127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 756418c754bdf814aa7159a70585d381, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _countdownText: {fileID: 0}
+  _countdownText: {fileID: 1001716651}
   OnTimerEnd:
     m_PersistentCalls:
       m_Calls: []

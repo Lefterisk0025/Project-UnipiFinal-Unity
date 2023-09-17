@@ -3,11 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.Events;
+using System;
 
 public class TextCountdownTimer : MonoBehaviour
 {
     [SerializeField] private TMP_Text _countdownText;
     [HideInInspector] public UnityEvent OnTimerEnd;
+
+    private void OnDisable()
+    {
+        OnTimerEnd.RemoveAllListeners();
+    }
 
     public IEnumerator StartCountDown(int timeValue)
     {
@@ -45,6 +51,34 @@ public class TextCountdownTimer : MonoBehaviour
             seconds = Mathf.FloorToInt(timeRemaining % 60);
             timeRemaining--;
             _countdownText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+            yield return new WaitForSeconds(1);
+        }
+
+        OnTimerEnd.Invoke();
+
+        _countdownText.gameObject.SetActive(false);
+    }
+
+    public IEnumerator StartCountDownInTimeFormatHours(int timeInSec)
+    {
+        _countdownText.gameObject.SetActive(true);
+
+        int timeRemaining = timeInSec;
+        int hours = Mathf.FloorToInt(timeRemaining / 3600);
+        int minutes = Mathf.FloorToInt(timeRemaining / 60) % 60;
+        int seconds = Mathf.FloorToInt(timeRemaining % 60);
+
+        _countdownText.text = $"{hours}:{minutes:D2}:{seconds:D2}";
+
+        while (timeRemaining > 0)
+        {
+            hours = Mathf.FloorToInt(timeRemaining / 3600);
+            minutes = Mathf.FloorToInt(timeRemaining / 60) % 60;
+            seconds = Mathf.FloorToInt(timeRemaining % 60);
+            timeRemaining--;
+
+            _countdownText.text = $"{hours}:{minutes:D2}:{seconds:D2}";
+
             yield return new WaitForSeconds(1);
         }
 
