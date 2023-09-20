@@ -10,6 +10,9 @@ public class LevelPresenter
     MatchConfig _matchConfig;
     GridPresenter _gridPresenter;
 
+    int _currLevelIndex;
+    List<Level> _levelsList;
+
     public LevelPresenter(LevelView levelView)
     {
         _levelView = levelView;
@@ -21,26 +24,31 @@ public class LevelPresenter
         _levelView.LevelPerformanceView.OnLevelEndedVictorious.AddListener(HandleLevelEnded);
     }
 
-    private void HandleViewInitialized()
+    private async void HandleViewInitialized()
     {
-        // List<Level> levelsList = await _levelLocalService.LoadAllLevels();
-        // int currSelectedNodeId = PlayerPrefs.GetInt("SelectedNodeId");
+        _levelsList = new List<Level>(await _levelLocalService.LoadAllLevels());
+        int currSelectedNodeId = PlayerPrefs.GetInt("SelectedNodeId");
 
-        // foreach (var level in levelsList)
-        // {
-        //     if (level.NodeId == currSelectedNodeId)
-        //         _level = level;
-        // }
+        _currLevelIndex = 0;
+        foreach (var level in _levelsList)
+        {
+            if (level.NodeId == currSelectedNodeId)
+            {
+                _level = level;
+                break;
+            }
+            _currLevelIndex++;
+        }
 
         Debug.Log($"<color=red>HandleViewInitializedCalled!</color>");
 
-        _level = new Level()
-        {
-            Grid = null,
-            NodeId = 25,
-            Difficulty = "Easy",
-            GameMode = GameMode.MatchPoint,
-        };
+        // _level = new Level()
+        // {
+        //     Grid = null,
+        //     NodeId = 25,
+        //     Difficulty = "Easy",
+        //     GameMode = GameMode.MatchPoint,
+        // };
 
         if (_level.Difficulty == "Easy")
             _matchConfig = _levelView.GetMatchConfigByDifficulty(_level.GameMode, Difficulty.Easy);
@@ -57,13 +65,19 @@ public class LevelPresenter
     }
 
     // From here game starts
-    private void HandlePreGameTimerEnded()
+    private async void HandlePreGameTimerEnded()
     {
         // Generate grid
 
         if (_level.Grid == null)
         {
             _level.Grid = _gridPresenter.CreateAndInitializeGrid(_matchConfig.Height);
+            _levelsList[_currLevelIndex].Grid = _level.Grid;
+            await _levelLocalService.SaveAllLevels(_levelsList);
+        }
+        else
+        {
+            _gridPresenter.InitializeGrid(_level.Grid);
         }
         _levelView.GridView.InjectGridPresenter(_gridPresenter);
 

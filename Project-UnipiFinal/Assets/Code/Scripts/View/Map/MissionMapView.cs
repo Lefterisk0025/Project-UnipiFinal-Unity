@@ -55,8 +55,8 @@ public class MissionMapView : MonoBehaviour, IObserver
 
         GameManager.Instance.DisableMainCamera();
 
-        if (_contentParent.childCount > 0)
-            _selectedNodeView = null;
+        _selectedNodeView.UpdateView(MapNodeView.NodeState.Default);
+        _selectedNodeView = null;
     }
 
     private void OnDisable()
@@ -143,6 +143,8 @@ public class MissionMapView : MonoBehaviour, IObserver
         if (_contentParent.childCount > 0)
             return;
 
+        LoadingScreen.Instance.FakeOpen(2);
+
         MapNodeView mapNodeView;
         foreach (List<MapNode> nodesGroup in mapGraph.NodeGroups)
         {
@@ -151,10 +153,10 @@ public class MissionMapView : MonoBehaviour, IObserver
             foreach (MapNode node in nodesGroup)
             {
                 GameObject spawnedNode = null;
-                if (node.NodeType == NodeType.Begin || node.NodeType == NodeType.Attack || node.NodeType == NodeType.Default)
-                    spawnedNode = Instantiate(_attackNodePrefab, verticalLine.transform).gameObject;
-                else
+                if (node.NodeType == NodeType.BoostHub)
                     spawnedNode = Instantiate(_boostHubNodePrefab, verticalLine.transform).gameObject;
+                else
+                    spawnedNode = Instantiate(_attackNodePrefab, verticalLine.transform).gameObject;
 
                 _nodeGameObjectsList.Add(spawnedNode);
 

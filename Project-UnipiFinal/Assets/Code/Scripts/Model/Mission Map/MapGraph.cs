@@ -46,7 +46,12 @@ public class MapGraph
             // Check for root or final node
             if (i == 0 || i == (MapDepth - 1))
             {
-                MapNode mapNode = new MapNode(NodeType.Begin);
+                MapNode mapNode = null;
+                if (i == 0)
+                    mapNode = new MapNode(NodeType.Begin);
+                else if (i == (MapDepth - 1))
+                    mapNode = new MapNode(NodeType.Final);
+
                 mapNode.Id = id;
                 tempGroup.Add(mapNode);
                 AddNodesGroup(tempGroup);

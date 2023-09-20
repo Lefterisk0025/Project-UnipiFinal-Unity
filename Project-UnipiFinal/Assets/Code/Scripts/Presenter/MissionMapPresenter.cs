@@ -7,6 +7,7 @@ public class MissionMapPresenter
 {
     MissionMapView _missionMapView;
     MissionLocalService _missionLocalService;
+    LevelLocalService _levelLocalService;
     Mission _mission;
 
     public MissionMapPresenter(MissionMapView missionMapView)
@@ -14,6 +15,7 @@ public class MissionMapPresenter
         _missionMapView = missionMapView;
 
         _missionLocalService = new MissionLocalService();
+        _levelLocalService = new LevelLocalService();
 
         // Initialize events
         _missionMapView.OnViewInitialized.AddListener(HandleViewInitialized);
@@ -40,11 +42,14 @@ public class MissionMapPresenter
                 tempConfig = _missionMapView.GetMissionMapConfigBasedOnDifficulty(Difficulty.VeryHard);
 
             int mapDepth = Random.Range(tempConfig.MapDepth.x, tempConfig.MapDepth.y + 1);
+
             _mission.MapGraph = new MapGraph(mapDepth, tempConfig.MaxNodesPerLine);
             _mission.MapGraph.CreateRandomGraph();
 
             PlayerPrefs.SetInt("CurrentPointedNodeId", 0); // Root node has id=0 
             PlayerPrefs.SetInt("PreviousPointedNodeId", -1);
+
+            CreateAndSaveLevelsOnConnectedNodesOfPointedNode(PlayerPrefs.GetInt("CurrentPointedNodeId"));
 
             await _missionLocalService.SaveMission(_mission);
         }
@@ -58,6 +63,9 @@ public class MissionMapPresenter
         // if (node.NodeType != NodeType.Attack)
         //     return;
 
+        if (node.NodeType == NodeType.Final)
+            return;
+
         // Save selected node id to be used later by Match Manager 
         PlayerPrefs.SetInt("SelectedNodeId", node.Id);
 
@@ -67,6 +75,8 @@ public class MissionMapPresenter
     public void HandleLevelEndedVictorious()
     {
         SetCurrentPointedNode();
+
+        CreateAndSaveLevelsOnConnectedNodesOfPointedNode(PlayerPrefs.GetInt("CurrentPointedNodeId"));
     }
 
     public async void AbandonMission()
@@ -76,6 +86,48 @@ public class MissionMapPresenter
         _mission = null;
 
         GameManager.Instance.UpdateGameState(GameState.AbandoningMission);
+    }
+
+    public async void CreateAndSaveLevelsOnConnectedNodesOfPointedNode(int pointedNodeId)
+    {
+        MapNode pointedNode = _mission.MapGraph.GetNodeById(pointedNodeId);
+        List<Level> levelsList = new List<Level>();
+        int randGameMode;
+        foreach (var connectedNode in pointedNode.ConnectedNodes)
+        {
+            randGameMode = Random.Range(0, 2); // 0 or 1
+            levelsList.Add(new Level()
+            {
+                NodeId = connectedNode.Id,
+                Difficulty = GetDifficultyByNodeType(connectedNode),
+                GameMode = randGameMode == 0 ? GameMode.TimeAttack : GameMode.MatchPoint,
+            });
+        }
+
+        await _levelLocalService.SaveAllLevels(levelsList);
+
+        // Nested method to define diffuculty
+        string GetDifficultyByNodeType(MapNode mapNode)
+        {
+            if (mapNode.NodeType == NodeType.Final)
+            {
+                switch (_mission.Difficulty)
+                {
+                    case "Easy":
+                        return "Medium";
+                    case "Medium":
+                        return "Hard";
+                    case "Hard":
+                        return "Very Hard";
+                    case "Very Hard":
+                        return "Very Hard";
+                    default:
+                        return "Medium";
+                }
+            }
+
+            return _mission.Difficulty;
+        }
     }
 
     public void SetCurrentPointedNode()
