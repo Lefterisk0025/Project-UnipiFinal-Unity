@@ -45,6 +45,8 @@ public class MissionMapPresenter
 
             PlayerPrefs.SetInt("CurrentPointedNodeId", 0); // Root node has id=0 
             PlayerPrefs.SetInt("PreviousPointedNodeId", -1);
+
+            await _missionLocalService.SaveMission(_mission);
         }
 
         _missionMapView.DisplayMissionInfo(_mission);
@@ -53,8 +55,8 @@ public class MissionMapPresenter
 
     public void HandleAttackOnNode(MapNode node)
     {
-        if (node.NodeType != NodeType.Attack)
-            return;
+        // if (node.NodeType != NodeType.Attack)
+        //     return;
 
         // Save selected node id to be used later by Match Manager 
         PlayerPrefs.SetInt("SelectedNodeId", node.Id);
@@ -62,10 +64,18 @@ public class MissionMapPresenter
         GameManager.Instance.UpdateGameState(GameState.Playing);
     }
 
-    public void AbandonMission()
+    public void HandleLevelEndedVictorious()
     {
+        SetCurrentPointedNode();
+    }
+
+    public async void AbandonMission()
+    {
+        await _missionLocalService.DeleteMission();
+
         _mission = null;
-        _missionMapView.OnViewInitialized.RemoveListener(HandleViewInitialized);
+
+        GameManager.Instance.UpdateGameState(GameState.AbandoningMission);
     }
 
     public void SetCurrentPointedNode()

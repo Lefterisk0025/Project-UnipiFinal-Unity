@@ -15,5 +15,5 @@ MonoBehaviour:
   Difficulty: 0
   TotalTime: 5
   Height: 8
-  ScoreGoal: 10
+  ScoreGoal: 20
   PointsPerMatch: 10

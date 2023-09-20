@@ -52,6 +52,11 @@ public class MissionMapView : MonoBehaviour, IObserver
     private void OnEnable()
     {
         OnViewInitialized.Invoke();
+
+        GameManager.Instance.DisableMainCamera();
+
+        if (_contentParent.childCount > 0)
+            _selectedNodeView = null;
     }
 
     private void OnDisable()
@@ -79,6 +84,8 @@ public class MissionMapView : MonoBehaviour, IObserver
 
     public void OnAbandonButtonClicked()
     {
+        _missionMapPresenter.AbandonMission();
+
         foreach (Transform child in _contentParent)
         {
             Destroy(child.gameObject);
@@ -92,10 +99,6 @@ public class MissionMapView : MonoBehaviour, IObserver
 
         _nodeGameObjectsList.Clear();
         _mapLinesList.Clear();
-
-        _missionMapPresenter.AbandonMission();
-
-        GameManager.Instance.UpdateGameState(GameState.AbandoningMission);
     }
 
     public void OnNodeSelected(MapNodeView nodeView)
@@ -109,6 +112,11 @@ public class MissionMapView : MonoBehaviour, IObserver
             return;
 
         _missionMapPresenter.HandleAttackOnNode(_selectedNodeView.Node);
+    }
+
+    public void OnLevelEndedVictorious()
+    {
+        _missionMapPresenter.HandleLevelEndedVictorious();
     }
 
     public MissionMapConfig GetMissionMapConfigBasedOnDifficulty(Difficulty difficulty)
@@ -132,7 +140,9 @@ public class MissionMapView : MonoBehaviour, IObserver
 
     public void DisplayMap(MapGraph mapGraph)
     {
-        Debug.Log("Display Map called");
+        if (_contentParent.childCount > 0)
+            return;
+
         MapNodeView mapNodeView;
         foreach (List<MapNode> nodesGroup in mapGraph.NodeGroups)
         {
@@ -198,6 +208,7 @@ public class MissionMapView : MonoBehaviour, IObserver
         // Reset previous pointed node
         if (_pointedNodeView != null)
             _pointedNodeView.UpdateView(MapNodeView.NodeState.Default);
+
         // Set the new one
         _pointedNodeView = GetNodeGameObjectById(nodeId).GetComponent<MapNodeView>();
         _pointedNodeView.UpdateView(MapNodeView.NodeState.CurrentObjective);
@@ -208,6 +219,7 @@ public class MissionMapView : MonoBehaviour, IObserver
         // Reset previous selected node
         if (_selectedNodeView != null)
             _selectedNodeView.UpdateView(MapNodeView.NodeState.Default);
+
         // Set the new one
         _selectedNodeView = GetNodeGameObjectById(nodeId).GetComponent<MapNodeView>();
         _selectedNodeView.UpdateView(MapNodeView.NodeState.Selected);

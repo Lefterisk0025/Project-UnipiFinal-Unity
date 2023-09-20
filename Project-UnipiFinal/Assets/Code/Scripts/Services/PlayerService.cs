@@ -126,13 +126,13 @@ public class PlayerService
         }
     }
 
-    public async Task<bool> UpdateRemoteProgressionStatsOfPlayer(MatchResults matchResults, string userId)
+    public async Task<bool> UpdateRemoteProgressionStatsOfPlayer(string userId)
     {
         try
         {
             // Get player
             Player player = await GetRemotePlayerByUserId(userId);
-            player.Reputation += matchResults.ReputationEarned;
+            //player.Reputation += matchResults.ReputationEarned;
 
             // Update reputation
             DocumentReference playerRef = _fsDB.Collection("players").Document(player.Uid);

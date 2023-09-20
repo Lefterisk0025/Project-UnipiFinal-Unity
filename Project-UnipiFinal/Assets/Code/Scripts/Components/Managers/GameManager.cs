@@ -55,8 +55,8 @@ public class GameManager : MonoBehaviour
             case GameState.Playing:
                 HandlePlayingState();
                 break;
-            case GameState.FinishingMatch:
-                HandleFinishPlayingtate();
+            case GameState.FinishingLevel:
+                HandleFinishingLeveltate();
                 break;
             case GameState.TerminatingMission:
                 break;
@@ -66,7 +66,6 @@ public class GameManager : MonoBehaviour
     private void HandleInitializationState()
     {
         // Logo screen
-        PlayerPrefs.SetInt("OnMission", 0);
         PlayerManager.Instance.SignInPlayer();
     }
 
@@ -91,16 +90,12 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("OnMission", 1);
 
-        //PlayerManager.Instance.UpdatePlayerMissionPerformance(new MatchResults());
-
         MenuManager.Instance.ToggleMenu(Menu.MissionMap);
     }
 
     private void HandleAbandoningMissionState()
     {
         PlayerPrefs.SetInt("OnMission", 0);
-
-        //PlayerManager.Instance.OpenMissionResultsUI();
 
         MenuManager.Instance.ToggleMenu(Menu.MainMenu);
     }
@@ -112,9 +107,8 @@ public class GameManager : MonoBehaviour
         MenuManager.Instance.ToggleMenu(Menu.Game);
     }
 
-    private void HandleFinishPlayingtate()
+    private void HandleFinishingLeveltate()
     {
-
         MenuManager.Instance.ToggleMenu(Menu.MissionMap);
     }
 }

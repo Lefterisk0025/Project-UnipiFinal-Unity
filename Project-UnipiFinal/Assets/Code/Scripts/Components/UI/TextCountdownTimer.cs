@@ -35,7 +35,7 @@ public class TextCountdownTimer : MonoBehaviour
         _countdownText.gameObject.SetActive(false);
     }
 
-    public IEnumerator StartCountDownInTimeFormat(int timeInSec)
+    public IEnumerator StartCountDownInTimeFormatMinutes(int timeInSec)
     {
         _countdownText.gameObject.SetActive(true);
 
@@ -53,6 +53,8 @@ public class TextCountdownTimer : MonoBehaviour
             _countdownText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
             yield return new WaitForSeconds(1);
         }
+
+        _countdownText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
 
         OnTimerEnd.Invoke();
 
@@ -81,6 +83,8 @@ public class TextCountdownTimer : MonoBehaviour
 
             yield return new WaitForSeconds(1);
         }
+
+        _countdownText.text = $"{hours}:{minutes:D2}:{seconds:D2}";
 
         OnTimerEnd.Invoke();
 

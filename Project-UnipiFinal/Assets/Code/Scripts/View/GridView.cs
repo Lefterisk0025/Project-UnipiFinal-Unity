@@ -11,11 +11,11 @@ public class GridView : MonoBehaviour, IObserver
     TileView _selectedTile1;
     TileView _selectedTile2;
 
-    public UnityEvent OnMatchFound;
-
     [SerializeField] private List<TileView> _tilesPrefabs;
     private IDictionary<Tile, TileView> _spawnedTiles;
     [SerializeField] private int _height;
+
+    public UnityEvent OnMatchFound;
 
     private void Awake()
     {

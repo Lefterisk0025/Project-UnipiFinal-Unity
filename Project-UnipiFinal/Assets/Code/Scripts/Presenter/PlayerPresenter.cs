@@ -89,7 +89,7 @@ public class PlayerPresenter
         return await _playerService.LoadLocalPlayerMissionPerformanceDataAsync();
     }
 
-    public async Task<bool> UpdatePlayerMissionPerformance(MatchResults matchResults)
+    public async Task<bool> UpdatePlayerMissionPerformance()
     {
         // Save the local data
         MissionPerformance missionPerformance = null;
@@ -104,18 +104,18 @@ public class PlayerPresenter
             missionPerformance = new MissionPerformance();
         }
 
-        missionPerformance.TotalMissionScore += matchResults.TotalScore;
-        missionPerformance.TotalReputation += matchResults.ReputationEarned;
+        //missionPerformance.TotalMissionScore += matchResults.TotalScore;
+        //missionPerformance.TotalReputation += matchResults.ReputationEarned;
 
         await _playerService.SaveLocalPlayerMissionPerformanceDataAsync(missionPerformance);
 
         return true;
 
         // Update player data to the server the match results
-        if (await _playerService.UpdateRemoteProgressionStatsOfPlayer(matchResults, PlayerManager.Instance.Player.UserId))
-            return true;
-        else
-            return false;
+        // if (await _playerService.UpdateRemoteProgressionStatsOfPlayer(matchResults, PlayerManager.Instance.Player.UserId))
+        //     return true;
+        // else
+        //     return false;
     }
 
     public async Task<bool> DeleteMissionPerformace()

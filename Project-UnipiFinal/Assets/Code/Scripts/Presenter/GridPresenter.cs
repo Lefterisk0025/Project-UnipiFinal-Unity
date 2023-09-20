@@ -18,7 +18,7 @@ public class GridPresenter
     public Grid CreateAndInitializeGrid(int height)
     {
         _grid = new Grid(height);
-        _grid.Tiles = CreateTiles(height);
+        _grid.Tiles = CreateTiles();
 
         _gridView.GenerateTilesOnScene(_grid.Tiles);
 
@@ -38,7 +38,7 @@ public class GridPresenter
         Random.InitState(tempSeed);
     }
 
-    public List<Tile> CreateTiles(int height)
+    public List<Tile> CreateTiles()
     {
         List<Tile> tempTiles = new List<Tile>();
 

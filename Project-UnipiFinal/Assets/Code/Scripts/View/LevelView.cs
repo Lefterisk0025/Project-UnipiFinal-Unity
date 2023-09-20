@@ -8,16 +8,28 @@ public class LevelView : MonoBehaviour
 {
     LevelPresenter _levelPresenter;
 
+    [Header("General Settings")]
+    [SerializeField] internal GridView GridView;
+    [SerializeField] internal LevelPerformanceView LevelPerformanceView;
+
     [Header("Diffuculty configs")]
     [SerializeField] private List<TimeAttackConfig> _timeAttackDifficultyConfigs;
     [SerializeField] private List<MatchPointConfig> _matchPointDifficultyConfigs;
 
-    [Header("General UI")]
+    [Header("UI")]
     [SerializeField] private TextCountdownTimer _preGameTimer;
+    [SerializeField] private TextCountdownTimer _centralLevelTimer;
+    [SerializeField] private BarCountdownTimer _repeatBarTimer;
 
     [HideInInspector] public UnityEvent OnViewInitialized;
     [HideInInspector] public UnityEvent OnViewDisabled;
-    [HideInInspector] public UnityEvent OnPreGameTimerEnd;
+    [HideInInspector] public UnityEvent OnPerformanceStatsPrepared;
+    [HideInInspector] public UnityEvent PreGameTimerEnded;
+    [HideInInspector] public UnityEvent CentralLevelTimerEnded;
+    [HideInInspector] public UnityEvent RepeatBarTimerEnded;
+    [HideInInspector] public UnityEvent<bool> OnLevelEndedVictorious;
+    public UnityEvent OnLevelLost;
+    public UnityEvent OnLevelWin;
 
     private void Awake()
     {
@@ -26,26 +38,54 @@ public class LevelView : MonoBehaviour
 
     private void OnEnable()
     {
-        _preGameTimer.OnTimerEnd.AddListener(HandlePreGameTimerEnded);
+        // Setup events
+        LoadingScreen.Instance.OnLoadFinish.AddListener(DisplayAndStartPreGameTimer);
+
+        // Disable UI
+        _preGameTimer.gameObject.SetActive(false);
+        _centralLevelTimer.gameObject.SetActive(true);
+
+        GameManager.Instance.EnableMainCamera();
 
         OnViewInitialized.Invoke();
     }
 
     private void OnDisable()
     {
-        _preGameTimer.OnTimerEnd.RemoveAllListeners();
+        LoadingScreen.Instance.OnLoadFinish.RemoveListener(DisplayAndStartPreGameTimer);
+        _preGameTimer.OnTimerEnd.RemoveListener(() => PreGameTimerEnded.Invoke());
+        LevelPerformanceView.OnAllMatchesFound.RemoveListener(() => _repeatBarTimer.StartAndRepeatBarTimer());
+        _repeatBarTimer.OnTimerEnd.RemoveListener(() => RepeatBarTimerEnded.Invoke());
+        _centralLevelTimer.OnTimerEnd.RemoveListener(() => CentralLevelTimerEnded.Invoke());
 
         OnViewDisabled.Invoke();
     }
 
-    public void DisplayPreGameTimer()
+    public void DisplayAndStartPreGameTimer()
     {
+        _preGameTimer.gameObject.SetActive(true);
+
+        _preGameTimer.OnTimerEnd.AddListener(() => PreGameTimerEnded.Invoke());
+        LevelPerformanceView.OnAllMatchesFound.AddListener(() => _repeatBarTimer.StartAndRepeatBarTimer());
+
         StartCoroutine(_preGameTimer.StartCountDown(3));
     }
 
-    private void HandlePreGameTimerEnded()
+    public void DisplayAndStartRepeatBarTimer(int durationTilRepeat)
     {
-        OnPreGameTimerEnd.Invoke();
+        _repeatBarTimer.gameObject.SetActive(true);
+
+        _repeatBarTimer.OnTimerEnd.AddListener(() => RepeatBarTimerEnded.Invoke());
+
+        _repeatBarTimer.InitializeRepeatTimer(durationTilRepeat);
+        _repeatBarTimer.StartAndRepeatBarTimer();
+    }
+
+    public void DisplayAndStartCentralLevelTimer(int duration)
+    {
+        _centralLevelTimer.gameObject.SetActive(true);
+        _centralLevelTimer.OnTimerEnd.AddListener(() => CentralLevelTimerEnded.Invoke());
+        StartCoroutine(_centralLevelTimer.StartCountDownInTimeFormatMinutes(duration));
     }
 
     public MatchConfig GetMatchConfigByDifficulty(GameMode gameMode, Difficulty difficulty)

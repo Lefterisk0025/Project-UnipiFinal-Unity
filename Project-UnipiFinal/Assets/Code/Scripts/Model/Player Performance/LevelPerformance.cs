@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MatchResults
+public class LevelPerformance
 {
     public int TotalScore { get; set; }
-    public int MatchesFound { get; set; }
+    public int TotalMatches { get; set; }
     public int ReputationEarned { get; set; }
     public bool IsVictory { get; set; }
 }
