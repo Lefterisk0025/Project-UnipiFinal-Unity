@@ -55,8 +55,12 @@ public class MissionMapView : MonoBehaviour, IObserver
 
         GameManager.Instance.DisableMainCamera();
 
-        _selectedNodeView.UpdateView(MapNodeView.NodeState.Default);
-        _selectedNodeView = null;
+        if (_selectedNodeView != null)
+        {
+            _selectedNodeView.UpdateView(MapNodeView.NodeState.Default);
+            _selectedNodeView = null;
+        }
+
     }
 
     private void OnDisable()
@@ -114,11 +118,6 @@ public class MissionMapView : MonoBehaviour, IObserver
         _missionMapPresenter.HandleAttackOnNode(_selectedNodeView.Node);
     }
 
-    public void OnLevelEndedVictorious()
-    {
-        _missionMapPresenter.HandleLevelEndedVictorious();
-    }
-
     public MissionMapConfig GetMissionMapConfigBasedOnDifficulty(Difficulty difficulty)
     {
         foreach (var config in _missionMapConfigsList)
@@ -171,7 +170,7 @@ public class MissionMapView : MonoBehaviour, IObserver
 
     private IEnumerator DrawMapLines(MapGraph mapGraph)
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
 
         GameObject newLine = null;
         MapLineRenderer mapLineRenderer = null;
@@ -202,11 +201,12 @@ public class MissionMapView : MonoBehaviour, IObserver
         if (_scrollRect != null)
             _scrollRect.onValueChanged.AddListener(OnScrollMoved);
 
-        OnMapGenerated.Invoke();
+        DisplayPointedNode();
     }
 
-    public void DisplayPointedNode(int nodeId)
+    public void DisplayPointedNode()
     {
+        int nodeId = PlayerPrefs.GetInt("CurrentPointedNodeId");
         // Reset previous pointed node
         if (_pointedNodeView != null)
             _pointedNodeView.UpdateView(MapNodeView.NodeState.Default);
@@ -225,6 +225,12 @@ public class MissionMapView : MonoBehaviour, IObserver
         // Set the new one
         _selectedNodeView = GetNodeGameObjectById(nodeId).GetComponent<MapNodeView>();
         _selectedNodeView.UpdateView(MapNodeView.NodeState.Selected);
+    }
+
+    // MUST BEING CALLED BY CONTINUE BUTTON IN LEVEL RESULT'S PANEL
+    public void ContinueInNextPointedNode()
+    {
+        _missionMapPresenter.HandleContinueInNextPointedNode();
     }
 
     private GameObject GetNodeGameObjectById(int nodeId)

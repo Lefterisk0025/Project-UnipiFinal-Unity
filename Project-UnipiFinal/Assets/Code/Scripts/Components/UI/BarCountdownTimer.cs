@@ -15,6 +15,11 @@ public class BarCountdownTimer : MonoBehaviour
         _timerBarRectTransform = _timerBar.gameObject.GetComponent<RectTransform>();
     }
 
+    private void OnEnable()
+    {
+        _timerBar.gameObject.SetActive(false);
+    }
+
     public void InitializeRepeatTimer(int durationTilRepeat)
     {
         _durationTilRepeat = durationTilRepeat;
@@ -22,6 +27,9 @@ public class BarCountdownTimer : MonoBehaviour
 
     public void StartAndRepeatBarTimer()
     {
+        if (!_timerBar.activeSelf)
+            _timerBar.gameObject.SetActive(true);
+
         LeanTween.cancel(_timerBar);
 
         _timerBarRectTransform.localScale = new Vector3(0, _timerBar.transform.localScale.y);

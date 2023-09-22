@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class LevelPerformanceView : MonoBehaviour
 {
@@ -23,20 +24,23 @@ public class LevelPerformanceView : MonoBehaviour
     [SerializeField] private TMP_Text _matchesFoundText;
     [SerializeField] private TMP_Text _livesLostText;
     [SerializeField] private TMP_Text _reputationEarnedText;
+    [SerializeField] private Button _continueBtn;
+    [SerializeField] private Button _abandonBtn;
 
     [HideInInspector] public UnityEvent OnAllMatchesFound;
-    [HideInInspector] public UnityEvent<bool> OnLevelEndedVictorious;
 
     // Starting point of Level Performance view
     public void SetLevelPerformance(MatchConfig matchConfig)
     {
         _levelPerformancePresenter = new LevelPerformancePresenter(this);
         _levelPerformancePresenter.HandleLevelPerformanceSet(matchConfig);
-        ResetResultsPanel();
-        _resultsPanel.SetActive(false);
     }
 
-    private void OnDisable() { }
+    private void OnEnable()
+    {
+        ResetResultsPanel();
+        ResetPerformanceStatsUI();
+    }
 
     private void ResetResultsPanel()
     {
@@ -45,6 +49,16 @@ public class LevelPerformanceView : MonoBehaviour
         _matchesFoundText.text = "";
         _livesLostText.text = "";
         _reputationEarnedText.text = "";
+        _continueBtn.gameObject.SetActive(false);
+        _abandonBtn.gameObject.SetActive(false);
+        _resultsPanel.SetActive(false);
+    }
+
+    private void ResetPerformanceStatsUI()
+    {
+        _numberOfMatchesPerTimeText.text = "";
+        _scoreText.text = "";
+        _livesText.text = "";
     }
 
     public void DisplayInitialStats(MatchConfig config)
@@ -57,7 +71,7 @@ public class LevelPerformanceView : MonoBehaviour
         }
         else if (config is MatchPointConfig matchPointConfig)
         {
-            _scoreText.text = $"Score: 9/{matchPointConfig.ScoreGoal}";
+            _scoreText.text = $"Score: 0/{matchPointConfig.ScoreGoal}";
         }
     }
 
@@ -78,9 +92,15 @@ public class LevelPerformanceView : MonoBehaviour
         _resultsPanel.SetActive(true);
 
         if (performance.IsVictory)
+        {
+            _continueBtn.gameObject.SetActive(true);
             _resultHeader.text = $"<color=#009510>Victory!</color>";
+        }
         else
+        {
+            _abandonBtn.gameObject.SetActive(true);
             _resultHeader.text = $"<color=red>Defeat</color>";
+        }
 
         _matchesFoundText.text = "Matches Found: " + performance.TotalMatches.ToString();
         _reputationEarnedText.text = $"+{performance.ReputationEarned} Reputation";
@@ -100,10 +120,24 @@ public class LevelPerformanceView : MonoBehaviour
         Time.timeScale = 0;
     }
 
-    public void OnEndLevelButtonClicked()
+    public void OnCloseLevelButtonClicked()
+    {
+        //Time.timeScale = 1;
+
+        //_levelPerformancePresenter.HandleCloseLevelButtonClicked();
+    }
+
+    public void OnAbandonLevelButtonClicked()
     {
         Time.timeScale = 1;
 
-        _levelPerformancePresenter.HandleEndLevelButtonClicked();
+        LevelView.AbandonLevel();
+    }
+
+    public void OnContinueLevelButtonClicked()
+    {
+        Time.timeScale = 1;
+
+        LevelView.ContinueLevel();
     }
 }

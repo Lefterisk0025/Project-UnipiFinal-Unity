@@ -12,6 +12,8 @@ public class LoadingScreen : MonoBehaviour
 
     public UnityEvent OnLoadFinish;
 
+    bool isOpen;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -31,7 +33,6 @@ public class LoadingScreen : MonoBehaviour
     {
         _screen.SetActive(true);
 
-        Debug.Log("Before Wait..");
         yield return new WaitForSeconds(sec);
 
         OnLoadFinish.Invoke();
@@ -41,11 +42,30 @@ public class LoadingScreen : MonoBehaviour
 
     public void Open()
     {
+        isOpen = true;
         _screen.SetActive(true);
     }
 
     public void Close()
     {
+        if (!isOpen)
+            return;
+
+        OnLoadFinish.Invoke();
+        _screen.SetActive(false);
+    }
+
+    public void CloseAfterDelay(int sec)
+    {
+        StartCoroutine(CloseWithDelayEnumerator(sec));
+    }
+
+    private IEnumerator CloseWithDelayEnumerator(int sec)
+    {
+        yield return new WaitForSeconds(sec);
+
+        OnLoadFinish.Invoke();
+
         _screen.SetActive(false);
     }
 }

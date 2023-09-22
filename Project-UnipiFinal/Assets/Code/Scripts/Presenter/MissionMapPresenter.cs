@@ -19,7 +19,6 @@ public class MissionMapPresenter
 
         // Initialize events
         _missionMapView.OnViewInitialized.AddListener(HandleViewInitialized);
-        _missionMapView.OnMapGenerated.AddListener(SetCurrentPointedNode);
     }
 
     public async void HandleViewInitialized()
@@ -48,6 +47,9 @@ public class MissionMapPresenter
 
             PlayerPrefs.SetInt("CurrentPointedNodeId", 0); // Root node has id=0 
             PlayerPrefs.SetInt("PreviousPointedNodeId", -1);
+            PlayerPrefs.SetInt("IsFinalNode", 0);
+            PlayerPrefs.SetInt("MissionScore", 0);
+            PlayerPrefs.SetInt("MissionReputation", 0);
 
             CreateAndSaveLevelsOnConnectedNodesOfPointedNode(PlayerPrefs.GetInt("CurrentPointedNodeId"));
 
@@ -64,7 +66,7 @@ public class MissionMapPresenter
         //     return;
 
         if (node.NodeType == NodeType.Final)
-            return;
+            PlayerPrefs.SetInt("IsFinalNode", 1);
 
         // Save selected node id to be used later by Match Manager 
         PlayerPrefs.SetInt("SelectedNodeId", node.Id);
@@ -72,9 +74,9 @@ public class MissionMapPresenter
         GameManager.Instance.UpdateGameState(GameState.Playing);
     }
 
-    public void HandleLevelEndedVictorious()
+    public void HandleContinueInNextPointedNode()
     {
-        SetCurrentPointedNode();
+        _missionMapView.DisplayPointedNode();
 
         CreateAndSaveLevelsOnConnectedNodesOfPointedNode(PlayerPrefs.GetInt("CurrentPointedNodeId"));
     }
@@ -88,19 +90,44 @@ public class MissionMapPresenter
         GameManager.Instance.UpdateGameState(GameState.AbandoningMission);
     }
 
+    public void SetSelectedNode(MapNode node)
+    {
+        var currPointedNode = _mission.MapGraph.GetNodeById(PlayerPrefs.GetInt("CurrentPointedNodeId"));
+
+        if (!CanVisitSelectedNode(currPointedNode, node))
+            return;
+
+        _missionMapView.DisplaySelectedNode(node.Id);
+    }
+
+    private bool CanVisitSelectedNode(MapNode pointedNode, MapNode selectedNode)
+    {
+        foreach (var connectedNode in pointedNode.ConnectedNodes)
+        {
+            if (selectedNode.Id == connectedNode.Id)
+                return true;
+        }
+
+        return false;
+    }
+
     public async void CreateAndSaveLevelsOnConnectedNodesOfPointedNode(int pointedNodeId)
     {
         MapNode pointedNode = _mission.MapGraph.GetNodeById(pointedNodeId);
         List<Level> levelsList = new List<Level>();
-        int randGameMode;
+        GameMode tempGameMode = GameMode.TimeAttack;
         foreach (var connectedNode in pointedNode.ConnectedNodes)
         {
-            randGameMode = Random.Range(0, 2); // 0 or 1
+            if (connectedNode.NodeType == NodeType.Attack)
+                tempGameMode = GameMode.TimeAttack;
+            else if (connectedNode.NodeType == NodeType.BoostHub)
+                tempGameMode = GameMode.MatchPoint;
+
             levelsList.Add(new Level()
             {
                 NodeId = connectedNode.Id,
                 Difficulty = GetDifficultyByNodeType(connectedNode),
-                GameMode = randGameMode == 0 ? GameMode.TimeAttack : GameMode.MatchPoint,
+                GameMode = tempGameMode,
             });
         }
 
@@ -126,33 +153,20 @@ public class MissionMapPresenter
                 }
             }
 
-            return _mission.Difficulty;
+            int randNum = Random.Range(0, 2);
+            switch (_mission.Difficulty)
+            {
+                case "Easy":
+                    return randNum == 0 ? "Easy" : "Medium";
+                case "Medium":
+                    return randNum == 0 ? "Medium" : "Hard";
+                case "Hard":
+                    return randNum == 0 ? "Hard" : "Very Hard";
+                case "Very Hard":
+                    return "Very Hard";
+                default:
+                    return "Medium";
+            }
         }
-    }
-
-    public void SetCurrentPointedNode()
-    {
-        _missionMapView.DisplayPointedNode(PlayerPrefs.GetInt("CurrentPointedNodeId"));
-    }
-
-    public void SetSelectedNode(MapNode node)
-    {
-        var currPointedNode = _mission.MapGraph.GetNodeById(PlayerPrefs.GetInt("CurrentPointedNodeId"));
-
-        if (!CanVisitSelectedNode(currPointedNode, node))
-            return;
-
-        _missionMapView.DisplaySelectedNode(node.Id);
-    }
-
-    private bool CanVisitSelectedNode(MapNode pointedNode, MapNode selectedNode)
-    {
-        foreach (var connectedNode in pointedNode.ConnectedNodes)
-        {
-            if (selectedNode.Id == connectedNode.Id)
-                return true;
-        }
-
-        return false;
     }
 }

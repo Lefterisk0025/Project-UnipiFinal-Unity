@@ -21,7 +21,7 @@ public class MissionResultsView : MonoBehaviour
         _resultsPanel.SetActive(false);
     }
 
-    public void SetResultsScreen(MissionPerformance missionPerformance)
+    public void DisplayResultsScreen(MissionPerformance missionPerformance)
     {
         _resultsPanel.SetActive(true);
 

@@ -75,9 +75,11 @@ public class MapGraph
             }
 
             // Initialize empty nodes in the node groups
+            int randNodeType = 0;
             for (int j = 0; j < randGroupSize; j++)
             {
-                MapNode mapNode = new MapNode(NodeType.Attack);
+                randNodeType = Random.Range(0, 2);
+                MapNode mapNode = randNodeType == 0 ? new MapNode(NodeType.Attack) : new MapNode(NodeType.BoostHub);
                 mapNode.Id = id;
                 tempGroup.Add(mapNode);
                 id++;
@@ -88,7 +90,7 @@ public class MapGraph
         }
 
         // Place BoostHub Nodes
-        int nodesAfter = 0; // number that indicates the number of nodes to be passed before placing new ones, can be 2 or 3
+        /*int nodesAfter = 0; // number that indicates the number of nodes to be passed before placing new ones, can be 2 or 3
         for (int i = 2; i < NodeGroups.Count - 1; i++)
         {
             // The node group before the final group must always contains BoostHub nodes
@@ -134,7 +136,7 @@ public class MapGraph
 
             nodesAfter = Random.Range(2, 3);
             i += nodesAfter; // 2 or 3 nodes after to place the
-        }
+        }*/
 
         // Connect Nodes between Node Groups
         // Iterate node groups

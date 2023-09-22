@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HardConfig
   m_EditorClassIdentifier: 
   Difficulty: 2
-  TotalTime: 30
+  TotalTime: 10
   Height: 10
-  ScoreGoal: 400
-  PointsPerMatch: 20
+  ScoreGoal: 30
+  PointsPerMatch: 10

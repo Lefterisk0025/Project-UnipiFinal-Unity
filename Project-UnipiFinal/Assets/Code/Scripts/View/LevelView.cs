@@ -23,13 +23,19 @@ public class LevelView : MonoBehaviour
 
     [HideInInspector] public UnityEvent OnViewInitialized;
     [HideInInspector] public UnityEvent OnViewDisabled;
-    [HideInInspector] public UnityEvent OnPerformanceStatsPrepared;
     [HideInInspector] public UnityEvent PreGameTimerEnded;
     [HideInInspector] public UnityEvent CentralLevelTimerEnded;
     [HideInInspector] public UnityEvent RepeatBarTimerEnded;
-    [HideInInspector] public UnityEvent<bool> OnLevelEndedVictorious;
-    public UnityEvent OnLevelLost;
-    public UnityEvent OnLevelWin;
+
+    /// <summary>
+    /// Use bool to show if its victory or not
+    /// </summary>
+    [HideInInspector] public UnityEvent<bool> OnLevelEnd;
+    /// <summary>
+    /// Use bool to show if its victory or not
+    /// </summary>
+    public UnityEvent<bool> OnMissionEnd;
+    public UnityEvent OnPointedTargetChanged;
 
     private void Awake()
     {
@@ -38,26 +44,19 @@ public class LevelView : MonoBehaviour
 
     private void OnEnable()
     {
-        // Setup events
+        GameManager.Instance.EnableMainCamera();
+
         LoadingScreen.Instance.OnLoadFinish.AddListener(DisplayAndStartPreGameTimer);
 
-        // Disable UI
         _preGameTimer.gameObject.SetActive(false);
-        _centralLevelTimer.gameObject.SetActive(true);
-
-        GameManager.Instance.EnableMainCamera();
+        _centralLevelTimer.gameObject.SetActive(false);
+        _repeatBarTimer.gameObject.SetActive(false);
 
         OnViewInitialized.Invoke();
     }
 
     private void OnDisable()
     {
-        LoadingScreen.Instance.OnLoadFinish.RemoveListener(DisplayAndStartPreGameTimer);
-        _preGameTimer.OnTimerEnd.RemoveListener(() => PreGameTimerEnded.Invoke());
-        LevelPerformanceView.OnAllMatchesFound.RemoveListener(() => _repeatBarTimer.StartAndRepeatBarTimer());
-        _repeatBarTimer.OnTimerEnd.RemoveListener(() => RepeatBarTimerEnded.Invoke());
-        _centralLevelTimer.OnTimerEnd.RemoveListener(() => CentralLevelTimerEnded.Invoke());
-
         OnViewDisabled.Invoke();
     }
 
@@ -65,27 +64,53 @@ public class LevelView : MonoBehaviour
     {
         _preGameTimer.gameObject.SetActive(true);
 
+        LoadingScreen.Instance.OnLoadFinish.RemoveListener(DisplayAndStartPreGameTimer);
+
         _preGameTimer.OnTimerEnd.AddListener(() => PreGameTimerEnded.Invoke());
-        LevelPerformanceView.OnAllMatchesFound.AddListener(() => _repeatBarTimer.StartAndRepeatBarTimer());
 
         StartCoroutine(_preGameTimer.StartCountDown(3));
     }
 
-    public void DisplayAndStartRepeatBarTimer(int durationTilRepeat)
+    public void DisplayRepeatBarTimer()
     {
         _repeatBarTimer.gameObject.SetActive(true);
 
         _repeatBarTimer.OnTimerEnd.AddListener(() => RepeatBarTimerEnded.Invoke());
+        LevelPerformanceView.OnAllMatchesFound.AddListener(() => _repeatBarTimer.StartAndRepeatBarTimer());
+    }
 
+    public void StartRepeatBarTimer(int durationTilRepeat)
+    {
         _repeatBarTimer.InitializeRepeatTimer(durationTilRepeat);
         _repeatBarTimer.StartAndRepeatBarTimer();
     }
 
-    public void DisplayAndStartCentralLevelTimer(int duration)
+    public void DisplayCentralLevelTimer(int duration)
     {
         _centralLevelTimer.gameObject.SetActive(true);
         _centralLevelTimer.OnTimerEnd.AddListener(() => CentralLevelTimerEnded.Invoke());
+        _centralLevelTimer.InitializeDisplayOfCountDownInTimeFormatMinutes(duration);
+    }
+
+    public void StartCentralLevelTimer(int duration)
+    {
         StartCoroutine(_centralLevelTimer.StartCountDownInTimeFormatMinutes(duration));
+    }
+
+    public void DisableTimers()
+    {
+        _repeatBarTimer.StopTimer();
+        StopAllCoroutines(); // for stopping coroutine timers
+    }
+
+    public void AbandonLevel()
+    {
+        _levelPresenter.HandleAbandonLevel();
+    }
+
+    public void ContinueLevel()
+    {
+        _levelPresenter.HandleContinueLevel();
     }
 
     public MatchConfig GetMatchConfigByDifficulty(GameMode gameMode, Difficulty difficulty)

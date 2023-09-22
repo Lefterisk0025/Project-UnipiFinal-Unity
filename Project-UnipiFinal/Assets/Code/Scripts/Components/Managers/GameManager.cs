@@ -97,6 +97,8 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("OnMission", 0);
 
+
+
         MenuManager.Instance.ToggleMenu(Menu.MainMenu);
     }
 

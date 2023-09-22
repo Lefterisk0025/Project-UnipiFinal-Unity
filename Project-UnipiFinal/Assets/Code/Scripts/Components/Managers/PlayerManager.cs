@@ -40,4 +40,28 @@ public class PlayerManager : MonoBehaviour
         else
             ErrorScreen.Instance.Show("Register failed!");
     }
+
+    public void SetPlayerMissionStats(int score, int reputation)
+    {
+        int currScore = PlayerPrefs.GetInt("MissionScore");
+        int currRep = PlayerPrefs.GetInt("MissionReputation");
+
+        PlayerPrefs.SetInt("MissionScore", currScore + score);
+        PlayerPrefs.SetInt("MissionReputation", currRep + reputation);
+    }
+
+    public void DisplayMissionResults(bool isVictory)
+    {
+        _missionResultsView.gameObject.SetActive(true);
+
+        int currScore = PlayerPrefs.GetInt("MissionScore");
+        int currRep = PlayerPrefs.GetInt("MissionReputation");
+        MissionPerformance missionPerformance = new MissionPerformance()
+        {
+            TotalMissionScore = currScore,
+            TotalReputation = currRep,
+            IsVictory = isVictory,
+        };
+        _missionResultsView.DisplayResultsScreen(missionPerformance);
+    }
 }
