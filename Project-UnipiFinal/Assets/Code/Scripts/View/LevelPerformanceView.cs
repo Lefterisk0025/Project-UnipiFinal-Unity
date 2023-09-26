@@ -26,6 +26,7 @@ public class LevelPerformanceView : MonoBehaviour
     [SerializeField] private TMP_Text _reputationEarnedText;
     [SerializeField] private Button _continueBtn;
     [SerializeField] private Button _abandonBtn;
+    [SerializeField] private Button _finishBtn;
 
     [HideInInspector] public UnityEvent OnAllMatchesFound;
 
@@ -51,6 +52,7 @@ public class LevelPerformanceView : MonoBehaviour
         _reputationEarnedText.text = "";
         _continueBtn.gameObject.SetActive(false);
         _abandonBtn.gameObject.SetActive(false);
+        _finishBtn.gameObject.SetActive(false);
         _resultsPanel.SetActive(false);
     }
 
@@ -77,6 +79,7 @@ public class LevelPerformanceView : MonoBehaviour
 
     public void DisplayTimeAttackStats(TimeAttackPerformance performance, TimeAttackConfig config)
     {
+        Debug.Log("I am in John...");
         _numberOfMatchesPerTimeText.text = $"Matches: {performance.CurrentMatches}/{config.NumberOfMatchesPerTime}";
         _scoreText.text = $"Score: {performance.TotalScore}";
         _livesText.text = $"Lives: {performance.CurrentLives}/{TimeAttackPerformance.MaxLives}";
@@ -89,11 +92,19 @@ public class LevelPerformanceView : MonoBehaviour
 
     public void DisplayPerformanceResults(LevelPerformance performance)
     {
+        ResetPerformanceStatsUI();
+
         _resultsPanel.SetActive(true);
+
+        Debug.Log("IsFinalNode: " + PlayerPrefs.GetInt("IsFinalNode"));
 
         if (performance.IsVictory)
         {
-            _continueBtn.gameObject.SetActive(true);
+            if (PlayerPrefs.GetInt("IsFinalNode") == 1)
+                _finishBtn.gameObject.SetActive(true);
+            else
+                _continueBtn.gameObject.SetActive(true);
+
             _resultHeader.text = $"<color=#009510>Victory!</color>";
         }
         else

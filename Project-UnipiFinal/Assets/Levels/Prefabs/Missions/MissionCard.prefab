@@ -37,8 +37,8 @@ RectTransform:
   - {fileID: 1531567547981639325}
   - {fileID: 1531567546910483774}
   - {fileID: 1531567546868621828}
-  - {fileID: 1531567547332847193}
   - {fileID: 1531567547113027277}
+  - {fileID: 1531567547332847193}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -100,7 +100,6 @@ MonoBehaviour:
   _titleTMP: {fileID: 1531567547955545862}
   _descriptionTMP: {fileID: 1531567547048828151}
   _difficultyTMP: {fileID: 1531567547981639324}
-  _minimumReputationTMP: {fileID: 1531567546868621831}
   CompletionOverlay: {fileID: 1531567547332847174}
 --- !u!1 &1531567546868621829
 GameObject:
@@ -540,7 +539,7 @@ RectTransform:
   m_Children:
   - {fileID: 1531567547417645748}
   m_Father: {fileID: 1531567546429701499}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -672,7 +671,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1531567546429701499}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -700,7 +699,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 1, b: 0.046749115, a: 0.392}
+  m_Color: {r: 0, g: 1, b: 0.046749115, a: 0.34117648}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

@@ -35,7 +35,6 @@ public class LevelView : MonoBehaviour
     /// Use bool to show if its victory or not
     /// </summary>
     public UnityEvent<bool> OnMissionEnd;
-    public UnityEvent OnPointedTargetChanged;
 
     private void Awake()
     {
@@ -101,6 +100,10 @@ public class LevelView : MonoBehaviour
     {
         _repeatBarTimer.StopTimer();
         StopAllCoroutines(); // for stopping coroutine timers
+
+        _repeatBarTimer.OnTimerEnd.RemoveAllListeners();
+        _centralLevelTimer.OnTimerEnd.RemoveAllListeners();
+        _preGameTimer.OnTimerEnd.RemoveAllListeners();
     }
 
     public void AbandonLevel()

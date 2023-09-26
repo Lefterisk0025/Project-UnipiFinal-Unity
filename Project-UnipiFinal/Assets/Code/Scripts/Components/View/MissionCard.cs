@@ -21,15 +21,12 @@ public class MissionCard : Subject
     {
         Mission = mission;
 
-        if (mission.IsCompleted)
-        {
-            CompletionOverlay.SetActive(true);
-            return;
-        }
-
         _titleTMP.text = mission.Title;
         _descriptionTMP.text = mission.Description;
         _difficultyTMP.text = mission.Difficulty;
+
+        if (mission.IsCompleted)
+            CompletionOverlay.SetActive(true);
     }
 
     public void SelectMissionAction()

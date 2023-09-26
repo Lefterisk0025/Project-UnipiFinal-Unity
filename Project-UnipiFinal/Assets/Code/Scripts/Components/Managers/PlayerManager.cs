@@ -14,6 +14,7 @@ public class PlayerManager : MonoBehaviour
     PlayerPresenter _playerPresenter;
 
     [SerializeField] private MissionResultsView _missionResultsView;
+    [SerializeField] private PlayerStatsView _playerStatsView;
 
     private void Awake()
     {
@@ -43,11 +44,7 @@ public class PlayerManager : MonoBehaviour
 
     public void SetPlayerMissionStats(int score, int reputation)
     {
-        int currScore = PlayerPrefs.GetInt("MissionScore");
-        int currRep = PlayerPrefs.GetInt("MissionReputation");
-
-        PlayerPrefs.SetInt("MissionScore", currScore + score);
-        PlayerPrefs.SetInt("MissionReputation", currRep + reputation);
+        _playerPresenter.HandlePlayerMissionStatsSet(score, reputation);
     }
 
     public void DisplayMissionResults(bool isVictory)
@@ -63,5 +60,10 @@ public class PlayerManager : MonoBehaviour
             IsVictory = isVictory,
         };
         _missionResultsView.DisplayResultsScreen(missionPerformance);
+    }
+
+    public void DisplayPlayerInformation()
+    {
+
     }
 }

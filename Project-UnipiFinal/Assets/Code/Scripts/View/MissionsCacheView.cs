@@ -11,17 +11,16 @@ public class MissionsCacheView : MonoBehaviour, IObserver
     MissionsCachePresenter _missionsCachePresenter;
 
     [Header("Settings")]
-    [SerializeField] private bool _canFetchNewMissions;
     [SerializeField] private int _missionsCount = 5;
 
     [Header("General UI")]
     [SerializeField] private MissionCard _missionCardPrefab;
-    [SerializeField] private TextMeshProUGUI _headerText;
     [SerializeField] private Transform _missionCardsParent;
-    public TextCountdownTimer MissionsRefreshTimer;
+    [SerializeField] private TextCountdownTimer _missionsRefreshTimer;
 
     [HideInInspector] public UnityEvent OnViewInitialized;
     [HideInInspector] public UnityEvent OnViewDisabled;
+    [HideInInspector] public UnityEvent OnMissionsRefreshTimerEnded;
 
     private void Awake()
     {
@@ -34,14 +33,16 @@ public class MissionsCacheView : MonoBehaviour, IObserver
 
     private void OnEnable()
     {
+        _missionsRefreshTimer.OnTimerEnd.AddListener(() => OnMissionsRefreshTimerEnded.Invoke());
         OnViewInitialized.Invoke();
     }
 
     private void OnDisable()
     {
-        OnViewDisabled.Invoke();
-
+        _missionsRefreshTimer.OnTimerEnd.RemoveAllListeners();
         StopAllCoroutines();
+
+        OnViewDisabled.Invoke();
     }
 
     public void DisplayMissions(List<Mission> missionsList)
@@ -64,9 +65,9 @@ public class MissionsCacheView : MonoBehaviour, IObserver
         }
     }
 
-    public void DisplayTimeUntilRefresh(int timeInSec)
+    public void DisplayTimeUntilMissionsRefresh(int timeInSec)
     {
-        StartCoroutine(MissionsRefreshTimer.StartCountDownInTimeFormatHours(timeInSec));
+        StartCoroutine(_missionsRefreshTimer.StartCountDownInTimeFormatHours(timeInSec));
     }
 
     public void OnNotify(ISubject subject, Actions action)

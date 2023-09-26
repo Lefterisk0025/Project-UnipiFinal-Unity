@@ -45,8 +45,12 @@ public class MissionRemoteService
                     randomMissionsList[n] = value;
                 }
 
+                Debug.Log("Ok I got the missions!");
+
                 return randomMissionsList.Take(count).ToList();
             }
+
+            Debug.Log("There are no missions...");
 
             return null;
         }

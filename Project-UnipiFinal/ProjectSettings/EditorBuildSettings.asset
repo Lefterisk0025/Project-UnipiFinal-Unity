@@ -14,15 +14,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Levels/Scenes/AuthMenu.unity
     guid: b1c2f25907f44f74392d70e355c22495
-  - enabled: 1
+  - enabled: 0
     path: Assets/Levels/Scenes/MainMenu.unity
     guid: 535e275d351e4494c829bb3ddee33713
   - enabled: 0
     path: Assets/Levels/Scenes/MapTest.unity
     guid: 7bd01a67c56d9f64385ed058a09f4130
-  - enabled: 1
+  - enabled: 0
     path: Assets/Levels/Scenes/Game.unity
     guid: 2593cb0f7b815b8478a7f78741beeca8
+  - enabled: 1
+    path: Assets/Levels/Scenes/FirebaseTEST.unity
+    guid: 58956564a0a08a7479acec7144297de6
   m_configObjects:
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 43683f4d36f3ca742b69d901eded067c, type: 2}
     com.unity.adaptiveperformance.samsung.android.provider_settings: {fileID: 11400000, guid: 5def7a2305b08d04e8534ec4b64d9ef8, type: 2}

@@ -161,7 +161,7 @@ public class MapGraph
                 var lastNode = NodeGroups[i + 1][0];
                 foreach (var node in NodeGroups[i])
                 {
-                    lastNode.ConnectedNodes.Add(node);
+                    node.ConnectedNodes.Add(lastNode);
                 }
                 break;
             }
@@ -174,7 +174,6 @@ public class MapGraph
             {
                 foreach (var nextNode in nextNodeGroup)
                 {
-                    Debug.Log("Node connected to single node!");
                     currNodeGroup[0].ConnectedNodes.Add(nextNode);
                 }
                 continue;
@@ -184,7 +183,6 @@ public class MapGraph
             {
                 foreach (var currNode in currNodeGroup)
                 {
-                    Debug.Log("Node connected to single node!");
                     currNode.ConnectedNodes.Add(nextNodeGroup[0]);
                 }
                 continue;

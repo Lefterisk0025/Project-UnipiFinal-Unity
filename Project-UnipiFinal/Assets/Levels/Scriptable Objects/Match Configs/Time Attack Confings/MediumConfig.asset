@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MediumConfig
   m_EditorClassIdentifier: 
   Difficulty: 1
-  TotalTime: 10
+  TotalTime: 3
   Height: 10
   FindMatchTime: 2
   NumberOfMatchesPerTime: 1

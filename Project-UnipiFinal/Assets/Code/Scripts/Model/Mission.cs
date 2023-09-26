@@ -13,6 +13,7 @@ public class Mission
     [FirestoreProperty]
     public string Difficulty { get; set; }
 
-    public bool IsCompleted { get; private set; }
+    public int Id { get; set; }
+    public bool IsCompleted { get; set; }
     public MapGraph MapGraph { get; set; }
 }

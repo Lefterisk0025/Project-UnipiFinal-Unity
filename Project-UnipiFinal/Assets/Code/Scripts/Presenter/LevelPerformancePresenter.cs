@@ -69,6 +69,7 @@ public class LevelPerformancePresenter
 
     private void HandleRepeatBarTimerEnded()
     {
+        Debug.Log($"<color=green>HandleRepeatBarTimerEnded called</color>");
         _timeAttackPerformance.CurrentLives--;
         _timeAttackPerformance.CurrentMatches = 0;
 
@@ -82,6 +83,7 @@ public class LevelPerformancePresenter
 
     private void HandleMatchFound()
     {
+        Debug.Log("CurrGameMode: " + _currGameMode);
         if (_currGameMode == GameMode.TimeAttack)
         {
             _timeAttackPerformance.CurrentMatches++;

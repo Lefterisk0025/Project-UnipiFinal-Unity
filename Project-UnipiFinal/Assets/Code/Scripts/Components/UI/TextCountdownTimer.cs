@@ -10,16 +10,6 @@ public class TextCountdownTimer : MonoBehaviour
     [SerializeField] private TMP_Text _countdownText;
     [HideInInspector] public UnityEvent OnTimerEnd;
 
-    private void OnEnable()
-    {
-        _countdownText.gameObject.SetActive(false);
-    }
-
-    private void OnDisable()
-    {
-
-    }
-
     public IEnumerator StartCountDown(int timeValue)
     {
         _countdownText.gameObject.SetActive(true);

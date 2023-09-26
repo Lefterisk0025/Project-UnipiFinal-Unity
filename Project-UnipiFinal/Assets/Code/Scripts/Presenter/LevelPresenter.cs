@@ -6,6 +6,7 @@ public class LevelPresenter
 {
     LevelView _levelView;
     LevelLocalService _levelLocalService;
+    MissionLocalService _missionLocalService;
     Level _level;
     MatchConfig _matchConfig;
     GridPresenter _gridPresenter;
@@ -18,6 +19,7 @@ public class LevelPresenter
     {
         _levelView = levelView;
         _levelLocalService = new LevelLocalService();
+        _missionLocalService = new MissionLocalService();
         _gridPresenter = new GridPresenter(_levelView.GridView);
 
         // Setup events
@@ -94,9 +96,25 @@ public class LevelPresenter
         _isVictory = isVictory;
     }
 
-    public void HandleAbandonLevel()
+    public async void HandleAbandonLevel()
     {
         ClearLevel();
+
+        // Set the current mission as completed and save it to the disk
+        if (_isVictory)
+        {
+            int tempId = PlayerPrefs.GetInt("CurrentSelectedMissionId");
+            var missionsList = await _missionLocalService.LoadAllMissions();
+            foreach (var mission in missionsList)
+            {
+                if (mission.Id == tempId)
+                {
+                    mission.IsCompleted = true;
+                    break;
+                }
+            }
+            await _missionLocalService.SaveAllMissions(missionsList);
+        }
 
         _levelView.OnMissionEnd.Invoke(_isVictory);
         PlayerManager.Instance.DisplayMissionResults(_isVictory);
@@ -110,8 +128,6 @@ public class LevelPresenter
         PlayerPrefs.SetInt("CurrentPointedNodeId", PlayerPrefs.GetInt("SelectedNodeId"));
 
         GameManager.Instance.UpdateGameState(GameState.FinishingLevel);
-
-        _levelView.OnPointedTargetChanged.Invoke();
     }
 
     private void ClearLevel()
@@ -125,6 +141,8 @@ public class LevelPresenter
         _levelView.CentralLevelTimerEnded.RemoveAllListeners();
         _levelView.RepeatBarTimerEnded.RemoveAllListeners();
         _levelView.LevelPerformanceView.OnAllMatchesFound.RemoveAllListeners();
+        _levelView.GridView.OnMatchFound.RemoveAllListeners();
+        _levelView.OnLevelEnd.RemoveAllListeners();
     }
 
     public void HandleOnMissionEnded(bool isVictory)
