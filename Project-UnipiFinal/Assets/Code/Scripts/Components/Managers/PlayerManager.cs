@@ -42,9 +42,9 @@ public class PlayerManager : MonoBehaviour
             ErrorScreen.Instance.Show("Register failed!");
     }
 
-    public void SetPlayerMissionStats(int score, int reputation)
+    public void SetPlayerMissionStats(int score, int reputation, int matches)
     {
-        _playerPresenter.HandlePlayerMissionStatsSet(score, reputation);
+        _playerPresenter.HandlePlayerMissionStatsSet(score, reputation, matches);
     }
 
     public void DisplayMissionResults(bool isVictory)
@@ -53,10 +53,12 @@ public class PlayerManager : MonoBehaviour
 
         int currScore = PlayerPrefs.GetInt("MissionScore");
         int currRep = PlayerPrefs.GetInt("MissionReputation");
+        int currMatches = PlayerPrefs.GetInt("MissionMatches");
         MissionPerformance missionPerformance = new MissionPerformance()
         {
             TotalMissionScore = currScore,
             TotalReputation = currRep,
+            TotalMatches = currMatches,
             IsVictory = isVictory,
         };
         _missionResultsView.DisplayResultsScreen(missionPerformance);
@@ -64,6 +66,17 @@ public class PlayerManager : MonoBehaviour
 
     public void DisplayPlayerInformation()
     {
-
+        if (Player != null)
+        {
+            _playerStatsView.DisplayPlayerInformation(Player);
+        }
     }
+
+    public void ShowAvatarFrame() => _playerStatsView.ShowAvatarFrame();
+
+    public void HideAvatarFrame() => _playerStatsView.HideAvatarFrame();
+
+    public void ShowPerformanceStats() => _playerStatsView.ShowPerformanceStats();
+
+    public void HidePerformanceStats() => _playerStatsView.HidePerformanceStats();
 }

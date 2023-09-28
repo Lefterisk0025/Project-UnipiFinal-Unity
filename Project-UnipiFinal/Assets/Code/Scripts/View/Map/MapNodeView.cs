@@ -7,13 +7,12 @@ using UnityEngine.UI;
 public class MapNodeView : Subject, IPointerDownHandler
 {
     public enum NodeState { Default, Selected, CurrentObjective, Completed }
-
     public MapNode Node { get; set; }
 
     [SerializeField] private GameObject _selectionIcon;
     [SerializeField] private GameObject _pointIcon;
 
-    bool isPointed = false;
+    bool _isPointed = false;
 
     private void Awake()
     {
@@ -32,7 +31,7 @@ public class MapNodeView : Subject, IPointerDownHandler
                 _pointIcon.SetActive(false);
                 break;
             case NodeState.Selected:
-                _selectionIcon.SetActive(true);
+                HandleNodeSelection();
                 break;
             case NodeState.CurrentObjective:
                 HandleCurrentObjectiveState();
@@ -57,14 +56,24 @@ public class MapNodeView : Subject, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (Node.IsActive && !isPointed)
+        if (Node.IsActive && !_isPointed)
             NotifyObservers(Actions.SelectNode);
     }
 
     private void HandleCurrentObjectiveState()
     {
         _pointIcon.SetActive(true);
-        isPointed = true;
+        _isPointed = true;
         Node.IsActive = false;
+    }
+
+    private void HandleNodeSelection()
+    {
+        _selectionIcon.SetActive(true);
+        Vector3 tempScale = _selectionIcon.GetComponent<RectTransform>().localScale;
+        LeanTween.scale(_selectionIcon, new Vector3(tempScale.x + 0.3f, tempScale.y + 0.3f, tempScale.z), 0.1f).setOnComplete(() =>
+        {
+            LeanTween.scale(_selectionIcon, new Vector3(tempScale.x, tempScale.y, tempScale.z), 0.1f);
+        });
     }
 }

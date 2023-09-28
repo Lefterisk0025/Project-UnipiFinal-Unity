@@ -14,15 +14,14 @@ public class MissionMapView : MonoBehaviour, IObserver
 {
     MissionMapPresenter _missionMapPresenter;
 
-    [Header("General UI")]
-    [SerializeField] private TextMeshProUGUI _missionTitleGUI;
-    [SerializeField] private TextMeshProUGUI _missionDifficultyGUI;
-
     [Header("Map Settings")]
     [SerializeField] private Transform _contentParent;
     [SerializeField] private GameObject _horizontalNodesContainerPrefab;
     [SerializeField] private MapNodeView _attackNodePrefab;
     [SerializeField] private MapNodeView _boostHubNodePrefab;
+    [SerializeField] private MapNodeView _beginNodePrefab;
+    [SerializeField] private MapNodeView _finishNodePrefab;
+    [SerializeField] private GameObject _attackBtn;
     [SerializeField] private List<MissionMapConfig> _missionMapConfigsList;
 
     [Header("Line Settings")]
@@ -52,6 +51,8 @@ public class MissionMapView : MonoBehaviour, IObserver
     private void OnEnable()
     {
         OnViewInitialized.Invoke();
+
+        _attackBtn.SetActive(false);
 
         GameManager.Instance.DisableMainCamera();
 
@@ -131,12 +132,6 @@ public class MissionMapView : MonoBehaviour, IObserver
         return null;
     }
 
-    public void DisplayMissionInfo(Mission mission)
-    {
-        _missionTitleGUI.text = "Mission: " + mission.Title;
-        _missionDifficultyGUI.text = "Difficulty: " + mission.Difficulty.ToString();
-    }
-
     public void DisplayMap(MapGraph mapGraph)
     {
         if (_contentParent.childCount > 0)
@@ -152,10 +147,22 @@ public class MissionMapView : MonoBehaviour, IObserver
             foreach (MapNode node in nodesGroup)
             {
                 GameObject spawnedNode = null;
-                if (node.NodeType == NodeType.BoostHub)
-                    spawnedNode = Instantiate(_boostHubNodePrefab, verticalLine.transform).gameObject;
-                else
-                    spawnedNode = Instantiate(_attackNodePrefab, verticalLine.transform).gameObject;
+
+                switch (node.NodeType)
+                {
+                    case NodeType.Begin:
+                        spawnedNode = Instantiate(_beginNodePrefab, verticalLine.transform).gameObject;
+                        break;
+                    case NodeType.Attack:
+                        spawnedNode = Instantiate(_attackNodePrefab, verticalLine.transform).gameObject;
+                        break;
+                    case NodeType.BoostHub:
+                        spawnedNode = Instantiate(_boostHubNodePrefab, verticalLine.transform).gameObject;
+                        break;
+                    case NodeType.Final:
+                        spawnedNode = Instantiate(_finishNodePrefab, verticalLine.transform).gameObject;
+                        break;
+                }
 
                 _nodeGameObjectsList.Add(spawnedNode);
 
@@ -225,6 +232,7 @@ public class MissionMapView : MonoBehaviour, IObserver
         // Set the new one
         _selectedNodeView = GetNodeGameObjectById(nodeId).GetComponent<MapNodeView>();
         _selectedNodeView.UpdateView(MapNodeView.NodeState.Selected);
+        _attackBtn.SetActive(true);
     }
 
     // MUST BEING CALLED BY CONTINUE BUTTON IN LEVEL RESULT'S PANEL

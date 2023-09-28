@@ -72,12 +72,14 @@ public class PlayerPresenter
         }
     }
 
-    public void HandlePlayerMissionStatsSet(int score, int reputation)
+    public void HandlePlayerMissionStatsSet(int score, int reputation, int matches)
     {
         int currScore = PlayerPrefs.GetInt("MissionScore"); // They are being initialized upon Level creation in MissionMapPresenter
         int currRep = PlayerPrefs.GetInt("MissionReputation");
+        int currMartches = PlayerPrefs.GetInt("MissionMatches");
 
         PlayerPrefs.SetInt("MissionScore", currScore + score);
         PlayerPrefs.SetInt("MissionReputation", currRep + reputation);
+        PlayerPrefs.SetInt("MissionMatches", currMartches + matches);
     }
 }

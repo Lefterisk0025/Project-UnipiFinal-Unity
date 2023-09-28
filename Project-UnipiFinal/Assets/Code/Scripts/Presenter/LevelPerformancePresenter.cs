@@ -120,13 +120,13 @@ public class LevelPerformancePresenter
                 _timeAttackPerformance.IsVictory = isVictory;
                 _timeAttackPerformance.ReputationEarned = CalculateAndGetReputation();
                 _levelPerformanceView.DisplayPerformanceResults(_timeAttackPerformance);
-                PlayerManager.Instance.SetPlayerMissionStats(_timeAttackPerformance.TotalScore, _timeAttackPerformance.ReputationEarned);
+                PlayerManager.Instance.SetPlayerMissionStats(_timeAttackPerformance.TotalScore, _timeAttackPerformance.ReputationEarned, _timeAttackPerformance.TotalMatches);
                 break;
             case GameMode.MatchPoint:
                 _matchPointPerformance.IsVictory = isVictory;
                 _matchPointPerformance.ReputationEarned = CalculateAndGetReputation();
                 _levelPerformanceView.DisplayPerformanceResults(_matchPointPerformance);
-                PlayerManager.Instance.SetPlayerMissionStats(_matchPointPerformance.TotalScore, _matchPointPerformance.ReputationEarned);
+                PlayerManager.Instance.SetPlayerMissionStats(_matchPointPerformance.TotalScore, _matchPointPerformance.ReputationEarned, _matchPointPerformance.TotalMatches);
                 break;
         }
     }

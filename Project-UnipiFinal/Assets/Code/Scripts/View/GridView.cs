@@ -11,11 +11,12 @@ public class GridView : MonoBehaviour, IObserver
     TileView _selectedTile1;
     TileView _selectedTile2;
 
-    [SerializeField] private List<TileView> _tilesPrefabs;
-    private IDictionary<Tile, TileView> _spawnedTiles;
-    [SerializeField] private int _height;
+    [SerializeField] private TileView _tilePrefab;
+    [SerializeField] private Transform _tilesParent;
 
-    public UnityEvent OnMatchFound;
+    IDictionary<Tile, TileView> _spawnedTiles;
+
+    [HideInInspector] public UnityEvent OnMatchFound;
 
     private void Awake()
     {
@@ -60,12 +61,11 @@ public class GridView : MonoBehaviour, IObserver
         TileView spawnedTileView;
         foreach (var tile in tiles)
         {
-            int tilePrefabIndex = tile.Value - 1;
-
-            var spawnedTile = Instantiate(_tilesPrefabs[tilePrefabIndex], transform);
+            var spawnedTile = Instantiate(_tilePrefab, _tilesParent);
 
             spawnedTileView = spawnedTile.GetComponent<TileView>();
             spawnedTileView.Tile = tile;
+            spawnedTileView.SetValue(tile.Value);
 
             spawnedTileView.AddObserver(this);
 

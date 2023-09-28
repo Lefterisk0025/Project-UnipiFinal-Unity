@@ -67,27 +67,26 @@ public class LevelPerformanceView : MonoBehaviour
     {
         if (config is TimeAttackConfig timeAttackConfig)
         {
-            _numberOfMatchesPerTimeText.text = $"Matches: 0/{timeAttackConfig.NumberOfMatchesPerTime}";
-            _scoreText.text = $"Score: 0";
-            _livesText.text = $"Lives: {TimeAttackPerformance.MaxLives}/{TimeAttackPerformance.MaxLives}";
+            _numberOfMatchesPerTimeText.text = $"0/{timeAttackConfig.NumberOfMatchesPerTime}";
+            _scoreText.text = $"0";
+            _livesText.text = $"{TimeAttackPerformance.MaxLives}/{TimeAttackPerformance.MaxLives}";
         }
         else if (config is MatchPointConfig matchPointConfig)
         {
-            _scoreText.text = $"Score: 0/{matchPointConfig.ScoreGoal}";
+            _scoreText.text = $"0/{matchPointConfig.ScoreGoal}";
         }
     }
 
     public void DisplayTimeAttackStats(TimeAttackPerformance performance, TimeAttackConfig config)
     {
-        Debug.Log("I am in John...");
-        _numberOfMatchesPerTimeText.text = $"Matches: {performance.CurrentMatches}/{config.NumberOfMatchesPerTime}";
-        _scoreText.text = $"Score: {performance.TotalScore}";
-        _livesText.text = $"Lives: {performance.CurrentLives}/{TimeAttackPerformance.MaxLives}";
+        _numberOfMatchesPerTimeText.text = $"{performance.CurrentMatches}/{config.NumberOfMatchesPerTime}";
+        _scoreText.text = $"{performance.TotalScore}";
+        _livesText.text = $"{performance.CurrentLives}/{TimeAttackPerformance.MaxLives}";
     }
 
     public void DisplayMatchPointStats(MatchPointPerformance performance, MatchPointConfig config)
     {
-        _scoreText.text = $"Score: {performance.TotalScore}/{config.ScoreGoal}";
+        _scoreText.text = $"{performance.TotalScore}/{config.ScoreGoal}";
     }
 
     public void DisplayPerformanceResults(LevelPerformance performance)

@@ -50,13 +50,13 @@ public class MissionMapPresenter
             PlayerPrefs.SetInt("IsFinalNode", 0);
             PlayerPrefs.SetInt("MissionScore", 0);
             PlayerPrefs.SetInt("MissionReputation", 0);
+            PlayerPrefs.SetInt("MissionMatches", 0);
 
             CreateAndSaveLevelsOnConnectedNodesOfPointedNode(PlayerPrefs.GetInt("CurrentPointedNodeId"));
 
             await _missionLocalService.SaveMission(_mission);
         }
 
-        _missionMapView.DisplayMissionInfo(_mission);
         _missionMapView.DisplayMap(_mission.MapGraph);
     }
 

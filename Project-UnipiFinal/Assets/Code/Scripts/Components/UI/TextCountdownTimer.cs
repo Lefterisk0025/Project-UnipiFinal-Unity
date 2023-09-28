@@ -8,7 +8,9 @@ using System;
 public class TextCountdownTimer : MonoBehaviour
 {
     [SerializeField] private TMP_Text _countdownText;
+    [SerializeField] private string _timerLabel = "";
     [HideInInspector] public UnityEvent OnTimerEnd;
+
 
     public IEnumerator StartCountDown(int timeValue)
     {
@@ -76,7 +78,7 @@ public class TextCountdownTimer : MonoBehaviour
         int minutes = Mathf.FloorToInt(timeRemaining / 60) % 60;
         int seconds = Mathf.FloorToInt(timeRemaining % 60);
 
-        _countdownText.text = $"{hours}:{minutes:D2}:{seconds:D2}";
+        _countdownText.text = $"{_timerLabel}{hours}:{minutes:D2}:{seconds:D2}";
     }
 
     public IEnumerator StartCountDownInTimeFormatHours(int timeInSec)
@@ -88,7 +90,7 @@ public class TextCountdownTimer : MonoBehaviour
         int minutes = Mathf.FloorToInt(timeRemaining / 60) % 60;
         int seconds = Mathf.FloorToInt(timeRemaining % 60);
 
-        _countdownText.text = $"{hours}:{minutes:D2}:{seconds:D2}";
+        _countdownText.text = $"{_timerLabel}{hours}:{minutes:D2}:{seconds:D2}";
 
         while (timeRemaining > 0)
         {
@@ -97,12 +99,12 @@ public class TextCountdownTimer : MonoBehaviour
             seconds = Mathf.FloorToInt(timeRemaining % 60);
             timeRemaining--;
 
-            _countdownText.text = $"{hours}:{minutes:D2}:{seconds:D2}";
+            _countdownText.text = $"{_timerLabel}{hours}:{minutes:D2}:{seconds:D2}";
 
             yield return new WaitForSeconds(1);
         }
 
-        _countdownText.text = $"{hours}:{minutes:D2}:{seconds:D2}";
+        _countdownText.text = $"{_timerLabel}{hours}:{minutes:D2}:{seconds:D2}";
 
         OnTimerEnd.Invoke();
 

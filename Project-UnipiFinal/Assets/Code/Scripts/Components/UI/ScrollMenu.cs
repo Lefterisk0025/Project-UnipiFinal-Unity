@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using Microsoft.Unity.VisualStudio.Editor;
 using UnityEngine;
+using UnityEngine.UI;
+using Image = UnityEngine.UI.Image;
 
 public class ScrollMenu : MonoBehaviour
 {
     int currentPanelIndex = 0;
     int prevPanelIndex = 0;
-    public List<GameObject> _itemGOsList = new List<GameObject>();
+    List<GameObject> _itemGOsList = new List<GameObject>();
+
+    [SerializeField] private List<GameObject> _navDotsList;
 
     private void Update()
     {
@@ -25,7 +30,13 @@ public class ScrollMenu : MonoBehaviour
             child.gameObject.SetActive(false);
         }
 
+        for (int i = 0; i < _navDotsList.Count; i++)
+        {
+            ResetSelectedNavDot(i);
+        }
+
         _itemGOsList[currentPanelIndex].SetActive(true);
+        SetSelectedNavDot(currentPanelIndex);
     }
 
     public void ClearScroll()
@@ -38,6 +49,7 @@ public class ScrollMenu : MonoBehaviour
         prevPanelIndex = currentPanelIndex;
 
         _itemGOsList[currentPanelIndex].SetActive(false);
+        ResetSelectedNavDot(currentPanelIndex);
 
         currentPanelIndex++;
         if (currentPanelIndex > _itemGOsList.Count - 1)
@@ -46,6 +58,7 @@ public class ScrollMenu : MonoBehaviour
         }
 
         _itemGOsList[currentPanelIndex].SetActive(true);
+        SetSelectedNavDot(currentPanelIndex);
     }
 
     public void PreviousTarget()
@@ -53,6 +66,7 @@ public class ScrollMenu : MonoBehaviour
         prevPanelIndex = currentPanelIndex;
 
         _itemGOsList[currentPanelIndex].SetActive(false);
+        ResetSelectedNavDot(currentPanelIndex);
 
         currentPanelIndex--;
         if (currentPanelIndex < 0)
@@ -61,5 +75,18 @@ public class ScrollMenu : MonoBehaviour
         }
 
         _itemGOsList[currentPanelIndex].SetActive(true);
+        SetSelectedNavDot(currentPanelIndex);
+    }
+
+    private void SetSelectedNavDot(int index)
+    {
+        _navDotsList[index].GetComponent<RectTransform>().sizeDelta = new Vector2(35, 35);
+        _navDotsList[index].GetComponent<Image>().color = new Color32(229, 1, 71, 255);
+    }
+
+    private void ResetSelectedNavDot(int index)
+    {
+        _navDotsList[index].GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
+        _navDotsList[index].GetComponent<Image>().color = new Color32(255, 255, 225, 255);
     }
 }

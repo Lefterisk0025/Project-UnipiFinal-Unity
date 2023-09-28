@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
     {
         LoadingScreen.Instance.FakeOpen(2);
 
-        CustomSceneManager.Instance.SwitchScene("AuthMenu", "FirebaseTEST");
+        CustomSceneManager.Instance.SwitchScene("AuthMenu", "MainMenu");
     }
 
     private void HandleInitializingMissionState()

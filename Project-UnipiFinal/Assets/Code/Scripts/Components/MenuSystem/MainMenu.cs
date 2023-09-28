@@ -5,23 +5,15 @@ using TMPro;
 
 public class MainMenu : MenuManager
 {
-    [SerializeField] private TextMeshProUGUI _welcomePlayer;
-
     private void Start()
     {
         OpenMainMenu();
     }
 
-    private void OnEnable()
-    {
-        if (PlayerManager.Instance.Player != null)
-            _welcomePlayer.text = "Username: " + PlayerManager.Instance.Player.DisplayName + "\nUserId: " + PlayerManager.Instance.Player.UserId;
-        else
-            _welcomePlayer.text = "There is no player...";
-    }
-
     public void OpenMainMenu()
     {
+        PlayerManager.Instance.ShowAvatarFrame();
+        PlayerManager.Instance.ShowPerformanceStats();
         ToggleMenu(Menu.MainMenu);
     }
 

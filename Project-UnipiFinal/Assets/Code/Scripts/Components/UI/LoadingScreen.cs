@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO.Compression;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -9,6 +10,8 @@ public class LoadingScreen : MonoBehaviour
     public static LoadingScreen Instance { get; private set; }
 
     [SerializeField] private GameObject _screen;
+    [SerializeField] private GameObject _outterCircle;
+    [SerializeField] private GameObject _innerCircle;
 
     public UnityEvent OnLoadFinish;
 
@@ -32,6 +35,9 @@ public class LoadingScreen : MonoBehaviour
     private IEnumerator FakeLoad(int sec)
     {
         _screen.SetActive(true);
+
+        LeanTween.rotateAround(_outterCircle, Vector3.forward, 360, 2.5f).setLoopClamp();
+        LeanTween.rotateAround(_innerCircle, Vector3.forward, -360, 2.5f).setLoopClamp();
 
         yield return new WaitForSeconds(sec);
 

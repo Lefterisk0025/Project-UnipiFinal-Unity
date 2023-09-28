@@ -34,6 +34,7 @@ public class MissionsCacheView : MonoBehaviour, IObserver
     private void OnEnable()
     {
         _missionsRefreshTimer.OnTimerEnd.AddListener(() => OnMissionsRefreshTimerEnded.Invoke());
+        PlayerManager.Instance.HideAvatarFrame();
         OnViewInitialized.Invoke();
     }
 

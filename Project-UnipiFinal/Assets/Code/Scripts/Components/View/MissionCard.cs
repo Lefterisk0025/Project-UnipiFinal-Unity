@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class MissionCard : Subject
@@ -9,13 +10,27 @@ public class MissionCard : Subject
 
     [SerializeField] private TextMeshProUGUI _titleTMP;
     [SerializeField] private TextMeshProUGUI _descriptionTMP;
-    [SerializeField] private TextMeshProUGUI _difficultyTMP;
-    [SerializeField] private GameObject CompletionOverlay;
+    [SerializeField] private List<Image> _difficultyIcons;
+
+    [Header("Card Background")]
+    [SerializeField] private Image _cardBackground;
+    [SerializeField] private Sprite _neaturalCardBackground;
+    [SerializeField] private Sprite _completedCardBackground;
+
+    [Header("Attack Button")]
+    [SerializeField] private Image _attackBtn;
+    [SerializeField] private Sprite _neaturalButtonBackground;
+    [SerializeField] private Sprite _completedButtonBackground;
 
     private void Awake()
     {
-        CompletionOverlay.SetActive(false);
+        // Initialize card's UI
+        _cardBackground.sprite = _neaturalCardBackground;
+        _attackBtn.sprite = _neaturalButtonBackground;
+        _attackBtn.gameObject.GetComponentInChildren<TMP_Text>().text = "ATTACK";
+        _attackBtn.gameObject.GetComponent<Button>().enabled = true;
     }
+
 
     public void SetMissionCardView(Mission mission)
     {
@@ -23,10 +38,27 @@ public class MissionCard : Subject
 
         _titleTMP.text = mission.Title;
         _descriptionTMP.text = mission.Description;
-        _difficultyTMP.text = mission.Difficulty;
+
+        int x = 0;
+        if (mission.Difficulty == "Easy")
+            x = 1;
+        else if (mission.Difficulty == "Medium")
+            x = 2;
+        else if (mission.Difficulty == "Hard")
+            x = 3;
+        else
+            x = 4;
+
+        for (int i = 0; i < x; i++)
+            _difficultyIcons[i].gameObject.SetActive(true);
 
         if (mission.IsCompleted)
-            CompletionOverlay.SetActive(true);
+        {
+            _cardBackground.sprite = _completedCardBackground;
+            _attackBtn.sprite = _completedButtonBackground;
+            _attackBtn.gameObject.GetComponentInChildren<TMP_Text>().text = "COMPLETED";
+            _attackBtn.gameObject.GetComponent<Button>().enabled = false;
+        }
     }
 
     public void SelectMissionAction()
