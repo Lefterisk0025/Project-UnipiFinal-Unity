@@ -119,14 +119,16 @@ public class LevelPerformancePresenter
             case GameMode.TimeAttack:
                 _timeAttackPerformance.IsVictory = isVictory;
                 _timeAttackPerformance.ReputationEarned = CalculateAndGetReputation();
+                _timeAttackPerformance.CoinsEarned = CalculateAndGetCoins();
                 _levelPerformanceView.DisplayPerformanceResults(_timeAttackPerformance);
-                PlayerManager.Instance.SetPlayerMissionStats(_timeAttackPerformance.TotalScore, _timeAttackPerformance.ReputationEarned, _timeAttackPerformance.TotalMatches);
+                PlayerManager.Instance.SetPlayerMissionStats(_timeAttackPerformance.TotalScore, _timeAttackPerformance.ReputationEarned, _timeAttackPerformance.TotalMatches, _timeAttackPerformance.CoinsEarned);
                 break;
             case GameMode.MatchPoint:
                 _matchPointPerformance.IsVictory = isVictory;
                 _matchPointPerformance.ReputationEarned = CalculateAndGetReputation();
+                _matchPointPerformance.CoinsEarned = CalculateAndGetCoins();
                 _levelPerformanceView.DisplayPerformanceResults(_matchPointPerformance);
-                PlayerManager.Instance.SetPlayerMissionStats(_matchPointPerformance.TotalScore, _matchPointPerformance.ReputationEarned, _matchPointPerformance.TotalMatches);
+                PlayerManager.Instance.SetPlayerMissionStats(_matchPointPerformance.TotalScore, _matchPointPerformance.ReputationEarned, _matchPointPerformance.TotalMatches, _matchPointPerformance.CoinsEarned);
                 break;
         }
     }
@@ -148,6 +150,18 @@ public class LevelPerformancePresenter
                 return 5;
 
             return 30;
+        }
+    }
+
+    private int CalculateAndGetCoins()
+    {
+        if (_currGameMode == GameMode.TimeAttack)
+        {
+            return 20;
+        }
+        else
+        {
+            return 16;
         }
     }
 }

@@ -52,7 +52,7 @@ public class PlayerRemoteService
         }
     }
 
-    public async Task<bool> CreatePlayer(string userId, string displayName)
+    public async Task<bool> CreatePlayer(string userId, string displayName, int gender)
     {
         try
         {
@@ -61,6 +61,7 @@ public class PlayerRemoteService
                 DisplayName = displayName,
                 Reputation = 0,
                 UserId = userId,
+                Gender = gender,
             };
 
             DocumentReference playerRef = _fsDB.Collection("players").Document();

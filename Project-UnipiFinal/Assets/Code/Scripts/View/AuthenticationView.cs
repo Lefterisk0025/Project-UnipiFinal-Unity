@@ -13,7 +13,7 @@ public class AuthenticationView : MonoBehaviour
 
         if (nameText != null)
         {
-            PlayerManager.Instance.RegisterPlayer(nameText);
+            PlayerManager.Instance.RegisterPlayer(nameText, 1);
 
             GameManager.Instance.UpdateGameState(GameState.MainMenu);
         }

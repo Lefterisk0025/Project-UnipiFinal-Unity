@@ -49,7 +49,7 @@ public class PlayerPresenter
         }
     }
 
-    public async Task<bool> RegisterPlayer(string displayName)
+    public async Task<bool> RegisterPlayer(string displayName, int gender)
     {
         try
         {
@@ -57,7 +57,7 @@ public class PlayerPresenter
             {
                 string userId = _playerRemoteService.GetUserIdOfAuthUser();
 
-                if (await _playerRemoteService.CreatePlayer(userId, displayName))
+                if (await _playerRemoteService.CreatePlayer(userId, displayName, gender))
                 {
                     return true;
                 }
@@ -72,7 +72,7 @@ public class PlayerPresenter
         }
     }
 
-    public void HandlePlayerMissionStatsSet(int score, int reputation, int matches)
+    public void HandlePlayerMissionStatsSet(int score, int reputation, int matches, int coins)
     {
         int currScore = PlayerPrefs.GetInt("MissionScore"); // They are being initialized upon Level creation in MissionMapPresenter
         int currRep = PlayerPrefs.GetInt("MissionReputation");
@@ -81,5 +81,12 @@ public class PlayerPresenter
         PlayerPrefs.SetInt("MissionScore", currScore + score);
         PlayerPrefs.SetInt("MissionReputation", currRep + reputation);
         PlayerPrefs.SetInt("MissionMatches", currMartches + matches);
+
+        PlayerManager.Instance.Player.Reputation += reputation;
+        PlayerManager.Instance.Player.NetCoins += coins;
+
+        PlayerManager.Instance.UpdatePlayerInformation();
+
+        //await _playerRemoteService.UpdatePlayer(PlayerManager.Instance.Player);
     }
 }

@@ -65,8 +65,6 @@ public class TextCountdownTimer : MonoBehaviour
         _countdownText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
 
         OnTimerEnd.Invoke();
-
-        _countdownText.gameObject.SetActive(false);
     }
 
     public void InitializeDisplayOfCountDownInTimeFormatHours(int timeInSec)

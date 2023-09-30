@@ -13,6 +13,8 @@ public class LevelPerformanceView : MonoBehaviour
     [SerializeField] internal LevelView LevelView;
 
     [Header("Performance GUI")]
+    [SerializeField] private GameObject _timeAttackStatsParent;
+    [SerializeField] private GameObject _matchPointStatsParent;
     [SerializeField] private TMP_Text _scoreText;
     [SerializeField] private TMP_Text _livesText;
     [SerializeField] private TMP_Text _numberOfMatchesPerTimeText;
@@ -20,10 +22,11 @@ public class LevelPerformanceView : MonoBehaviour
     [Header("Results GUI")]
     [SerializeField] private GameObject _resultsPanel;
     [SerializeField] private TMP_Text _resultHeader;
-    [SerializeField] private TMP_Text _totalScoreText;
-    [SerializeField] private TMP_Text _matchesFoundText;
-    [SerializeField] private TMP_Text _livesLostText;
-    [SerializeField] private TMP_Text _reputationEarnedText;
+    [SerializeField] private Transform _totalScore;
+    [SerializeField] private Transform _matchesFound;
+    [SerializeField] private Transform _livesLost;
+    [SerializeField] private Transform _reputationEarned;
+    [SerializeField] private Transform _coinsEarned;
     [SerializeField] private Button _continueBtn;
     [SerializeField] private Button _abandonBtn;
     [SerializeField] private Button _finishBtn;
@@ -41,15 +44,18 @@ public class LevelPerformanceView : MonoBehaviour
     {
         ResetResultsPanel();
         ResetPerformanceStatsUI();
+
+        _timeAttackStatsParent.SetActive(false);
+        _matchPointStatsParent.SetActive(false);
     }
 
     private void ResetResultsPanel()
     {
         _resultHeader.text = "";
-        _totalScoreText.text = "";
-        _matchesFoundText.text = "";
-        _livesLostText.text = "";
-        _reputationEarnedText.text = "";
+        _totalScore.Find("Value").GetComponent<TMP_Text>().text = "0";
+        _matchesFound.Find("Value").GetComponent<TMP_Text>().text = "0";
+        _livesLost.Find("Value").GetComponent<TMP_Text>().text = "0";
+        _reputationEarned.Find("Value").GetComponent<TMP_Text>().text = "0";
         _continueBtn.gameObject.SetActive(false);
         _abandonBtn.gameObject.SetActive(false);
         _finishBtn.gameObject.SetActive(false);
@@ -67,12 +73,13 @@ public class LevelPerformanceView : MonoBehaviour
     {
         if (config is TimeAttackConfig timeAttackConfig)
         {
+            _timeAttackStatsParent.SetActive(true);
             _numberOfMatchesPerTimeText.text = $"0/{timeAttackConfig.NumberOfMatchesPerTime}";
-            _scoreText.text = $"0";
             _livesText.text = $"{TimeAttackPerformance.MaxLives}/{TimeAttackPerformance.MaxLives}";
         }
         else if (config is MatchPointConfig matchPointConfig)
         {
+            _matchPointStatsParent.SetActive(true);
             _scoreText.text = $"0/{matchPointConfig.ScoreGoal}";
         }
     }
@@ -80,7 +87,6 @@ public class LevelPerformanceView : MonoBehaviour
     public void DisplayTimeAttackStats(TimeAttackPerformance performance, TimeAttackConfig config)
     {
         _numberOfMatchesPerTimeText.text = $"{performance.CurrentMatches}/{config.NumberOfMatchesPerTime}";
-        _scoreText.text = $"{performance.TotalScore}";
         _livesText.text = $"{performance.CurrentLives}/{TimeAttackPerformance.MaxLives}";
     }
 
@@ -91,11 +97,9 @@ public class LevelPerformanceView : MonoBehaviour
 
     public void DisplayPerformanceResults(LevelPerformance performance)
     {
-        ResetPerformanceStatsUI();
+        _livesLost.gameObject.SetActive(false);
 
         _resultsPanel.SetActive(true);
-
-        Debug.Log("IsFinalNode: " + PlayerPrefs.GetInt("IsFinalNode"));
 
         if (performance.IsVictory)
         {
@@ -104,28 +108,31 @@ public class LevelPerformanceView : MonoBehaviour
             else
                 _continueBtn.gameObject.SetActive(true);
 
-            _resultHeader.text = $"<color=#009510>Victory!</color>";
+            _resultHeader.text = $"<color=#00F11A>COMPLETED!</color>";
         }
         else
         {
             _abandonBtn.gameObject.SetActive(true);
-            _resultHeader.text = $"<color=red>Defeat</color>";
+            _resultHeader.text = $"<color=#FF5F45>GAME OVER</color>";
         }
 
-        _matchesFoundText.text = "Matches Found: " + performance.TotalMatches.ToString();
-        _reputationEarnedText.text = $"+{performance.ReputationEarned} Reputation";
+        _matchesFound.Find("Value").GetComponent<TMP_Text>().text = performance.TotalMatches.ToString();
 
         if (performance is TimeAttackPerformance timeAttackPerformance)
         {
-            _totalScoreText.text = $"Score: {performance.TotalScore}";
+            _totalScore.Find("Value").GetComponent<TMP_Text>().text = performance.TotalScore.ToString();
 
+            _livesLost.gameObject.SetActive(true);
             int livesLost = TimeAttackPerformance.MaxLives - timeAttackPerformance.CurrentLives;
-            _livesLostText.text = "Lives Lost: " + livesLost.ToString();
+            _livesLost.Find("Value").GetComponent<TMP_Text>().text = livesLost.ToString();
         }
         else if (performance is MatchPointPerformance matchPointPerformance)
         {
-            _totalScoreText.text = $"Score: {matchPointPerformance.TotalScore}/{matchPointPerformance.ScoreGoal}";
+            _totalScore.Find("Value").GetComponent<TMP_Text>().text = $"{matchPointPerformance.TotalScore}/{matchPointPerformance.ScoreGoal}";
         }
+
+        _reputationEarned.Find("Value").GetComponent<TMP_Text>().text = performance.ReputationEarned.ToString();
+        _coinsEarned.Find("Value").GetComponent<TMP_Text>().text = performance.CoinsEarned.ToString();
 
         Time.timeScale = 0;
     }

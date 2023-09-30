@@ -18,7 +18,7 @@ public class JsonLocalDataService : ILocalDataService
     public async Task<bool> SaveData<T>(string RelativePath, T Data, bool Encrypted)
     {
         string path = _persistentDataPath + RelativePath;
-
+        Debug.Log($"<color=green>Start saving {RelativePath}</color>");
         try
         {
             if (File.Exists(path))
@@ -39,13 +39,16 @@ public class JsonLocalDataService : ILocalDataService
                 });
 
                 await writer.WriteAsync(jsonData);
+                writer.Close();
             }
             stream.Close();
 
+            Debug.Log($"<color=yellow>Finish saving</color>");
             return true;
         }
         catch (Exception e)
         {
+            Debug.Log($"<color=red>An error occured while saving</color>");
             Debug.Log(e.Message);
             return false;
         }
@@ -53,8 +56,9 @@ public class JsonLocalDataService : ILocalDataService
 
     public async Task<T> LoadData<T>(string RelativePath, bool Encrypted)
     {
-        string path = _persistentDataPath + RelativePath;
 
+        string path = _persistentDataPath + RelativePath;
+        Debug.Log($"<color=green>Start loading {RelativePath}</color>");
         if (!File.Exists(path))
         {
             throw new FileNotFoundException($"{path} does not exist!");
@@ -63,10 +67,12 @@ public class JsonLocalDataService : ILocalDataService
         try
         {
             T data = JsonConvert.DeserializeObject<T>(await File.ReadAllTextAsync(path));
+            Debug.Log($"<color=yellow>Finish loading</color>");
             return data;
         }
         catch (Exception e)
         {
+            Debug.Log($"<color=red>An error occured while loading</color>");
             Debug.Log(e.Message);
             throw e;
         }
@@ -75,7 +81,7 @@ public class JsonLocalDataService : ILocalDataService
     public async Task<bool> DeleteData(string RelativePath)
     {
         string path = Application.persistentDataPath + RelativePath;
-
+        Debug.Log($"<color=green>Start deleting {RelativePath}</color>");
         if (!File.Exists(path))
         {
             throw new FileNotFoundException($"{path} does not exist!");
@@ -84,10 +90,12 @@ public class JsonLocalDataService : ILocalDataService
         try
         {
             await Task.Run(() => File.Delete(path));
+            Debug.Log($"<color=yellow>Finish Deleting</color>");
             return true;
         }
         catch (Exception e)
         {
+            Debug.Log($"<color=red>An error occured while Deleting</color>");
             Debug.Log(e.Message);
             return false;
         }

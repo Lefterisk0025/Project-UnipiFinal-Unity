@@ -7,7 +7,11 @@ public class MissionResultsView : MonoBehaviour
 {
     [SerializeField] private GameObject _resultsPanel;
     [SerializeField] private TMP_Text _outcomeText;
-    [SerializeField] private TMP_Text _reputationText;
+    [SerializeField] private TMP_Text _totalReputationText;
+    [SerializeField] private TMP_Text _totalScoreText;
+    [SerializeField] private TMP_Text _totalMatchesText;
+    [SerializeField] private TMP_Text _bonuesReputationEarnedText;
+    [SerializeField] private TMP_Text _bonusCoinsEarnedText;
 
     private void Start()
     {
@@ -16,8 +20,13 @@ public class MissionResultsView : MonoBehaviour
 
     public void ClosePanelAndResetUI()
     {
-        _outcomeText.text = "Outcome: ";
-        _reputationText.text = "Total Reputation: ";
+        _outcomeText.text = "MISSION";
+        _totalReputationText.text = "-";
+        _totalScoreText.text = "-";
+        _totalMatchesText.text = "-";
+        _bonuesReputationEarnedText.text = "-";
+        _bonusCoinsEarnedText.text = "-";
+
         _resultsPanel.SetActive(false);
     }
 
@@ -26,10 +35,16 @@ public class MissionResultsView : MonoBehaviour
         _resultsPanel.SetActive(true);
 
         if (missionPerformance.IsVictory)
-            _outcomeText.text = "Outcome: Victory";
+            _outcomeText.text = "MISSION COMPLETED";
         else
-            _outcomeText.text = "Outcome: Defeat";
+            _outcomeText.text = "MISSION FAILED";
 
-        _reputationText.text = "Total Reputation: " + missionPerformance.TotalReputation;
+        _totalReputationText.text = missionPerformance.TotalReputation.ToString();
+        _totalScoreText.text = missionPerformance.TotalMissionScore.ToString();
+        _totalMatchesText.text = missionPerformance.TotalMatches.ToString();
+        _bonuesReputationEarnedText.text = missionPerformance.BonusReputation.ToString();
+        _bonusCoinsEarnedText.text = missionPerformance.BonusCoins.ToString();
+
+
     }
 }

@@ -14,7 +14,7 @@ public class MissionsCachePresenter
     MissionsCacheView _missionsCacheView;
     List<Mission> _missionsList;
 
-    //bool canFetch = false;
+    bool isFetching = false;
 
     public MissionsCachePresenter(MissionsCacheView missionsCacheView)
     {
@@ -36,23 +36,17 @@ public class MissionsCachePresenter
         if (!lastFetchDateTimeStr.Equals(""))
             lastFetchDateTime = DateTime.Parse(lastFetchDateTimeStr);
 
-        SetMissionsRefreshTimer(currDateTime, lastFetchDateTime);
-
         bool canFetch = CanFetchNewMissions(currDateTime, lastFetchDateTime);
 
         if (!canFetch)
         {
-            // if (_missionsList != null && _missionsList.Count > 0)
-            // {
-            //     _missionsCacheView.DisplayMissions(_missionsList);
-            //     return;
-            // }
-
             try
             {
-                Debug.Log("<color=yellow>Loading Missions</color>");
                 //LoadingScreen.Instance.FakeOpen(1);
-                _missionsList = await _missionLocalService.LoadAllMissions();
+                if (_missionsList.Count == 0 || _missionsList == null)
+                    _missionsList = await _missionLocalService.LoadAllMissions();
+
+                SetMissionsRefreshTimer(currDateTime, lastFetchDateTime);
             }
             catch (Exception e)
             {
@@ -78,9 +72,8 @@ public class MissionsCachePresenter
 
         PlayerPrefs.SetInt("CurrentSelectedMissionId", mission.Id);
 
-        await _missionLocalService.SaveMission(mission);
-
-        GameManager.Instance.UpdateGameState(GameState.InitializingMission);
+        if (await _missionLocalService.SaveMission(mission))
+            GameManager.Instance.UpdateGameState(GameState.InitializingMission);
     }
 
     public void HandleMissionRefreshTimerEnded()
@@ -105,19 +98,26 @@ public class MissionsCachePresenter
 
     private async void FetchNewRandomMissions()
     {
-        Debug.Log("<color=yellow>Fetching Missions</color>");
+        if (isFetching)
+            return;
+        else
+            isFetching = true;
+
         LoadingScreen.Instance.FakeOpen(1);
 
         _missionsCacheView.ClearMissionCards();
         //_missionsList = await _missionRemoteService.GetRandomRemoteMissions(_missionsCount);
         _missionsList = _missionLocalService.GetRandomMissions(_missionsCount);
-        await _missionLocalService.SaveAllMissions(_missionsList);
+        if (await _missionLocalService.SaveAllMissions(_missionsList))
+        {
+            PlayerPrefs.SetString("LastFetchDateTime", DateTime.Now.ToString());
 
-        PlayerPrefs.SetString("LastFetchDateTime", DateTime.Now.ToString());
+            DateTime lastFetchDateTime = DateTime.Parse(PlayerPrefs.GetString("LastFetchDateTime"));
+            SetMissionsRefreshTimer(DateTime.Now, lastFetchDateTime);
 
-        DateTime lastFetchDateTime = DateTime.Parse(PlayerPrefs.GetString("LastFetchDateTime"));
-        SetMissionsRefreshTimer(DateTime.Now, lastFetchDateTime);
+            _missionsCacheView.DisplayMissions(_missionsList);
 
-        _missionsCacheView.DisplayMissions(_missionsList);
+            isFetching = false;
+        }
     }
 }

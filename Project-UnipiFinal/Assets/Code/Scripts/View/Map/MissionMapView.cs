@@ -55,6 +55,8 @@ public class MissionMapView : MonoBehaviour, IObserver
         _attackBtn.SetActive(false);
 
         GameManager.Instance.DisableMainCamera();
+        PlayerManager.Instance.HidePerformanceStats();
+        PlayerManager.Instance.HideAvatarFrame();
 
         if (_selectedNodeView != null)
         {

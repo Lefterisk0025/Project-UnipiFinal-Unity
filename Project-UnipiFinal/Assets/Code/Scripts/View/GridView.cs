@@ -132,7 +132,7 @@ public class GridView : MonoBehaviour, IObserver
 
         _spawnedTiles.Clear();
 
-        foreach (Transform child in this.gameObject.transform)
+        foreach (Transform child in _tilesParent)
         {
             Destroy(child.gameObject);
         }

@@ -24,6 +24,9 @@ public class PlayerManager : MonoBehaviour
             Instance = this;
 
         _playerPresenter = new PlayerPresenter(this);
+
+        HideAvatarFrame();
+        HidePerformanceStats();
     }
 
     public async void SignInPlayer()
@@ -34,17 +37,17 @@ public class PlayerManager : MonoBehaviour
             ErrorScreen.Instance.Show("Sign in failed!");
     }
 
-    public async void RegisterPlayer(string displayName)
+    public async void RegisterPlayer(string displayName, int gender)
     {
-        if (await _playerPresenter.RegisterPlayer(displayName))
+        if (await _playerPresenter.RegisterPlayer(displayName, gender))
             SignInPlayer();
         else
             ErrorScreen.Instance.Show("Register failed!");
     }
 
-    public void SetPlayerMissionStats(int score, int reputation, int matches)
+    public void SetPlayerMissionStats(int score, int reputation, int matches, int coins)
     {
-        _playerPresenter.HandlePlayerMissionStatsSet(score, reputation, matches);
+        _playerPresenter.HandlePlayerMissionStatsSet(score, reputation, matches, coins);
     }
 
     public void DisplayMissionResults(bool isVictory)
@@ -60,11 +63,19 @@ public class PlayerManager : MonoBehaviour
             TotalReputation = currRep,
             TotalMatches = currMatches,
             IsVictory = isVictory,
+            BonusReputation = 10,
+            BonusCoins = 20,
         };
+
+        Player.Reputation += missionPerformance.BonusReputation;
+        Player.NetCoins += missionPerformance.BonusCoins;
+
+        UpdatePlayerInformation();
+
         _missionResultsView.DisplayResultsScreen(missionPerformance);
     }
 
-    public void DisplayPlayerInformation()
+    public void UpdatePlayerInformation()
     {
         if (Player != null)
         {

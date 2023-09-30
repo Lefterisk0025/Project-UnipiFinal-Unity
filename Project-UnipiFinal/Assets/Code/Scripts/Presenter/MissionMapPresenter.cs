@@ -81,9 +81,9 @@ public class MissionMapPresenter
         CreateAndSaveLevelsOnConnectedNodesOfPointedNode(PlayerPrefs.GetInt("CurrentPointedNodeId"));
     }
 
-    public async void AbandonMission()
+    public void AbandonMission()
     {
-        await _missionLocalService.DeleteMission();
+        //await _missionLocalService.DeleteMission();
 
         _mission = null;
 

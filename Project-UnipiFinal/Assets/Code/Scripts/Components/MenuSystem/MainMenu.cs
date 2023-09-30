@@ -12,6 +12,7 @@ public class MainMenu : MenuManager
 
     public void OpenMainMenu()
     {
+        PlayerManager.Instance.UpdatePlayerInformation();
         PlayerManager.Instance.ShowAvatarFrame();
         PlayerManager.Instance.ShowPerformanceStats();
         ToggleMenu(Menu.MainMenu);
@@ -21,10 +22,14 @@ public class MainMenu : MenuManager
     {
         int onMission = PlayerPrefs.GetInt("OnMission");
         if (onMission == 0)
+        {
+            PlayerManager.Instance.ShowPerformanceStats();
             ToggleMenu(Menu.Missions);
+        }
         else
         {
             LoadingScreen.Instance.FakeOpen(1);
+            PlayerManager.Instance.HidePerformanceStats();
             ToggleMenu(Menu.MissionMap);
         }
     }

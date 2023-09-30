@@ -8,4 +8,6 @@ public class MissionPerformance
     public int TotalMissionScore { get; set; }
     public int TotalReputation { get; set; }
     public int TotalMatches { get; set; }
+    public int BonusReputation { get; set; }
+    public int BonusCoins { get; set; }
 }

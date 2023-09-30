@@ -149,7 +149,7 @@ public class MapGraph
                 var rootNode = NodeGroups[0][0];
                 foreach (var node in NodeGroups[1])
                 {
-                    rootNode.ConnectedNodes.Add(node);
+                    rootNode.ConnectedNodes.Add(node.Id);
                 }
                 continue;
             }
@@ -161,7 +161,7 @@ public class MapGraph
                 var lastNode = NodeGroups[i + 1][0];
                 foreach (var node in NodeGroups[i])
                 {
-                    node.ConnectedNodes.Add(lastNode);
+                    node.ConnectedNodes.Add(lastNode.Id);
                 }
                 break;
             }
@@ -174,7 +174,7 @@ public class MapGraph
             {
                 foreach (var nextNode in nextNodeGroup)
                 {
-                    currNodeGroup[0].ConnectedNodes.Add(nextNode);
+                    currNodeGroup[0].ConnectedNodes.Add(nextNode.Id);
                 }
                 continue;
             }
@@ -183,7 +183,7 @@ public class MapGraph
             {
                 foreach (var currNode in currNodeGroup)
                 {
-                    currNode.ConnectedNodes.Add(nextNodeGroup[0]);
+                    currNode.ConnectedNodes.Add(nextNodeGroup[0].Id);
                 }
                 continue;
             }
@@ -192,20 +192,20 @@ public class MapGraph
             if (currNodeGroup.Count == 2)
             {
                 // Always connect the two upper edge nodes 
-                currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[0]);
+                currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[0].Id);
                 // Always connect the two bottom edge nodes 
-                currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[nextNodeGroup.Count - 1]);
+                currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[nextNodeGroup.Count - 1].Id);
 
                 if (nextNodeGroup.Count == 3)
                 {
                     randNum = Random.Range(0, 3); // 0 or 1 or 2
                     if (randNum == 2)
                     {
-                        currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[1]);
-                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1]);
+                        currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[1].Id);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1].Id);
                         continue;
                     }
-                    currNodeGroup[randNum].ConnectedNodes.Add(nextNodeGroup[1]);
+                    currNodeGroup[randNum].ConnectedNodes.Add(nextNodeGroup[1].Id);
                 }
 
                 if (nextNodeGroup.Count == 4)
@@ -216,11 +216,11 @@ public class MapGraph
                         randNum = Random.Range(1, 4); // 1 or 2 or 3
                         if (randNum == 3)
                         {
-                            currNodeGroup[j].ConnectedNodes.Add(nextNodeGroup[1]);
-                            currNodeGroup[j].ConnectedNodes.Add(nextNodeGroup[2]);
+                            currNodeGroup[j].ConnectedNodes.Add(nextNodeGroup[1].Id);
+                            currNodeGroup[j].ConnectedNodes.Add(nextNodeGroup[2].Id);
                             continue;
                         }
-                        currNodeGroup[j].ConnectedNodes.Add(nextNodeGroup[randNum]);
+                        currNodeGroup[j].ConnectedNodes.Add(nextNodeGroup[randNum].Id);
                     }
                 }
             }
@@ -228,20 +228,20 @@ public class MapGraph
             if (currNodeGroup.Count == 3)
             {
                 // Always connect the two upper edge nodes 
-                currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[0]);
+                currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[0].Id);
                 // Always connect the two bottom edge nodes 
-                currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[nextNodeGroup.Count - 1]);
+                currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[nextNodeGroup.Count - 1].Id);
 
                 if (nextNodeGroup.Count == 2)
                 {
                     randNum = Random.Range(0, 3); // 0 or 1 or 2
                     if (randNum == 2)
                     {
-                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[0]);
-                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[0].Id);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1].Id);
                         continue;
                     }
-                    currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[randNum]);
+                    currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[randNum].Id);
                 }
 
                 if (nextNodeGroup.Count == 4)
@@ -252,7 +252,7 @@ public class MapGraph
                     randNum = Random.Range(0, 2); // 0 or 1
                     if (randNum == 1)
                     {
-                        currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[1]);
+                        currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[1].Id);
                         isNodeWithIndex1Connected = true;
                     }
 
@@ -260,31 +260,31 @@ public class MapGraph
                     randNum = Random.Range(1, 4); // 1 or 2 or 3
                     if (randNum == 3)
                     {
-                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1]);
-                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[2]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1].Id);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[2].Id);
                         isNodeWithIndex1Connected = true;
                         isNodeWithIndex2Connected = true;
                     }
-                    currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[randNum]);
+                    currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[randNum].Id);
 
                     // For node with index 2 in the current group
                     randNum = Random.Range(0, 2); // 0 or 1
                     if (randNum == 1)
                     {
-                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[2]);
+                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[2].Id);
                         isNodeWithIndex2Connected = true;
                     }
 
                     if (!isNodeWithIndex1Connected)
                     {
                         randNum = Random.Range(0, 2); // 0 or 1
-                        currNodeGroup[randNum].ConnectedNodes.Add(nextNodeGroup[1]);
+                        currNodeGroup[randNum].ConnectedNodes.Add(nextNodeGroup[1].Id);
                     }
 
                     if (!isNodeWithIndex2Connected)
                     {
                         randNum = Random.Range(1, 3); // 1 or 2
-                        currNodeGroup[randNum].ConnectedNodes.Add(nextNodeGroup[2]);
+                        currNodeGroup[randNum].ConnectedNodes.Add(nextNodeGroup[2].Id);
                     }
 
                 }
@@ -293,33 +293,33 @@ public class MapGraph
             if (currNodeGroup.Count == 4)
             {
                 // Always connect the two upper edge nodes 
-                currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[0]);
+                currNodeGroup[0].ConnectedNodes.Add(nextNodeGroup[0].Id);
                 // Always connect the two bottom edge nodes 
-                currNodeGroup[3].ConnectedNodes.Add(nextNodeGroup[nextNodeGroup.Count - 1]);
+                currNodeGroup[3].ConnectedNodes.Add(nextNodeGroup[nextNodeGroup.Count - 1].Id);
 
                 if (nextNodeGroup.Count == 2)
                 {
                     randNum = Random.Range(0, 3); // 0 or 1 or 2
                     if (randNum == 2)
                     {
-                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[0]);
-                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[0].Id);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1].Id);
                     }
                     else
                     {
-                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[randNum]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[randNum].Id);
                     }
 
 
                     randNum = Random.Range(0, 3); // 0 or 1 or 2
                     if (randNum == 2)
                     {
-                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[0]);
-                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1]);
+                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[0].Id);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1].Id);
                     }
                     else
                     {
-                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[randNum]);
+                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[randNum].Id);
                     }
                 }
 
@@ -330,13 +330,13 @@ public class MapGraph
                     randNum = Random.Range(0, 3); // 0 or 1 or 2
                     if (randNum == 2)
                     {
-                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[0]);
-                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[0].Id);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[1].Id);
                         isTheMiddleNodeConnected = true;
                     }
                     else
                     {
-                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[randNum]);
+                        currNodeGroup[1].ConnectedNodes.Add(nextNodeGroup[randNum].Id);
                         if (randNum == 1)
                             isTheMiddleNodeConnected = true;
                     }
@@ -345,13 +345,13 @@ public class MapGraph
                     randNum = Random.Range(1, 4); // 1 or 2 or 3
                     if (randNum == 3)
                     {
-                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[1]);
-                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[2]);
+                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[1].Id);
+                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[2].Id);
                         isTheMiddleNodeConnected = true;
                     }
                     else
                     {
-                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[randNum]);
+                        currNodeGroup[2].ConnectedNodes.Add(nextNodeGroup[randNum].Id);
                         if (randNum == 1)
                             isTheMiddleNodeConnected = true;
                     }
@@ -359,7 +359,7 @@ public class MapGraph
                     if (!isTheMiddleNodeConnected)
                     {
                         randNum = Random.Range(1, 3); // 1 or 2
-                        currNodeGroup[randNum].ConnectedNodes.Add(nextNodeGroup[1]);
+                        currNodeGroup[randNum].ConnectedNodes.Add(nextNodeGroup[1].Id);
                     }
                 }
             }
