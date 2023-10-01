@@ -13,7 +13,6 @@ public class MissionMapPresenter
     public MissionMapPresenter(MissionMapView missionMapView)
     {
         _missionMapView = missionMapView;
-
         _missionLocalService = new MissionLocalService();
         _levelLocalService = new LevelLocalService();
 
@@ -30,6 +29,7 @@ public class MissionMapPresenter
 
         if (_mission.MapGraph == null)
         {
+            Debug.Log($"<color=blue>Generating MapGraph...</color>");
             MissionMapConfig tempConfig = null;
             if (_mission.Difficulty == "Easy")
                 tempConfig = _missionMapView.GetMissionMapConfigBasedOnDifficulty(Difficulty.Easy);
@@ -81,11 +81,11 @@ public class MissionMapPresenter
         CreateAndSaveLevelsOnConnectedNodesOfPointedNode(PlayerPrefs.GetInt("CurrentPointedNodeId"));
     }
 
-    public void AbandonMission()
+    public async void AbandonMission()
     {
-        //await _missionLocalService.DeleteMission();
-
         _mission = null;
+
+        await _missionLocalService.DeleteMission();
 
         GameManager.Instance.UpdateGameState(GameState.AbandoningMission);
     }
@@ -102,9 +102,9 @@ public class MissionMapPresenter
 
     private bool CanVisitSelectedNode(MapNode pointedNode, MapNode selectedNode)
     {
-        foreach (var connectedNode in pointedNode.ConnectedNodes)
+        foreach (var nodeId in pointedNode.ConnectedNodes)
         {
-            if (selectedNode.Id == connectedNode.Id)
+            if (selectedNode.Id == nodeId)
                 return true;
         }
 
@@ -114,10 +114,12 @@ public class MissionMapPresenter
     public async void CreateAndSaveLevelsOnConnectedNodesOfPointedNode(int pointedNodeId)
     {
         MapNode pointedNode = _mission.MapGraph.GetNodeById(pointedNodeId);
+        MapNode connectedNode = null;
         List<Level> levelsList = new List<Level>();
         GameMode tempGameMode = GameMode.TimeAttack;
-        foreach (var connectedNode in pointedNode.ConnectedNodes)
+        foreach (var nodeId in pointedNode.ConnectedNodes)
         {
+            connectedNode = _mission.MapGraph.GetNodeById(nodeId);
             if (connectedNode.NodeType == NodeType.Attack)
                 tempGameMode = GameMode.TimeAttack;
             else if (connectedNode.NodeType == NodeType.BoostHub)

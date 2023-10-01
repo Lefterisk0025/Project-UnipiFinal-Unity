@@ -47,9 +47,9 @@ public class MapNodeView : Subject, IPointerDownHandler
     public void PrintNodeInfo()
     {
         Debug.Log($"<color=green>-------------- Node {Node.Id} - Type: {Node.NodeType} --------------</color>");
-        foreach (var item in Node.ConnectedNodes)
+        foreach (var nodeId in Node.ConnectedNodes)
         {
-            Debug.Log($"<color=green>Child Node {item.Id} - Type: {item.NodeType}</color>");
+            Debug.Log($"<color=green>Child Node {nodeId}</color>");
 
         }
     }

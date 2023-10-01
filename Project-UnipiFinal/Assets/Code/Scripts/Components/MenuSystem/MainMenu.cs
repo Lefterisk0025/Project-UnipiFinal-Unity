@@ -28,9 +28,9 @@ public class MainMenu : MenuManager
         }
         else
         {
-            LoadingScreen.Instance.FakeOpen(1);
             PlayerManager.Instance.HidePerformanceStats();
-            ToggleMenu(Menu.MissionMap);
+            Debug.Log("Opening Mission Map Menu");
+            GameManager.Instance.UpdateGameState(GameState.InitializingMission);
         }
     }
 

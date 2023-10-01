@@ -13,6 +13,7 @@ public class GridView : MonoBehaviour, IObserver
 
     [SerializeField] private TileView _tilePrefab;
     [SerializeField] private Transform _tilesParent;
+    [SerializeField] private GameObject _addLinesButton;
 
     IDictionary<Tile, TileView> _spawnedTiles;
 
@@ -31,6 +32,8 @@ public class GridView : MonoBehaviour, IObserver
     private void OnEnable()
     {
         _spawnedTiles = new Dictionary<Tile, TileView>();
+
+        _addLinesButton.SetActive(true);
     }
 
     public void InjectGridPresenter(GridPresenter gridPresenter)
@@ -105,6 +108,8 @@ public class GridView : MonoBehaviour, IObserver
             return;
 
         GenerateTilesOnScene(tilesLine);
+
+        _addLinesButton.GetComponentInChildren<TMP_Text>().text = $"{0}";
     }
 
     public void RemoveTiles(List<Tile> tiles)

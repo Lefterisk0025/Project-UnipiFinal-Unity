@@ -63,7 +63,6 @@ public class MissionMapView : MonoBehaviour, IObserver
             _selectedNodeView.UpdateView(MapNodeView.NodeState.Default);
             _selectedNodeView = null;
         }
-
     }
 
     private void OnDisable()
@@ -91,8 +90,6 @@ public class MissionMapView : MonoBehaviour, IObserver
 
     public void OnAbandonButtonClicked()
     {
-        _missionMapPresenter.AbandonMission();
-
         foreach (Transform child in _contentParent)
         {
             Destroy(child.gameObject);
@@ -106,6 +103,8 @@ public class MissionMapView : MonoBehaviour, IObserver
 
         _nodeGameObjectsList.Clear();
         _mapLinesList.Clear();
+
+        _missionMapPresenter.AbandonMission();
     }
 
     public void OnNodeSelected(MapNodeView nodeView)
@@ -191,9 +190,9 @@ public class MissionMapView : MonoBehaviour, IObserver
                 GameObject originMapNodeGO = GetNodeGameObjectById(node.Id);
                 GameObject targetMapNodeGO = null;
 
-                foreach (MapNode targetNode in node.ConnectedNodes)
+                foreach (int targetNodeId in node.ConnectedNodes)
                 {
-                    targetMapNodeGO = GetNodeGameObjectById(targetNode.Id);
+                    targetMapNodeGO = GetNodeGameObjectById(targetNodeId);
 
                     newLine = Instantiate(_linePrefab, _linesParent);
                     newLine.transform.SetSiblingIndex(0);

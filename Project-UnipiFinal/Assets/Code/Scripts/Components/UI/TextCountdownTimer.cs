@@ -53,7 +53,7 @@ public class TextCountdownTimer : MonoBehaviour
 
         _countdownText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
 
-        while (timeRemaining > 0)
+        while (timeRemaining >= 0)
         {
             minutes = Mathf.FloorToInt(timeRemaining / 60);
             seconds = Mathf.FloorToInt(timeRemaining % 60);

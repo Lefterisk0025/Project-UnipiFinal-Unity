@@ -43,7 +43,7 @@ public class JsonLocalDataService : ILocalDataService
             }
             stream.Close();
 
-            Debug.Log($"<color=yellow>Finish saving</color>");
+            Debug.Log($"<color=yellow>Finish saving {RelativePath}</color>");
             return true;
         }
         catch (Exception e)
@@ -67,7 +67,7 @@ public class JsonLocalDataService : ILocalDataService
         try
         {
             T data = JsonConvert.DeserializeObject<T>(await File.ReadAllTextAsync(path));
-            Debug.Log($"<color=yellow>Finish loading</color>");
+            Debug.Log($"<color=yellow>Finish loading {RelativePath}</color>");
             return data;
         }
         catch (Exception e)
@@ -90,7 +90,7 @@ public class JsonLocalDataService : ILocalDataService
         try
         {
             await Task.Run(() => File.Delete(path));
-            Debug.Log($"<color=yellow>Finish Deleting</color>");
+            Debug.Log($"<color=yellow>Finish Deleting {RelativePath}</color>");
             return true;
         }
         catch (Exception e)

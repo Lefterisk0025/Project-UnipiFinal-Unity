@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 public class MissionsCachePresenter
 {
     const int _missionsCount = 5;
+    const float _refreshTimeInHours = 2.0f;
+
     MissionLocalService _missionLocalService;
     MissionRemoteService _missionRemoteService;
     MissionsCacheView _missionsCacheView;
@@ -83,7 +85,7 @@ public class MissionsCachePresenter
 
     private void SetMissionsRefreshTimer(DateTime currDateTime, DateTime lastFetchDateTime)
     {
-        int timeRemainsInSec = 7200 - Mathf.FloorToInt((float)(currDateTime - lastFetchDateTime).TotalSeconds);
+        int timeRemainsInSec = (int)((_refreshTimeInHours * 3600) - Mathf.FloorToInt((float)(currDateTime - lastFetchDateTime).TotalSeconds));
         _missionsCacheView.DisplayTimeUntilMissionsRefresh(timeRemainsInSec);
     }
 
@@ -93,7 +95,7 @@ public class MissionsCachePresenter
             return true;
 
         // Check if 2 hours has passed since the last fetch time
-        return (lastFetchDateTime - currDateTime).TotalHours >= 2.0f;
+        return (lastFetchDateTime - currDateTime).TotalSeconds >= _refreshTimeInHours;
     }
 
     private async void FetchNewRandomMissions()

@@ -72,7 +72,7 @@ public class PlayerPresenter
         }
     }
 
-    public void HandlePlayerMissionStatsSet(int score, int reputation, int matches, int coins)
+    public async void HandlePlayerMissionStatsSet(int score, int reputation, int matches, int coins)
     {
         int currScore = PlayerPrefs.GetInt("MissionScore"); // They are being initialized upon Level creation in MissionMapPresenter
         int currRep = PlayerPrefs.GetInt("MissionReputation");
@@ -87,6 +87,6 @@ public class PlayerPresenter
 
         PlayerManager.Instance.UpdatePlayerInformation();
 
-        //await _playerRemoteService.UpdatePlayer(PlayerManager.Instance.Player);
+        await _playerRemoteService.UpdatePlayer(PlayerManager.Instance.Player);
     }
 }
