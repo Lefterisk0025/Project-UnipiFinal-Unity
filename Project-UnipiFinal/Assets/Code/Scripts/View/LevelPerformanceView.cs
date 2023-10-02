@@ -29,7 +29,6 @@ public class LevelPerformanceView : MonoBehaviour
     [SerializeField] private Transform _coinsEarned;
     [SerializeField] private Button _continueBtn;
     [SerializeField] private Button _abandonBtn;
-    [SerializeField] private Button _finishBtn;
 
     [HideInInspector] public UnityEvent OnAllMatchesFound;
 
@@ -45,8 +44,7 @@ public class LevelPerformanceView : MonoBehaviour
         ResetResultsPanel();
         ResetPerformanceStatsUI();
 
-        _timeAttackStatsParent.SetActive(false);
-        _matchPointStatsParent.SetActive(false);
+        _resultsPanel.SetActive(false);
     }
 
     private void ResetResultsPanel()
@@ -58,7 +56,6 @@ public class LevelPerformanceView : MonoBehaviour
         _reputationEarned.Find("Value").GetComponent<TMP_Text>().text = "0";
         _continueBtn.gameObject.SetActive(false);
         _abandonBtn.gameObject.SetActive(false);
-        _finishBtn.gameObject.SetActive(false);
         _resultsPanel.SetActive(false);
     }
 
@@ -71,6 +68,9 @@ public class LevelPerformanceView : MonoBehaviour
 
     public void DisplayInitialStats(MatchConfig config)
     {
+        _timeAttackStatsParent.SetActive(false);
+        _matchPointStatsParent.SetActive(false);
+
         if (config is TimeAttackConfig timeAttackConfig)
         {
             _timeAttackStatsParent.SetActive(true);
@@ -104,7 +104,7 @@ public class LevelPerformanceView : MonoBehaviour
         if (performance.IsVictory)
         {
             if (PlayerPrefs.GetInt("IsFinalNode") == 1)
-                _finishBtn.gameObject.SetActive(true);
+                _abandonBtn.gameObject.SetActive(true);
             else
                 _continueBtn.gameObject.SetActive(true);
 
@@ -113,7 +113,6 @@ public class LevelPerformanceView : MonoBehaviour
         else
         {
             _abandonBtn.gameObject.SetActive(true);
-            PlayerPrefs.SetInt("OnMission", 0);
             _resultHeader.text = $"<color=#FF5F45>GAME OVER</color>";
         }
 
@@ -136,26 +135,5 @@ public class LevelPerformanceView : MonoBehaviour
         _coinsEarned.Find("Value").GetComponent<TMP_Text>().text = performance.CoinsEarned.ToString();
 
         Time.timeScale = 0;
-    }
-
-    public void OnCloseLevelButtonClicked()
-    {
-        //Time.timeScale = 1;
-
-        //_levelPerformancePresenter.HandleCloseLevelButtonClicked();
-    }
-
-    public void OnAbandonLevelButtonClicked()
-    {
-        Time.timeScale = 1;
-
-        LevelView.AbandonLevel();
-    }
-
-    public void OnContinueLevelButtonClicked()
-    {
-        Time.timeScale = 1;
-
-        LevelView.ContinueLevel();
     }
 }

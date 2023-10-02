@@ -47,6 +47,8 @@ public class LevelPresenter
             _currLevelIndex++;
         }
 
+        _levelView.DisplayDiffuculty(_level.Difficulty);
+
         _matchConfig = null;
         if (_level.Difficulty == "Easy")
             _matchConfig = _levelView.GetMatchConfigByDifficulty(_level.GameMode, Difficulty.Easy);
@@ -95,29 +97,22 @@ public class LevelPresenter
     private void HandleLevelEnded(bool isVictory)
     {
         _isVictory = isVictory;
+
+        // Background work when a level finishes
+        // If player loses
+        if (!_isVictory)
+            PlayerPrefs.SetInt("OnMission", 0);
+
+        if (_isVictory && PlayerPrefs.GetInt("IsFinalNode") == 1)
+        {
+            PlayerPrefs.SetInt("OnMission", 0);
+            SetCurrentMissionAsCompleted();
+        }
     }
 
-    public async void HandleAbandonLevel()
+    public void HandleAbandonLevel()
     {
         ClearLevel();
-
-        // Set the current mission as completed and save it to the disk
-        if (_isVictory)
-        {
-            int tempId = PlayerPrefs.GetInt("CurrentSelectedMissionId");
-            var missionsList = await _missionLocalService.LoadAllMissions();
-            foreach (var mission in missionsList)
-            {
-                if (mission.Id == tempId)
-                {
-                    mission.IsCompleted = true;
-                    break;
-                }
-            }
-            await _missionLocalService.SaveAllMissions(missionsList);
-        }
-
-        _levelView.OnMissionEnd.Invoke(_isVictory);
         PlayerManager.Instance.SetMissionResults(_isVictory);
     }
 
@@ -129,6 +124,11 @@ public class LevelPresenter
         PlayerPrefs.SetInt("CurrentPointedNodeId", PlayerPrefs.GetInt("SelectedNodeId"));
 
         GameManager.Instance.UpdateGameState(GameState.FinishingLevel);
+    }
+
+    public void HandleOnMissionEnded(bool isVictory)
+    {
+
     }
 
     private void ClearLevel()
@@ -146,12 +146,18 @@ public class LevelPresenter
         _levelView.OnLevelEnd.RemoveAllListeners();
     }
 
-    public void HandleOnMissionEnded(bool isVictory)
+    private async void SetCurrentMissionAsCompleted()
     {
-        if (!isVictory || (PlayerPrefs.GetInt("IsFinalNode") == 1))
+        int tempId = PlayerPrefs.GetInt("CurrentSelectedMissionId");
+        var missionsList = await _missionLocalService.LoadAllMissions();
+        foreach (var mission in missionsList)
         {
-            PlayerManager.Instance.SetMissionResults(isVictory);
-            return;
+            if (mission.Id == tempId)
+            {
+                mission.IsCompleted = true;
+                break;
+            }
         }
+        await _missionLocalService.SaveAllMissions(missionsList);
     }
 }

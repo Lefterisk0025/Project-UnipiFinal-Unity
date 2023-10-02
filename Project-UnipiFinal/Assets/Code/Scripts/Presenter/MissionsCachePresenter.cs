@@ -40,15 +40,14 @@ public class MissionsCachePresenter
 
         bool canFetch = CanFetchNewMissions(currDateTime, lastFetchDateTime);
 
+        SetMissionsRefreshTimer(currDateTime, lastFetchDateTime);
+
         if (!canFetch)
         {
             try
             {
                 //LoadingScreen.Instance.FakeOpen(1);
-                if (_missionsList.Count == 0 || _missionsList == null)
-                    _missionsList = await _missionLocalService.LoadAllMissions();
-
-                SetMissionsRefreshTimer(currDateTime, lastFetchDateTime);
+                _missionsList = await _missionLocalService.LoadAllMissions();
             }
             catch (Exception e)
             {

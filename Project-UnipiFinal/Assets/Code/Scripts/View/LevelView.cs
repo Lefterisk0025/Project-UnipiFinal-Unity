@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,6 +21,7 @@ public class LevelView : MonoBehaviour
     [SerializeField] private TextCountdownTimer _preGameTimer;
     [SerializeField] private TextCountdownTimer _centralLevelTimer;
     [SerializeField] private BarCountdownTimer _repeatBarTimer;
+    [SerializeField] private TMP_Text _difficultyHeader;
 
     [HideInInspector] public UnityEvent OnViewInitialized;
     [HideInInspector] public UnityEvent OnViewDisabled;
@@ -106,13 +108,17 @@ public class LevelView : MonoBehaviour
         _preGameTimer.OnTimerEnd.RemoveAllListeners();
     }
 
-    public void AbandonLevel()
+    public void OnAbandonLevelButtonClicked()
     {
+        Time.timeScale = 1;
+
         _levelPresenter.HandleAbandonLevel();
     }
 
-    public void ContinueLevel()
+    public void OnContinueLevelButtonClicked()
     {
+        Time.timeScale = 1;
+
         _levelPresenter.HandleContinueLevel();
     }
 
@@ -141,5 +147,10 @@ public class LevelView : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void DisplayDiffuculty(string diff)
+    {
+        _difficultyHeader.text = diff;
     }
 }

@@ -56,7 +56,7 @@ public class GameManager : MonoBehaviour
                 HandlePlayingState();
                 break;
             case GameState.FinishingLevel:
-                HandleFinishingLeveltate();
+                HandleFinishingLevelState();
                 break;
             case GameState.TerminatingMission:
                 break;
@@ -95,7 +95,7 @@ public class GameManager : MonoBehaviour
 
     private void HandleAbandoningMissionState()
     {
-        PlayerPrefs.SetInt("OnMission", 0); // Its also being set in LevelPerformaceView
+        PlayerPrefs.SetInt("OnMission", 0); // Its also being set in LevelView
 
         PlayerManager.Instance.ShowAvatarFrame();
         PlayerManager.Instance.ShowPerformanceStats();
@@ -110,7 +110,7 @@ public class GameManager : MonoBehaviour
         MenuManager.Instance.ToggleMenu(Menu.Game);
     }
 
-    private void HandleFinishingLeveltate()
+    private void HandleFinishingLevelState()
     {
         MenuManager.Instance.ToggleMenu(Menu.MissionMap);
     }

@@ -83,9 +83,9 @@ public class MissionMapPresenter
 
     public async void AbandonMission()
     {
-        _mission = null;
-
         await _missionLocalService.DeleteMission();
+
+        _mission = null;
 
         GameManager.Instance.UpdateGameState(GameState.AbandoningMission);
     }
