@@ -113,6 +113,7 @@ public class LevelPerformanceView : MonoBehaviour
         else
         {
             _abandonBtn.gameObject.SetActive(true);
+            PlayerPrefs.SetInt("OnMission", 0);
             _resultHeader.text = $"<color=#FF5F45>GAME OVER</color>";
         }
 

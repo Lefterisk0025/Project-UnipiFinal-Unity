@@ -7,7 +7,7 @@ using UnityEngine;
 public class MissionLocalService
 {
     private const string localMissionFileName = "/mission.json";
-    private const string localMissionsCacheFileName = "/missions_chache.json";
+    private const string localMissionsCacheFileName = "/missions_cache.json";
 
     List<Mission> missionsList = new List<Mission>() {
             new Mission() {Id=0, Title="Diamond District Vault", Description="Nestled amidst a bustling city, this high-security vault holds billions in gems. Surveillance is tight, and the labyrinth layout confounds outsiders.", Difficulty = "Medium"},

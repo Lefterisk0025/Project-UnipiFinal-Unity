@@ -95,7 +95,7 @@ public class GameManager : MonoBehaviour
 
     private void HandleAbandoningMissionState()
     {
-        PlayerPrefs.SetInt("OnMission", 0);
+        PlayerPrefs.SetInt("OnMission", 0); // Its also being set in LevelPerformaceView
 
         PlayerManager.Instance.ShowAvatarFrame();
         PlayerManager.Instance.ShowPerformanceStats();

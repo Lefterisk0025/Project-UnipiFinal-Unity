@@ -72,21 +72,47 @@ public class PlayerPresenter
         }
     }
 
-    public async void HandlePlayerMissionStatsSet(int score, int reputation, int matches, int coins)
+    public async void HandlePerformanceStatsIncrement(LevelPerformance performance)
     {
         int currScore = PlayerPrefs.GetInt("MissionScore"); // They are being initialized upon Level creation in MissionMapPresenter
         int currRep = PlayerPrefs.GetInt("MissionReputation");
         int currMartches = PlayerPrefs.GetInt("MissionMatches");
 
-        PlayerPrefs.SetInt("MissionScore", currScore + score);
-        PlayerPrefs.SetInt("MissionReputation", currRep + reputation);
-        PlayerPrefs.SetInt("MissionMatches", currMartches + matches);
+        PlayerPrefs.SetInt("MissionScore", currScore + performance.TotalScore);
+        PlayerPrefs.SetInt("MissionReputation", currRep + performance.ReputationEarned);
+        PlayerPrefs.SetInt("MissionMatches", currMartches + performance.TotalMatches);
 
-        PlayerManager.Instance.Player.Reputation += reputation;
-        PlayerManager.Instance.Player.NetCoins += coins;
-
-        PlayerManager.Instance.UpdatePlayerInformation();
+        PlayerManager.Instance.Player.Reputation += performance.ReputationEarned;
+        PlayerManager.Instance.Player.NetCoins += performance.CoinsEarned;
 
         await _playerRemoteService.UpdatePlayer(PlayerManager.Instance.Player);
+
+        PlayerManager.Instance.UpdateDisplayOfPlayerInformation();
+    }
+
+    public async void HandleMissionResultsSet(bool isVictory)
+    {
+        int currScore = PlayerPrefs.GetInt("MissionScore");
+        int currRep = PlayerPrefs.GetInt("MissionReputation");
+        int currMatches = PlayerPrefs.GetInt("MissionMatches");
+
+        MissionPerformance missionPerformance = new MissionPerformance()
+        {
+            TotalMissionScore = currScore,
+            TotalReputation = currRep,
+            TotalMatches = currMatches,
+            IsVictory = isVictory,
+            BonusReputation = 10,
+            BonusCoins = 20,
+        };
+
+        PlayerManager.Instance.Player.Reputation += missionPerformance.BonusReputation;
+        PlayerManager.Instance.Player.NetCoins += missionPerformance.BonusCoins;
+
+        await _playerRemoteService.UpdatePlayer(PlayerManager.Instance.Player);
+
+        PlayerManager.Instance.UpdateDisplayOfPlayerInformation();
+
+        PlayerManager.Instance.DisplayMissionResults(missionPerformance);
     }
 }

@@ -69,7 +69,6 @@ public class LevelPerformancePresenter
 
     private void HandleRepeatBarTimerEnded()
     {
-        Debug.Log($"<color=green>HandleRepeatBarTimerEnded called</color>");
         _timeAttackPerformance.CurrentLives--;
         _timeAttackPerformance.CurrentMatches = 0;
 
@@ -83,7 +82,6 @@ public class LevelPerformancePresenter
 
     private void HandleMatchFound()
     {
-        Debug.Log("CurrGameMode: " + _currGameMode);
         if (_currGameMode == GameMode.TimeAttack)
         {
             _timeAttackPerformance.CurrentMatches++;
@@ -121,14 +119,14 @@ public class LevelPerformancePresenter
                 _timeAttackPerformance.ReputationEarned = CalculateAndGetReputation();
                 _timeAttackPerformance.CoinsEarned = CalculateAndGetCoins();
                 _levelPerformanceView.DisplayPerformanceResults(_timeAttackPerformance);
-                PlayerManager.Instance.SetPlayerMissionStats(_timeAttackPerformance.TotalScore, _timeAttackPerformance.ReputationEarned, _timeAttackPerformance.TotalMatches, _timeAttackPerformance.CoinsEarned);
+                PlayerManager.Instance.IncrementPerformanceStats(_timeAttackPerformance);
                 break;
             case GameMode.MatchPoint:
                 _matchPointPerformance.IsVictory = isVictory;
                 _matchPointPerformance.ReputationEarned = CalculateAndGetReputation();
                 _matchPointPerformance.CoinsEarned = CalculateAndGetCoins();
                 _levelPerformanceView.DisplayPerformanceResults(_matchPointPerformance);
-                PlayerManager.Instance.SetPlayerMissionStats(_matchPointPerformance.TotalScore, _matchPointPerformance.ReputationEarned, _matchPointPerformance.TotalMatches, _matchPointPerformance.CoinsEarned);
+                PlayerManager.Instance.IncrementPerformanceStats(_matchPointPerformance);
                 break;
         }
     }

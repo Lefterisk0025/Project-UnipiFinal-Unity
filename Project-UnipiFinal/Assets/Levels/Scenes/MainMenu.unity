@@ -5715,7 +5715,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _tilePrefab: {fileID: 871071744821000409, guid: 50fb1ec035db04a4b9fc2a8814a366bc, type: 3}
   _tilesParent: {fileID: 900728195}
-  _addLinesButton: {fileID: 0}
+  _addLinesButton: {fileID: 302741575}
   OnMatchFound:
     m_PersistentCalls:
       m_Calls: []

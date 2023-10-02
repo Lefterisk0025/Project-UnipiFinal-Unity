@@ -47,6 +47,7 @@ public class LevelPresenter
             _currLevelIndex++;
         }
 
+        _matchConfig = null;
         if (_level.Difficulty == "Easy")
             _matchConfig = _levelView.GetMatchConfigByDifficulty(_level.GameMode, Difficulty.Easy);
         else if (_level.Difficulty == "Medium")
@@ -117,7 +118,7 @@ public class LevelPresenter
         }
 
         _levelView.OnMissionEnd.Invoke(_isVictory);
-        PlayerManager.Instance.DisplayMissionResults(_isVictory);
+        PlayerManager.Instance.SetMissionResults(_isVictory);
     }
 
     public void HandleContinueLevel()
@@ -149,7 +150,7 @@ public class LevelPresenter
     {
         if (!isVictory || (PlayerPrefs.GetInt("IsFinalNode") == 1))
         {
-            PlayerManager.Instance.DisplayMissionResults(isVictory);
+            PlayerManager.Instance.SetMissionResults(isVictory);
             return;
         }
     }

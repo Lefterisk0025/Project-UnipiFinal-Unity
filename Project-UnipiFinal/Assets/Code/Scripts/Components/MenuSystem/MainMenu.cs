@@ -12,7 +12,7 @@ public class MainMenu : MenuManager
 
     public void OpenMainMenu()
     {
-        PlayerManager.Instance.UpdatePlayerInformation();
+        PlayerManager.Instance.UpdateDisplayOfPlayerInformation();
         PlayerManager.Instance.ShowAvatarFrame();
         PlayerManager.Instance.ShowPerformanceStats();
         ToggleMenu(Menu.MainMenu);

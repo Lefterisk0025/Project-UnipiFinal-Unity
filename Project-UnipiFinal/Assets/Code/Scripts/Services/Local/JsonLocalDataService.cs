@@ -19,6 +19,8 @@ public class JsonLocalDataService : ILocalDataService
     {
         string path = _persistentDataPath + RelativePath;
         Debug.Log($"<color=green>Start saving {RelativePath}</color>");
+        if (path == null)
+            Debug.Log($"<color=blue>Path is null in Save when proccessing {RelativePath}!</color>");
         try
         {
             if (File.Exists(path))
@@ -59,6 +61,8 @@ public class JsonLocalDataService : ILocalDataService
 
         string path = _persistentDataPath + RelativePath;
         Debug.Log($"<color=green>Start loading {RelativePath}</color>");
+        if (path == null)
+            Debug.Log($"<color=blue>Path is null in Load when proccessing {RelativePath}!</color>");
         if (!File.Exists(path))
         {
             throw new FileNotFoundException($"{path} does not exist!");
@@ -81,7 +85,8 @@ public class JsonLocalDataService : ILocalDataService
     public async Task<bool> DeleteData(string RelativePath)
     {
         string path = Application.persistentDataPath + RelativePath;
-        Debug.Log($"<color=green>Start deleting {RelativePath}</color>");
+        if (path == null)
+            Debug.Log($"<color=blue>Path is null in Delete when proccessing {RelativePath}!</color>");
         if (!File.Exists(path))
         {
             throw new FileNotFoundException($"{path} does not exist!");

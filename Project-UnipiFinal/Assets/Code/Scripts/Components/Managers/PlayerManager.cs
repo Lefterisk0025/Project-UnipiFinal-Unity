@@ -25,6 +25,14 @@ public class PlayerManager : MonoBehaviour
 
         _playerPresenter = new PlayerPresenter(this);
 
+        Player = new Player()
+        {
+            DisplayName = "Akazaas",
+            Reputation = 0,
+            NetCoins = 0,
+            Gender = 2,
+        };
+
         HideAvatarFrame();
         HidePerformanceStats();
     }
@@ -45,42 +53,26 @@ public class PlayerManager : MonoBehaviour
             ErrorScreen.Instance.Show("Register failed!");
     }
 
-    public void SetPlayerMissionStats(int score, int reputation, int matches, int coins)
+    public void IncrementPerformanceStats(LevelPerformance performance)
     {
-        _playerPresenter.HandlePlayerMissionStatsSet(score, reputation, matches, coins);
+        _playerPresenter.HandlePerformanceStatsIncrement(performance);
     }
 
-    public void DisplayMissionResults(bool isVictory)
+    public void SetMissionResults(bool isVictory)
+    {
+        _playerPresenter.HandleMissionResultsSet(isVictory);
+    }
+
+    public void DisplayMissionResults(MissionPerformance missionPerformance)
     {
         _missionResultsView.gameObject.SetActive(true);
-
-        int currScore = PlayerPrefs.GetInt("MissionScore");
-        int currRep = PlayerPrefs.GetInt("MissionReputation");
-        int currMatches = PlayerPrefs.GetInt("MissionMatches");
-        MissionPerformance missionPerformance = new MissionPerformance()
-        {
-            TotalMissionScore = currScore,
-            TotalReputation = currRep,
-            TotalMatches = currMatches,
-            IsVictory = isVictory,
-            BonusReputation = 10,
-            BonusCoins = 20,
-        };
-
-        Player.Reputation += missionPerformance.BonusReputation;
-        Player.NetCoins += missionPerformance.BonusCoins;
-
-        UpdatePlayerInformation();
-
         _missionResultsView.DisplayResultsScreen(missionPerformance);
     }
 
-    public void UpdatePlayerInformation()
+    public void UpdateDisplayOfPlayerInformation()
     {
         if (Player != null)
-        {
             _playerStatsView.DisplayPlayerInformation(Player);
-        }
     }
 
     public void ShowAvatarFrame() => _playerStatsView.ShowAvatarFrame();
