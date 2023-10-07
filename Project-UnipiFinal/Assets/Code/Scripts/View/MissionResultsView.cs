@@ -27,7 +27,11 @@ public class MissionResultsView : MonoBehaviour
         _bonuesReputationEarnedText.text = "-";
         _bonusCoinsEarnedText.text = "-";
 
+        AudioManager.Instance.StopAllMusics();
+
         _resultsPanel.SetActive(false);
+
+        AudioManager.Instance.PlayMainMenuMusic();
     }
 
     public void DisplayResultsScreen(MissionPerformance missionPerformance)
@@ -35,9 +39,15 @@ public class MissionResultsView : MonoBehaviour
         _resultsPanel.SetActive(true);
 
         if (missionPerformance.IsVictory)
+        {
+            AudioManager.Instance.PlayMissionCompletedMusic();
             _outcomeText.text = "MISSION COMPLETED";
+        }
         else
+        {
+            AudioManager.Instance.PlayMissionFailedMusic();
             _outcomeText.text = "MISSION FAILED";
+        }
 
         _totalReputationText.text = missionPerformance.TotalReputation.ToString();
         _totalScoreText.text = missionPerformance.TotalMissionScore.ToString();

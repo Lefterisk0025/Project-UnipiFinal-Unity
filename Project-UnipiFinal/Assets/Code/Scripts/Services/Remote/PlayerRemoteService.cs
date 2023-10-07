@@ -86,6 +86,8 @@ public class PlayerRemoteService
             DocumentReference playerRef = _fsDB.Collection("players").Document(player.Uid);
             Dictionary<string, object> updates = new Dictionary<string, object>
             {
+                {"DisplayName", player.DisplayName},
+                {"Gender", player.Gender},
                 { "NetCoins", player.NetCoins },
                 { "Reputation", player.Reputation },
             };
@@ -97,6 +99,28 @@ public class PlayerRemoteService
         catch (Exception e)
         {
             Debug.Log(e);
+            return false;
+        }
+    }
+
+    public async Task<bool> SyncLocalAndRemotePlayer(Player localPlayer)
+    {
+        try
+        {
+            Player remotePlayer = await GetPlayerByUserId(GetUserIdOfAuthUser());
+
+            remotePlayer.DisplayName = localPlayer.DisplayName;
+            remotePlayer.Gender = localPlayer.Gender;
+            remotePlayer.Reputation = localPlayer.Reputation;
+            remotePlayer.NetCoins = localPlayer.NetCoins;
+
+            await UpdatePlayer(remotePlayer);
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.Message);
             return false;
         }
     }

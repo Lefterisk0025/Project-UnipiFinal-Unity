@@ -12,6 +12,7 @@ public class MissionsCacheView : MonoBehaviour, IObserver
 
     [Header("Settings")]
     [SerializeField] private int _missionsCount = 5;
+    [SerializeField] private int _refreshPrice = 500;
 
     [Header("General UI")]
     [SerializeField] private MissionCard _missionCardPrefab;
@@ -44,6 +45,22 @@ public class MissionsCacheView : MonoBehaviour, IObserver
         StopAllCoroutines();
 
         OnViewDisabled.Invoke();
+    }
+
+    public void OnRefreshMissionsButtonClicked()
+    {
+        AlertWindow.Instance.ShowYesNoAlert("Refresh Missions", $"Are you sure you would like to spend {_refreshPrice} coins?", () =>
+        {
+            if (PlayerManager.Instance.Player.NetCoins > _refreshPrice)
+            {
+                PlayerManager.Instance.BuyItem(_refreshPrice);
+                _missionsCachePresenter.HandleRefreshMissionsButtonClicked();
+            }
+            else
+            {
+                AlertWindow.Instance.ShowMessageAlert("Problem!", "You don't have enough coins.");
+            }
+        }, () => { });
     }
 
     public void DisplayMissions(List<Mission> missionsList)

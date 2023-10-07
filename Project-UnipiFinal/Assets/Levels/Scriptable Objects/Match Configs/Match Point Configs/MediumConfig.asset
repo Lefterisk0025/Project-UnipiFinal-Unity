@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MediumConfig
   m_EditorClassIdentifier: 
   Difficulty: 1
-  TotalTime: 10
+  TotalTime: 40
   Height: 10
-  ScoreGoal: 20
-  PointsPerMatch: 10
+  ScoreGoal: 320
+  PointsPerMatch: 16

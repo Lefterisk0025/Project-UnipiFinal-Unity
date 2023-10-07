@@ -107,11 +107,15 @@ public class GameManager : MonoBehaviour
     {
         LoadingScreen.Instance.FakeOpen(1);
 
+        AudioManager.Instance.StopAllMusics();
+
         MenuManager.Instance.ToggleMenu(Menu.Game);
     }
 
     private void HandleFinishingLevelState()
     {
+        AudioManager.Instance.StopAllEffects();
+
         MenuManager.Instance.ToggleMenu(Menu.MissionMap);
     }
 }

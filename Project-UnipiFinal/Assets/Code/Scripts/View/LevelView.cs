@@ -21,7 +21,7 @@ public class LevelView : MonoBehaviour
     [SerializeField] private TextCountdownTimer _preGameTimer;
     [SerializeField] private TextCountdownTimer _centralLevelTimer;
     [SerializeField] private BarCountdownTimer _repeatBarTimer;
-    [SerializeField] private TMP_Text _difficultyHeader;
+    [SerializeField] internal GameObject _pauseMenuPanel;
 
     [HideInInspector] public UnityEvent OnViewInitialized;
     [HideInInspector] public UnityEvent OnViewDisabled;
@@ -52,6 +52,7 @@ public class LevelView : MonoBehaviour
         _preGameTimer.gameObject.SetActive(false);
         _centralLevelTimer.gameObject.SetActive(false);
         _repeatBarTimer.gameObject.SetActive(false);
+        _pauseMenuPanel.SetActive(false);
 
         OnViewInitialized.Invoke();
     }
@@ -122,6 +123,18 @@ public class LevelView : MonoBehaviour
         _levelPresenter.HandleContinueLevel();
     }
 
+    public void OnPauseButtonClicked()
+    {
+        _pauseMenuPanel.SetActive(true);
+        Time.timeScale = 0;
+    }
+
+    public void OnResumeButtonClicked()
+    {
+        _pauseMenuPanel.SetActive(false);
+        Time.timeScale = 1;
+    }
+
     public MatchConfig GetMatchConfigByDifficulty(GameMode gameMode, Difficulty difficulty)
     {
         switch (gameMode)
@@ -147,10 +160,5 @@ public class LevelView : MonoBehaviour
         }
 
         return null;
-    }
-
-    public void DisplayDiffuculty(string diff)
-    {
-        _difficultyHeader.text = diff;
     }
 }

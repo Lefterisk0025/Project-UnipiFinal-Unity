@@ -53,7 +53,7 @@ public class TextCountdownTimer : MonoBehaviour
 
         _countdownText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
 
-        while (timeRemaining >= 0)
+        while (timeRemaining > 0)
         {
             minutes = Mathf.FloorToInt(timeRemaining / 60);
             seconds = Mathf.FloorToInt(timeRemaining % 60);
@@ -63,6 +63,7 @@ public class TextCountdownTimer : MonoBehaviour
         }
 
         _countdownText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        _countdownText.text = "00:00";
 
         OnTimerEnd.Invoke();
     }
@@ -102,6 +103,7 @@ public class TextCountdownTimer : MonoBehaviour
             yield return new WaitForSeconds(1);
         }
 
+        timeRemaining--;
         _countdownText.text = $"{_timerLabel}{hours}:{minutes:D2}:{seconds:D2}";
 
         OnTimerEnd.Invoke();

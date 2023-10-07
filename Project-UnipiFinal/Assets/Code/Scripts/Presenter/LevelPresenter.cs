@@ -47,8 +47,6 @@ public class LevelPresenter
             _currLevelIndex++;
         }
 
-        _levelView.DisplayDiffuculty(_level.Difficulty);
-
         _matchConfig = null;
         if (_level.Difficulty == "Easy")
             _matchConfig = _levelView.GetMatchConfigByDifficulty(_level.GameMode, Difficulty.Easy);
@@ -64,9 +62,12 @@ public class LevelPresenter
 
         _levelView.DisplayCentralLevelTimer(_matchConfig.TotalTime);
 
-        _levelView.LevelPerformanceView.DisplayInitialStats(_matchConfig);
+        if (_level.GameMode == GameMode.TimeAttack)
+            _levelView.LevelPerformanceView.DisplayInitialTimeAttackStats((TimeAttackConfig)_matchConfig);
+        else
+            _levelView.LevelPerformanceView.DisplayInitialMatchPointStats((MatchPointConfig)_matchConfig);
 
-        _levelView.LevelPerformanceView.SetLevelPerformance(_matchConfig);
+        _levelView.LevelPerformanceView.SetLevelPerformance(_matchConfig, _level.Difficulty);
 
         LoadingScreen.Instance.CloseAfterDelay(1);
     }

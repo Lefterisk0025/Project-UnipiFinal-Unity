@@ -82,9 +82,14 @@ public class MissionsCachePresenter
         FetchNewRandomMissions();
     }
 
+    public void HandleRefreshMissionsButtonClicked()
+    {
+        FetchNewRandomMissions();
+    }
+
     private void SetMissionsRefreshTimer(DateTime currDateTime, DateTime lastFetchDateTime)
     {
-        int timeRemainsInSec = (int)((_refreshTimeInHours * 3600) - Mathf.FloorToInt((float)(currDateTime - lastFetchDateTime).TotalSeconds));
+        int timeRemainsInSec = 7200 - Mathf.FloorToInt((float)(currDateTime - lastFetchDateTime).TotalSeconds);
         _missionsCacheView.DisplayTimeUntilMissionsRefresh(timeRemainsInSec);
     }
 
@@ -107,8 +112,9 @@ public class MissionsCachePresenter
         LoadingScreen.Instance.FakeOpen(1);
 
         _missionsCacheView.ClearMissionCards();
-        //_missionsList = await _missionRemoteService.GetRandomRemoteMissions(_missionsCount);
-        _missionsList = _missionLocalService.GetRandomMissions(_missionsCount);
+        _missionsList = await _missionRemoteService.GetRandomRemoteMissions(_missionsCount);
+        if (_missionsList == null)
+            _missionsList = _missionLocalService.GetRandomMissions(_missionsCount);
         if (await _missionLocalService.SaveAllMissions(_missionsList))
         {
             PlayerPrefs.SetString("LastFetchDateTime", DateTime.Now.ToString());

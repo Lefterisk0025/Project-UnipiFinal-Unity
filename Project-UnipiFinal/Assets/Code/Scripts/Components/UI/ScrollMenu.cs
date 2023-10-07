@@ -10,6 +10,7 @@ public class ScrollMenu : MonoBehaviour
     int prevPanelIndex = 0;
     List<GameObject> _itemGOsList = new List<GameObject>();
 
+    [SerializeField] private bool _showDots;
     [SerializeField] private List<GameObject> _navDotsList;
 
     private void Update()
@@ -79,12 +80,18 @@ public class ScrollMenu : MonoBehaviour
 
     private void SetSelectedNavDot(int index)
     {
+        if (!_showDots)
+            return;
+
         _navDotsList[index].GetComponent<RectTransform>().sizeDelta = new Vector2(35, 35);
         _navDotsList[index].GetComponent<Image>().color = new Color32(229, 1, 71, 255);
     }
 
     private void ResetSelectedNavDot(int index)
     {
+        if (!_showDots)
+            return;
+
         _navDotsList[index].GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
         _navDotsList[index].GetComponent<Image>().color = new Color32(255, 255, 225, 255);
     }

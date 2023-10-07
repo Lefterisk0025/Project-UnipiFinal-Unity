@@ -25,10 +25,7 @@ public class MissionCard : Subject
     private void Awake()
     {
         // Initialize card's UI
-        _cardBackground.sprite = _neaturalCardBackground;
-        _attackBtn.sprite = _neaturalButtonBackground;
-        _attackBtn.gameObject.GetComponentInChildren<TMP_Text>().text = "ATTACK";
-        _attackBtn.gameObject.GetComponent<Button>().enabled = true;
+        InitializeCardView();
     }
 
 
@@ -59,6 +56,18 @@ public class MissionCard : Subject
             _attackBtn.gameObject.GetComponentInChildren<TMP_Text>().text = "COMPLETED";
             _attackBtn.gameObject.GetComponent<Button>().enabled = false;
         }
+        else
+        {
+            InitializeCardView();
+        }
+    }
+
+    private void InitializeCardView()
+    {
+        _cardBackground.sprite = _neaturalCardBackground;
+        _attackBtn.sprite = _neaturalButtonBackground;
+        _attackBtn.gameObject.GetComponentInChildren<TMP_Text>().text = "ATTACK";
+        _attackBtn.gameObject.GetComponent<Button>().enabled = true;
     }
 
     public void SelectMissionAction()

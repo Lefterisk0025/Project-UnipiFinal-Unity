@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EasyConfig
   m_EditorClassIdentifier: 
   Difficulty: 0
-  TotalTime: 5
-  Height: 8
-  ScoreGoal: 20
-  PointsPerMatch: 10
+  TotalTime: 60
+  Height: 10
+  ScoreGoal: 210
+  PointsPerMatch: 7

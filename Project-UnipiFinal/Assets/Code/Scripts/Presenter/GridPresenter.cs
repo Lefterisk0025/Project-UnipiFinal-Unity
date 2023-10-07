@@ -101,12 +101,16 @@ public class GridPresenter
                 _gridView.RemoveTiles(tilesToBeRemoved2);
             }
 
+            AudioManager.Instance.PlayMatchFoundEffect();
+
             return true;
         }
         else
         {
             tile1View.UpdateView(TileState.Default);
             tile2View.UpdateView(TileState.Default);
+            AudioManager.Instance.PlayMatchFailedEffect();
+
 
             return false;
         }

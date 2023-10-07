@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class MapLineRenderer : MonoBehaviour
 {
-    [SerializeField] private Transform _worldPointA;
-    [SerializeField] private Transform _worldPointB;
-    [SerializeField] private RectTransform _rectTransform;
+    private Transform _worldPointA;
+    private Transform _worldPointB;
+    private RectTransform _rectTransform;
 
     public void SetLineRenderer(Transform pointA, Transform pointB)
     {

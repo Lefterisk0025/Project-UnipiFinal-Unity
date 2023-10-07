@@ -12,14 +12,17 @@ public class LevelPerformancePresenter
     MatchPointPerformance _matchPointPerformance;
 
     GameMode _currGameMode;
+    string _currDifficulty;
 
     public LevelPerformancePresenter(LevelPerformanceView levelPerformanceView)
     {
         _levelPerformanceView = levelPerformanceView;
     }
 
-    public void HandleLevelPerformanceSet(MatchConfig matchConfig)
+    public void HandleLevelPerformanceSet(MatchConfig matchConfig, string difficulty)
     {
+        _currDifficulty = difficulty;
+
         // Setup events used by all game modes
         _levelPerformanceView.LevelView.CentralLevelTimerEnded.AddListener(HandleCentralLevelTimerEnded);
         _levelPerformanceView.LevelView.GridView.OnMatchFound.AddListener(HandleMatchFound);
@@ -133,33 +136,111 @@ public class LevelPerformancePresenter
 
     private int CalculateAndGetReputation()
     {
+        float diffValue = 0;
         if (_currGameMode == GameMode.TimeAttack)
         {
             if (!_timeAttackPerformance.IsVictory)
                 return 5;
 
-            int scoreMultiplier = (int)Mathf.Floor(_timeAttackPerformance.TotalMatches / _timeAttackConfig.NumberOfMatchesPerTime);
+            switch (_currDifficulty)
+            {
+                case "Easy":
+                    diffValue = 2;
+                    break;
+                case "Medium":
+                    diffValue = 5;
+                    break;
+                case "Hard":
+                    diffValue = 8;
+                    break;
+                case "Very Hard":
+                    diffValue = 12;
+                    break;
+            }
 
-            return 10 + (_timeAttackPerformance.CurrentLives * 3) + scoreMultiplier * 2;
+            float rep = _timeAttackPerformance.TotalMatches * (diffValue / 10) + diffValue - (2 * _timeAttackPerformance.CurrentLives);
+
+            return (int)Mathf.Ceil(rep);
         }
         else
         {
             if (!_matchPointPerformance.IsVictory)
                 return 5;
 
-            return 30;
+            switch (_currDifficulty)
+            {
+                case "Easy":
+                    diffValue = 3;
+                    break;
+                case "Medium":
+                    diffValue = 5;
+                    break;
+                case "Hard":
+                    diffValue = 8;
+                    break;
+                case "Very Hard":
+                    diffValue = 10;
+                    break;
+            }
+
+            float rep = _matchPointPerformance.TotalMatches * (diffValue / 10) + diffValue;
+
+            return (int)Mathf.Ceil(rep);
         }
     }
 
     private int CalculateAndGetCoins()
     {
+        float diffValue = 0;
         if (_currGameMode == GameMode.TimeAttack)
         {
-            return 20;
+            if (!_timeAttackPerformance.IsVictory)
+                return 0;
+
+            switch (_currDifficulty)
+            {
+                case "Easy":
+                    diffValue = 2;
+                    break;
+                case "Medium":
+                    diffValue = 5;
+                    break;
+                case "Hard":
+                    diffValue = 8;
+                    break;
+                case "Very Hard":
+                    diffValue = 12;
+                    break;
+            }
+
+            float coins = _timeAttackPerformance.TotalMatches * (diffValue / 10) + diffValue - (2 * _timeAttackPerformance.CurrentLives);
+
+            return (int)Mathf.Ceil(coins);
         }
         else
         {
-            return 16;
+            if (!_matchPointPerformance.IsVictory)
+                return 5;
+
+            switch (_currDifficulty)
+            {
+                case "Easy":
+                    diffValue = 2;
+                    break;
+                case "Medium":
+                    diffValue = 4;
+                    break;
+                case "Hard":
+                    diffValue = 6;
+                    break;
+                case "Very Hard":
+                    diffValue = 10;
+                    break;
+            }
+
+            float coins = _matchPointPerformance.TotalMatches * (diffValue / 10) + 2 * diffValue;
+
+            return (int)Mathf.Ceil(coins);
         }
     }
 }

@@ -12,6 +12,8 @@ public class MainMenu : MenuManager
 
     public void OpenMainMenu()
     {
+        AudioManager.Instance.PlayMainMenuMusic();
+
         PlayerManager.Instance.UpdateDisplayOfPlayerInformation();
         PlayerManager.Instance.ShowAvatarFrame();
         PlayerManager.Instance.ShowPerformanceStats();

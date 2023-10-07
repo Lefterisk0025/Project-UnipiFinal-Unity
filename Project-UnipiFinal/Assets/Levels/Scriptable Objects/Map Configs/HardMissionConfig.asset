@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: HardMissionConfig
   m_EditorClassIdentifier: 
   Difficulty: 2
-  MapDepth: {x: 20, y: 24}
+  MapDepth: {x: 12, y: 14}
   MaxNodesPerLine: 4

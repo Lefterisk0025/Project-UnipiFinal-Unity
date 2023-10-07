@@ -16,6 +16,7 @@ public class GridView : MonoBehaviour, IObserver
     [SerializeField] private GameObject _addLinesButton;
 
     IDictionary<Tile, TileView> _spawnedTiles;
+    int _addLinesCounter = 1;
 
     [HideInInspector] public UnityEvent OnMatchFound;
 
@@ -34,6 +35,8 @@ public class GridView : MonoBehaviour, IObserver
         _spawnedTiles = new Dictionary<Tile, TileView>();
 
         _addLinesButton.SetActive(true);
+        _addLinesCounter = 1;
+        _addLinesButton.GetComponentInChildren<TMP_Text>().text = $"{_addLinesCounter}";
     }
 
     public void InjectGridPresenter(GridPresenter gridPresenter)
@@ -103,13 +106,17 @@ public class GridView : MonoBehaviour, IObserver
 
     public void AddLineToGrid()
     {
+        if (_addLinesCounter == 0)
+            return;
+
         List<Tile> tilesLine = _gridPresenter.CreateGridLineBasedOnActiveTiles();
         if (tilesLine == null)
             return;
 
         GenerateTilesOnScene(tilesLine);
 
-        _addLinesButton.GetComponentInChildren<TMP_Text>().text = $"{0}";
+        _addLinesCounter--;
+        _addLinesButton.GetComponentInChildren<TMP_Text>().text = $"{_addLinesCounter}";
     }
 
     public void RemoveTiles(List<Tile> tiles)

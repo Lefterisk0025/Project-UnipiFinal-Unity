@@ -10,8 +10,9 @@ public class PlayerPresenter
     PlayerLocalService _playerLocalService;
     PlayerRemoteService _playerRemoteService;
     PlayerManager _playerManager;
-
     AuthService _authService;
+
+    bool _isGooglePlayAvailable = true;
 
     public PlayerPresenter(PlayerManager playerManager)
     {
@@ -29,16 +30,18 @@ public class PlayerPresenter
             if (_authService.AuthGooglePlayGames())
             {
                 string userId = _playerRemoteService.GetUserIdOfAuthUser();
-                var player = await _playerRemoteService.GetPlayerByUserId(userId);
+                var playerRemote = await _playerRemoteService.GetPlayerByUserId(userId);
 
-                if (player == null)
+                if (playerRemote == null)
                     GameManager.Instance.UpdateGameState(GameState.OnAuthMenu);
                 else
                 {
-                    PlayerManager.Instance.Player = player;
+                    PlayerManager.Instance.Player = playerRemote;
                     return true;
                 }
             }
+            else
+                _isGooglePlayAvailable = false;
 
             return false;
         }
@@ -62,6 +65,8 @@ public class PlayerPresenter
                     return true;
                 }
             }
+            else
+                _isGooglePlayAvailable = false;
 
             return false;
         }
@@ -85,7 +90,10 @@ public class PlayerPresenter
         PlayerManager.Instance.Player.Reputation += performance.ReputationEarned;
         PlayerManager.Instance.Player.NetCoins += performance.CoinsEarned;
 
-        await _playerRemoteService.UpdatePlayer(PlayerManager.Instance.Player);
+        if (_isGooglePlayAvailable)
+            await _playerRemoteService.UpdatePlayer(PlayerManager.Instance.Player);
+        else
+            UpdateLocalPlayer();
 
         PlayerManager.Instance.UpdateDisplayOfPlayerInformation();
     }
@@ -102,17 +110,56 @@ public class PlayerPresenter
             TotalReputation = currRep,
             TotalMatches = currMatches,
             IsVictory = isVictory,
-            BonusReputation = 10,
-            BonusCoins = 20,
+            BonusReputation = (int)Mathf.Ceil((currScore + currMatches) / 20),
+            BonusCoins = (int)Mathf.Ceil(currScore / 20),
         };
 
         PlayerManager.Instance.Player.Reputation += missionPerformance.BonusReputation;
         PlayerManager.Instance.Player.NetCoins += missionPerformance.BonusCoins;
 
-        await _playerRemoteService.UpdatePlayer(PlayerManager.Instance.Player);
+        PlayerManager.Instance.DisplayMissionResults(missionPerformance);
+
+        if (_isGooglePlayAvailable)
+            await _playerRemoteService.UpdatePlayer(PlayerManager.Instance.Player);
+        else
+            UpdateLocalPlayer();
 
         PlayerManager.Instance.UpdateDisplayOfPlayerInformation();
+    }
 
-        PlayerManager.Instance.DisplayMissionResults(missionPerformance);
+    public async void HandleBuyItem(int price)
+    {
+        PlayerManager.Instance.Player.NetCoins -= price;
+        PlayerManager.Instance.UpdateDisplayOfPlayerInformation();
+        await _playerRemoteService.UpdatePlayer(PlayerManager.Instance.Player);
+    }
+
+    public void LoadLocalPlayer()
+    {
+        PlayerManager.Instance.Player = _playerLocalService.LoadPlayer();
+        if (PlayerManager.Instance.Player == null)
+        {
+            GameManager.Instance.UpdateGameState(GameState.OnAuthMenu);
+            return;
+        }
+        else
+            GameManager.Instance.UpdateGameState(GameState.MainMenu);
+    }
+
+    public void CreateAndLoadLocalPlayer(string displayName, int gender)
+    {
+        _playerLocalService.CreatePlayer(displayName, gender);
+
+        PlayerManager.Instance.Player = _playerLocalService.LoadPlayer();
+    }
+
+    public void UpdateLocalPlayer()
+    {
+        _playerLocalService.UpdatePlayer(PlayerManager.Instance.Player);
+    }
+
+    public void EraseLocalPlayerData()
+    {
+        _playerLocalService.DeletePlayer();
     }
 }

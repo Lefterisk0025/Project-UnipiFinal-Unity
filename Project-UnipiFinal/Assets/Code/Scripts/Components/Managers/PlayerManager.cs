@@ -25,14 +25,6 @@ public class PlayerManager : MonoBehaviour
 
         _playerPresenter = new PlayerPresenter(this);
 
-        Player = new Player()
-        {
-            DisplayName = "Akazaas",
-            Reputation = 0,
-            NetCoins = 0,
-            Gender = 2,
-        };
-
         HideAvatarFrame();
         HidePerformanceStats();
     }
@@ -42,7 +34,7 @@ public class PlayerManager : MonoBehaviour
         if (await _playerPresenter.SignInPlayer())
             GameManager.Instance.UpdateGameState(GameState.MainMenu);
         else
-            ErrorScreen.Instance.Show("Sign in failed!");
+            _playerPresenter.LoadLocalPlayer();
     }
 
     public async void RegisterPlayer(string displayName, int gender)
@@ -50,7 +42,7 @@ public class PlayerManager : MonoBehaviour
         if (await _playerPresenter.RegisterPlayer(displayName, gender))
             SignInPlayer();
         else
-            ErrorScreen.Instance.Show("Register failed!");
+            _playerPresenter.CreateAndLoadLocalPlayer(displayName, gender);
     }
 
     public void IncrementPerformanceStats(LevelPerformance performance)
@@ -82,4 +74,9 @@ public class PlayerManager : MonoBehaviour
     public void ShowPerformanceStats() => _playerStatsView.ShowPerformanceStats();
 
     public void HidePerformanceStats() => _playerStatsView.HidePerformanceStats();
+
+    public void BuyItem(int price)
+    {
+        _playerPresenter.HandleBuyItem(price);
+    }
 }

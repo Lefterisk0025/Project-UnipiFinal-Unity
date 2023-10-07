@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HardConfig
   m_EditorClassIdentifier: 
   Difficulty: 2
-  TotalTime: 10
+  TotalTime: 20
   Height: 10
-  FindMatchTime: 2
-  NumberOfMatchesPerTime: 1
+  FindMatchTime: 5
+  NumberOfMatchesPerTime: 3

@@ -33,18 +33,20 @@ public class LevelPerformanceView : MonoBehaviour
     [HideInInspector] public UnityEvent OnAllMatchesFound;
 
     // Starting point of Level Performance view
-    public void SetLevelPerformance(MatchConfig matchConfig)
+    public void SetLevelPerformance(MatchConfig matchConfig, string difficulty)
     {
         _levelPerformancePresenter = new LevelPerformancePresenter(this);
-        _levelPerformancePresenter.HandleLevelPerformanceSet(matchConfig);
+        _levelPerformancePresenter.HandleLevelPerformanceSet(matchConfig, difficulty);
     }
 
     private void OnEnable()
     {
         ResetResultsPanel();
-        ResetPerformanceStatsUI();
 
         _resultsPanel.SetActive(false);
+
+        _timeAttackStatsParent.SetActive(false);
+        _matchPointStatsParent.SetActive(false);
     }
 
     private void ResetResultsPanel()
@@ -66,22 +68,17 @@ public class LevelPerformanceView : MonoBehaviour
         _livesText.text = "";
     }
 
-    public void DisplayInitialStats(MatchConfig config)
+    public void DisplayInitialTimeAttackStats(TimeAttackConfig timeAttackConfig)
     {
-        _timeAttackStatsParent.SetActive(false);
-        _matchPointStatsParent.SetActive(false);
+        _timeAttackStatsParent.SetActive(true);
+        _numberOfMatchesPerTimeText.text = $"0/{timeAttackConfig.NumberOfMatchesPerTime}";
+        _livesText.text = $"{TimeAttackPerformance.MaxLives}/{TimeAttackPerformance.MaxLives}";
+    }
 
-        if (config is TimeAttackConfig timeAttackConfig)
-        {
-            _timeAttackStatsParent.SetActive(true);
-            _numberOfMatchesPerTimeText.text = $"0/{timeAttackConfig.NumberOfMatchesPerTime}";
-            _livesText.text = $"{TimeAttackPerformance.MaxLives}/{TimeAttackPerformance.MaxLives}";
-        }
-        else if (config is MatchPointConfig matchPointConfig)
-        {
-            _matchPointStatsParent.SetActive(true);
-            _scoreText.text = $"0/{matchPointConfig.ScoreGoal}";
-        }
+    public void DisplayInitialMatchPointStats(MatchPointConfig matchPointConfig)
+    {
+        _matchPointStatsParent.SetActive(true);
+        _scoreText.text = $"0/{matchPointConfig.ScoreGoal}";
     }
 
     public void DisplayTimeAttackStats(TimeAttackPerformance performance, TimeAttackConfig config)

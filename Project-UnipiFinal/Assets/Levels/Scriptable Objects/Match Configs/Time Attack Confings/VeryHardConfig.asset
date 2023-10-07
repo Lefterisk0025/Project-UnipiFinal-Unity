@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Difficulty: 3
   TotalTime: 20
-  Height: 12
+  Height: 10
   FindMatchTime: 4
   NumberOfMatchesPerTime: 3
