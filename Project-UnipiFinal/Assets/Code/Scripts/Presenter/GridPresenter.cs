@@ -156,8 +156,6 @@ public class GridPresenter
 
         _grid.Height = _grid.Height + subGridHeight;
 
-        Debug.Log("Add line");
-
         return tilesLine;
     }
 
@@ -192,8 +190,6 @@ public class GridPresenter
             tilesToBeRemovedFromScene.Add(tile);
             _grid.RemoveTile(tile);
         }
-
-        Debug.Log("Remove tiles at row " + row);
 
         _grid.Height--;
 

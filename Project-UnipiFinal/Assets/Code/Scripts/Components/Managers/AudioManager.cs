@@ -30,6 +30,11 @@ public class AudioManager : MonoBehaviour
             _mainMenu.Play();
     }
 
+    public void StopMainMenuMusic()
+    {
+        _mainMenu.Stop();
+    }
+
     public void PlayMissionFailedMusic()
     {
         if (!_missionFailed.isPlaying)

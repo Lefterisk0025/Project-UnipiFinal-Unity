@@ -12,8 +12,6 @@ public class PlayerPresenter
     PlayerManager _playerManager;
     AuthService _authService;
 
-    bool _isGooglePlayAvailable = true;
-
     public PlayerPresenter(PlayerManager playerManager)
     {
         _playerManager = playerManager;
@@ -23,7 +21,7 @@ public class PlayerPresenter
         _authService = new AuthService();
     }
 
-    public async Task<bool> SignInPlayer()
+    public async Task<int> SignInPlayer()
     {
         try
         {
@@ -33,22 +31,23 @@ public class PlayerPresenter
                 var playerRemote = await _playerRemoteService.GetPlayerByUserId(userId);
 
                 if (playerRemote == null)
+                {
                     GameManager.Instance.UpdateGameState(GameState.OnAuthMenu);
+                    return 2;
+                }
                 else
                 {
                     PlayerManager.Instance.Player = playerRemote;
-                    return true;
+                    return 0;
                 }
             }
             else
-                _isGooglePlayAvailable = false;
-
-            return false;
+                return 1;
         }
         catch (Exception e)
         {
             ErrorScreen.Instance.Show(e.Message);
-            return false;
+            return 1;
         }
     }
 
@@ -65,8 +64,6 @@ public class PlayerPresenter
                     return true;
                 }
             }
-            else
-                _isGooglePlayAvailable = false;
 
             return false;
         }
@@ -90,10 +87,7 @@ public class PlayerPresenter
         PlayerManager.Instance.Player.Reputation += performance.ReputationEarned;
         PlayerManager.Instance.Player.NetCoins += performance.CoinsEarned;
 
-        if (_isGooglePlayAvailable)
-            await _playerRemoteService.UpdatePlayer(PlayerManager.Instance.Player);
-        else
-            UpdateLocalPlayer();
+        await _playerRemoteService.UpdatePlayer(PlayerManager.Instance.Player);
 
         PlayerManager.Instance.UpdateDisplayOfPlayerInformation();
     }
@@ -119,10 +113,7 @@ public class PlayerPresenter
 
         PlayerManager.Instance.DisplayMissionResults(missionPerformance);
 
-        if (_isGooglePlayAvailable)
-            await _playerRemoteService.UpdatePlayer(PlayerManager.Instance.Player);
-        else
-            UpdateLocalPlayer();
+        await _playerRemoteService.UpdatePlayer(PlayerManager.Instance.Player);
 
         PlayerManager.Instance.UpdateDisplayOfPlayerInformation();
     }
@@ -132,34 +123,5 @@ public class PlayerPresenter
         PlayerManager.Instance.Player.NetCoins -= price;
         PlayerManager.Instance.UpdateDisplayOfPlayerInformation();
         await _playerRemoteService.UpdatePlayer(PlayerManager.Instance.Player);
-    }
-
-    public void LoadLocalPlayer()
-    {
-        PlayerManager.Instance.Player = _playerLocalService.LoadPlayer();
-        if (PlayerManager.Instance.Player == null)
-        {
-            GameManager.Instance.UpdateGameState(GameState.OnAuthMenu);
-            return;
-        }
-        else
-            GameManager.Instance.UpdateGameState(GameState.MainMenu);
-    }
-
-    public void CreateAndLoadLocalPlayer(string displayName, int gender)
-    {
-        _playerLocalService.CreatePlayer(displayName, gender);
-
-        PlayerManager.Instance.Player = _playerLocalService.LoadPlayer();
-    }
-
-    public void UpdateLocalPlayer()
-    {
-        _playerLocalService.UpdatePlayer(PlayerManager.Instance.Player);
-    }
-
-    public void EraseLocalPlayerData()
-    {
-        _playerLocalService.DeletePlayer();
     }
 }

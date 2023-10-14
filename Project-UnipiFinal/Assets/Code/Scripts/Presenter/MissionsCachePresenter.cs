@@ -99,7 +99,7 @@ public class MissionsCachePresenter
             return true;
 
         // Check if 2 hours has passed since the last fetch time
-        return (lastFetchDateTime - currDateTime).TotalSeconds >= _refreshTimeInHours;
+        return (lastFetchDateTime - currDateTime).TotalHours >= _refreshTimeInHours;
     }
 
     private async void FetchNewRandomMissions()

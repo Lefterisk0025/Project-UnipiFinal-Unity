@@ -34,7 +34,6 @@ public class MissionMapView : MonoBehaviour, IObserver
     private ScrollRect _scrollRect;
     private MapNodeView _selectedNodeView;
     private MapNodeView _pointedNodeView;
-    int tempCurrentPointedNodeId = 0;
 
     [HideInInspector] public UnityEvent OnViewInitialized;
     [HideInInspector] public UnityEvent OnViewDisabled;
@@ -55,8 +54,8 @@ public class MissionMapView : MonoBehaviour, IObserver
         _attackBtn.SetActive(false);
 
         GameManager.Instance.DisableMainCamera();
+        PlayerManager.Instance.HideAvatar();
         PlayerManager.Instance.HidePerformanceStats();
-        PlayerManager.Instance.HideAvatarFrame();
 
         if (_selectedNodeView != null)
         {

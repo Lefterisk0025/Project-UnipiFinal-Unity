@@ -35,7 +35,7 @@ public class MissionsCacheView : MonoBehaviour, IObserver
     private void OnEnable()
     {
         _missionsRefreshTimer.OnTimerEnd.AddListener(() => OnMissionsRefreshTimerEnded.Invoke());
-        PlayerManager.Instance.HideAvatarFrame();
+        PlayerManager.Instance.HideAvatar();
         OnViewInitialized.Invoke();
     }
 
@@ -51,14 +51,15 @@ public class MissionsCacheView : MonoBehaviour, IObserver
     {
         AlertWindow.Instance.ShowYesNoAlert("Refresh Missions", $"Are you sure you would like to spend {_refreshPrice} coins?", () =>
         {
-            if (PlayerManager.Instance.Player.NetCoins > _refreshPrice)
+            if (PlayerManager.Instance.Player.NetCoins >= _refreshPrice)
             {
                 PlayerManager.Instance.BuyItem(_refreshPrice);
+                StopAllCoroutines();
                 _missionsCachePresenter.HandleRefreshMissionsButtonClicked();
             }
             else
             {
-                AlertWindow.Instance.ShowMessageAlert("Problem!", "You don't have enough coins.");
+                AlertWindow.Instance.ShowMessageAlert("Problem", "You don't have enough coins!");
             }
         }, () => { });
     }
@@ -94,12 +95,12 @@ public class MissionsCacheView : MonoBehaviour, IObserver
         {
             case Actions.SelectMission:
                 var missionCard = (MissionCard)subject;
-                InvokeSelectMission(missionCard.Mission);
+                HandleSelectMission(missionCard.Mission);
                 break;
         }
     }
 
-    private void InvokeSelectMission(Mission mission)
+    private void HandleSelectMission(Mission mission)
     {
         _missionsCachePresenter.HandleMissionSelect(mission);
     }

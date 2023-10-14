@@ -11,6 +11,10 @@ public class ScrollMenu : MonoBehaviour
     List<GameObject> _itemGOsList = new List<GameObject>();
 
     [SerializeField] private bool _showDots;
+    [SerializeField] private bool _hideFirstAndLastArrows = false;
+    [SerializeField] private GameObject _leftButton;
+    [SerializeField] private GameObject _rightButton;
+
     [SerializeField] private List<GameObject> _navDotsList;
 
     private void Update()
@@ -35,6 +39,8 @@ public class ScrollMenu : MonoBehaviour
             ResetSelectedNavDot(i);
         }
 
+        ToggleArrowButtons();
+
         _itemGOsList[currentPanelIndex].SetActive(true);
         SetSelectedNavDot(currentPanelIndex);
     }
@@ -57,6 +63,8 @@ public class ScrollMenu : MonoBehaviour
             currentPanelIndex = 0;
         }
 
+        ToggleArrowButtons();
+
         _itemGOsList[currentPanelIndex].SetActive(true);
         SetSelectedNavDot(currentPanelIndex);
     }
@@ -73,6 +81,8 @@ public class ScrollMenu : MonoBehaviour
         {
             currentPanelIndex = _itemGOsList.Count - 1;
         }
+
+        ToggleArrowButtons();
 
         _itemGOsList[currentPanelIndex].SetActive(true);
         SetSelectedNavDot(currentPanelIndex);
@@ -94,5 +104,21 @@ public class ScrollMenu : MonoBehaviour
 
         _navDotsList[index].GetComponent<RectTransform>().sizeDelta = new Vector2(25, 25);
         _navDotsList[index].GetComponent<Image>().color = new Color32(255, 255, 225, 255);
+    }
+
+    private void ToggleArrowButtons()
+    {
+        if (!_hideFirstAndLastArrows)
+            return;
+
+        if (currentPanelIndex == 0)
+            _leftButton.SetActive(false);
+        else
+            _leftButton.SetActive(true);
+
+        if (currentPanelIndex == _itemGOsList.Count - 1)
+            _rightButton.SetActive(false);
+        else
+            _rightButton.SetActive(true);
     }
 }

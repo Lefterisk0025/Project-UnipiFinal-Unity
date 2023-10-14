@@ -62,6 +62,7 @@ public class PlayerRemoteService
                 Reputation = 0,
                 UserId = userId,
                 Gender = gender,
+                NetCoins = 1000,
             };
 
             DocumentReference playerRef = _fsDB.Collection("players").Document();

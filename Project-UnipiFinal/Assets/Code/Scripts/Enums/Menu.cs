@@ -4,7 +4,7 @@ public enum Menu
     Settings,
     Missions,
     Store,
-    Help,
+    Tutorial,
     StoreItem,
     MissionMap,
     Welcome,

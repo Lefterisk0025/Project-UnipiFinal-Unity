@@ -97,7 +97,7 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("OnMission", 0); // Its also being set in LevelView
 
-        PlayerManager.Instance.ShowAvatarFrame();
+        PlayerManager.Instance.ShowAvatar();
         PlayerManager.Instance.ShowPerformanceStats();
 
         MenuManager.Instance.ToggleMenu(Menu.MainMenu);

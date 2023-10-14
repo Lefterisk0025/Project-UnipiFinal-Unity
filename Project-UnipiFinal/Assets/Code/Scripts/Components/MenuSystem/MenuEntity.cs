@@ -6,8 +6,9 @@ public class MenuEntity : MonoBehaviour
 {
     public Menu MenuType;
 
-    public void OpenMenu()
+    private void OnEnable()
     {
-
+        if (MenuType == Menu.MainMenu)
+            AudioManager.Instance.PlayMainMenuMusic();
     }
 }

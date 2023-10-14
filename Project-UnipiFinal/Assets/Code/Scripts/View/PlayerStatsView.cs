@@ -10,6 +10,7 @@ public class PlayerStatsView : MonoBehaviour
     [SerializeField] private TMP_Text _reputationValueText;
     [SerializeField] private TMP_Text _netCoinsValueText;
     [SerializeField] private GameObject _avatarFrame;
+    [SerializeField] private Image _genderIcon;
     [SerializeField] private GameObject _statsFrame;
     [SerializeField] private Sprite _maleGender;
     [SerializeField] private Sprite _femaleGender;
@@ -22,15 +23,15 @@ public class PlayerStatsView : MonoBehaviour
         _netCoinsValueText.text = player.NetCoins.ToString();
 
         if (player.Gender == 0)
-            _avatarFrame.transform.Find("GenderIcon").GetComponent<Image>().sprite = _maleGender;
+            _genderIcon.sprite = _maleGender;
         else if (player.Gender == 1)
-            _avatarFrame.transform.Find("GenderIcon").GetComponent<Image>().sprite = _femaleGender;
+            _genderIcon.sprite = _femaleGender;
         else
-            _avatarFrame.transform.Find("GenderIcon").GetComponent<Image>().sprite = _noGender;
+            _genderIcon.sprite = _noGender;
     }
 
-    public void ShowAvatarFrame() => _avatarFrame.SetActive(true);
-    public void HideAvatarFrame() => _avatarFrame.SetActive(false);
+    public void ShowAvatar() => _avatarFrame.SetActive(true);
+    public void HideAvatar() => _avatarFrame.SetActive(false);
     public void ShowPerformanceStats() => _statsFrame.SetActive(true);
     public void HidePerformanceStats() => _statsFrame.SetActive(false);
 }

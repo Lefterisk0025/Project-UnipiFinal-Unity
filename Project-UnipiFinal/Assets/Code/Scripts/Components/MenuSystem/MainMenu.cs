@@ -15,8 +15,9 @@ public class MainMenu : MenuManager
         AudioManager.Instance.PlayMainMenuMusic();
 
         PlayerManager.Instance.UpdateDisplayOfPlayerInformation();
-        PlayerManager.Instance.ShowAvatarFrame();
+        PlayerManager.Instance.ShowAvatar();
         PlayerManager.Instance.ShowPerformanceStats();
+
         ToggleMenu(Menu.MainMenu);
     }
 
@@ -41,8 +42,19 @@ public class MainMenu : MenuManager
         ToggleMenu(Menu.Store);
     }
 
-    public void OpenGame()
+    public void OpenTutorial()
     {
-        ToggleMenu(Menu.Game);
+        PlayerManager.Instance.HideAvatar();
+        PlayerManager.Instance.HidePerformanceStats();
+
+        ToggleMenu(Menu.Tutorial);
+    }
+
+    public void OpenSettings()
+    {
+        PlayerManager.Instance.HideAvatar();
+        PlayerManager.Instance.HidePerformanceStats();
+
+        ToggleMenu(Menu.Settings);
     }
 }

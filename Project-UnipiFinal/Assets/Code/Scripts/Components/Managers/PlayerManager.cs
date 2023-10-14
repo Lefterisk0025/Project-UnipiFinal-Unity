@@ -25,16 +25,26 @@ public class PlayerManager : MonoBehaviour
 
         _playerPresenter = new PlayerPresenter(this);
 
-        HideAvatarFrame();
+        HideAvatar();
         HidePerformanceStats();
     }
 
     public async void SignInPlayer()
     {
-        if (await _playerPresenter.SignInPlayer())
+        int err = await _playerPresenter.SignInPlayer();
+        if (err == 0)
             GameManager.Instance.UpdateGameState(GameState.MainMenu);
-        else
-            _playerPresenter.LoadLocalPlayer();
+        else if (err == 1)
+        {
+            Player = new Player()
+            {
+                DisplayName = "Guest",
+                Gender = 2,
+                Reputation = 0,
+                NetCoins = 1000,
+            };
+            GameManager.Instance.UpdateGameState(GameState.MainMenu);
+        }
     }
 
     public async void RegisterPlayer(string displayName, int gender)
@@ -42,7 +52,7 @@ public class PlayerManager : MonoBehaviour
         if (await _playerPresenter.RegisterPlayer(displayName, gender))
             SignInPlayer();
         else
-            _playerPresenter.CreateAndLoadLocalPlayer(displayName, gender);
+            Debug.Log("Sign in failed!");
     }
 
     public void IncrementPerformanceStats(LevelPerformance performance)
@@ -57,6 +67,7 @@ public class PlayerManager : MonoBehaviour
 
     public void DisplayMissionResults(MissionPerformance missionPerformance)
     {
+        AudioManager.Instance.StopMainMenuMusic();
         _missionResultsView.gameObject.SetActive(true);
         _missionResultsView.DisplayResultsScreen(missionPerformance);
     }
@@ -67,12 +78,9 @@ public class PlayerManager : MonoBehaviour
             _playerStatsView.DisplayPlayerInformation(Player);
     }
 
-    public void ShowAvatarFrame() => _playerStatsView.ShowAvatarFrame();
-
-    public void HideAvatarFrame() => _playerStatsView.HideAvatarFrame();
-
+    public void ShowAvatar() => _playerStatsView.ShowAvatar();
+    public void HideAvatar() => _playerStatsView.HideAvatar();
     public void ShowPerformanceStats() => _playerStatsView.ShowPerformanceStats();
-
     public void HidePerformanceStats() => _playerStatsView.HidePerformanceStats();
 
     public void BuyItem(int price)

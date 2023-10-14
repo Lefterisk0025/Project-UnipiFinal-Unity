@@ -19,7 +19,7 @@ public class MissionLocalService
             new Mission() {Id=6,Title="Royal Train Robbery", Description="A moving target, the luxury royal train transports a monarch's treasures. Security is tight, and the ever-changing landscape complicates the plot.", Difficulty="Hard", IsCompleted = false},
             new Mission() {Id=7,Title="Opera House Caper", Description="An architectural marvel echoing with music, it's said to have a vault of old world wealth beneath its stage. Heisting during a live performance?", Difficulty="Medium", IsCompleted = false},
             new Mission() {Id=8,Title="Tech Tycoon's Tower", Description="A modern skyscraper fitted with the latest technology, owned by a billionaire tech magnate. Rumored to hold a digital treasure of immense value.", Difficulty="Medium", IsCompleted = false},
-            new Mission() {Id=10,Title="Underground Speakeasy Heist", Description="Hidden below the bustling city streets, a prohibition-era speakeasy, now a den for modern elite. Holds rare liquors and a secret stash of golden bars.", Difficulty="Very Hard", IsCompleted = false},
+            new Mission() {Id=9,Title="Underground Speakeasy Heist", Description="Hidden below the bustling city streets, a prohibition-era speakeasy, now a den for modern elite. Holds rare liquors and a secret stash of golden bars.", Difficulty="Very Hard", IsCompleted = false},
     };
 
     ILocalDataService _dataService;

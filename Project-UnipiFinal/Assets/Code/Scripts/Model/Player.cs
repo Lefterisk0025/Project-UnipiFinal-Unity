@@ -20,6 +20,4 @@ public class Player
     public int NetCoins { get; set; }
     [FirestoreProperty]
     public int Gender { get; set; }
-
-    public MissionPerformance CurrentMissionPerformance { get; set; }
 }
