@@ -57,4 +57,12 @@ public class MainMenu : MenuManager
 
         ToggleMenu(Menu.Settings);
     }
+
+    public void ExitGame()
+    {
+        AlertWindow.Instance.ShowYesNoAlert("Confirmation", "Are you sure you want to exit?", () =>
+        {
+            Application.Quit();
+        }, () => { });
+    }
 }
