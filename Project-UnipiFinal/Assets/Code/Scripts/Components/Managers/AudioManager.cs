@@ -80,7 +80,6 @@ public class AudioManager : MonoBehaviour
         _mainMenu.mute = true;
         _missionCompleted.mute = true;
         _missionFailed.mute = true;
-
     }
 
     public void MuteAllMusics()

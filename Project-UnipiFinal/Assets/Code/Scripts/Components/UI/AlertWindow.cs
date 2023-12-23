@@ -64,9 +64,9 @@ public class AlertWindow : MonoBehaviour
 
     private void HideYesNoAlert()
     {
-        _yesnoAlertPanel.SetActive(false);
-
         _yesBtn.onClick.RemoveAllListeners();
         _noBtn.onClick.RemoveAllListeners();
+
+        _yesnoAlertPanel.SetActive(false);
     }
 }
